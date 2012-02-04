@@ -1,0 +1,346 @@
+/*
+   PeerData* MapPeerData(PeerKey* in_key)
+   PeerData* FindPeerData(PeerKey* in_key )
+   GetFreeSeed
+   void PeerData::DeleteThisPeerDate()
+*/
+struct PeerData
+{
+	struct NetAddr   addr;
+	uchar            NATType;
+	struct Treap     tpnd;
+};
+
+BOOL NetAddrCompare(struct BinTreeNode* pa_pBinNode0 ,
+		struct BinTreeNode* pa_pBinNode1 , void* pa_else)
+{
+	struct PeerData* p0 = GET_STRUCT_ADDR( pa_pBinNode0 , struct PeerData , tpnd.btnd );
+	struct PeerData* p1 = GET_STRUCT_ADDR( pa_pBinNode1 , struct PeerData , tpnd.btnd );
+
+	if( p0->addr.port != p1->addr.port )
+	{
+		return p0->addr.port > p1->addr.port;
+	}
+	else
+	{
+		return p0->addr.IPv4 > p1->addr.IPv4;
+	}
+}
+
+BOOL ifNetAddrEqual(struct BinTreeNode* pa_pBinNode0 ,
+		struct BinTreeNode* pa_pBinNode1 , void* pa_else)
+{
+	struct PeerData* p0 = GET_STRUCT_ADDR( pa_pBinNode0 , struct PeerData , tpnd.btnd );
+	struct PeerData* p1 = GET_STRUCT_ADDR( pa_pBinNode1 , struct PeerData , tpnd.btnd );
+
+	if( p0->addr.IPv4 == p1->addr.IPv4 && p0->addr.port == p1->addr.port)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+
+}
+//------------------
+
+struct BridgeProc
+{
+	MutiSending;
+	relayID;
+	a,b,c,s;
+	p0,p1;
+}
+
+RecvStep
+{
+	recvBRIDGE();
+	recvPOP3();
+	recvSMTP();
+	recvSTUN();
+
+	sleep(1)
+
+	return ReDo;
+}
+
+RedirectionServerStep
+{
+	if( recv == ASK_IF_RDR )
+	{
+		send( NO_RDR )
+	}
+	
+	return ReDo;
+}
+
+RegisterServerStep
+{
+	if( recv == register )
+	{
+		new SeverProc;
+		SeverProc.a = ...
+	}
+	
+	return ReDo;
+}
+
+MutiSendingStep
+{
+	if (first-do || over-time )
+	{
+		send( EndRes );
+	}
+
+	return GO_ON;
+}
+
+ServerStep0
+{
+	if( a.name already exit )
+	{
+		MutiSending = ErrCode(xxx);
+		return TO_END;
+	}
+	else
+	{
+		MutiSending = SuccCode(xxx);
+		add a to Treap;
+		return done;
+	}
+}
+
+ServerStep2
+{
+	if(over-time)
+	{
+		send( OK );
+		return GO_ON;
+	}
+	else if( last-time )
+	{
+		return abort;
+	}
+
+	if( recv == ECHO )
+	{
+		return RE_DO;
+	}
+	else if (recv == connect)
+	{
+		if(connect one doesn't exit)
+		{
+			MutiSending = ErrCode(xxx);
+			return TO_END;
+		}
+		else
+		{
+			b = ...
+			return DONE;
+		}
+	}
+}
+
+ServerStep3
+{
+	if(needRelay(a,b))
+	{
+		goto SelectLivingSeedPeer;
+	}
+	else
+	{
+		p0 = a;
+		p1 = b;
+		return done;
+	}
+}
+
+HolePuching
+{
+	if( first-time || over-time )
+	{
+		if( p0 < p1 )
+		{
+			send p0 to let p0 send puching to p1;
+		}
+		else
+		{
+			...;
+		}
+	}
+	else if( last-time )
+	{
+		return abort;
+	}
+
+	if( recv == HolePuchingFinish )
+	{
+		return done
+	}
+
+	return GO_ON
+}
+
+HolePuchingStep2
+{
+	if( first-time || over-time )
+	{
+		if( p0 < p1 )
+		{
+			send p1 to let p1 send hello to p1;
+		}
+		else
+		{
+			...;
+		}
+	}
+
+	if( recv == Established )
+	{
+		return abort
+	}
+
+	return GO_ON
+}
+
+echo
+{
+	if( over_time )
+	{
+		send(echo)
+		return GO_ON;
+	}
+	else if( last-time )
+	{
+		return abort;
+	}
+
+	if( recv == ok )
+	{
+		return reDo
+	}
+
+	return GO_ON;
+}
+
+SelectLivingSeedPeer
+{
+	if( first-time )
+	{
+		res = FindASeed();
+		if( !res )
+		{
+			errCode = ...;
+			return end;
+		}
+		c = res;
+	}
+	else if( over_time )
+	{
+		send to c(echo)
+		return GO_ON;
+	}
+	else if( last-time )
+	{
+		return redo;
+	}
+
+	if( recv == ok )
+	{
+		return done;
+	}
+
+	return GO_ON;
+}
+
+brige0
+{
+	p0 = a;
+	p1 = c;
+	relayID = ... 
+}
+
+hole punching...
+
+bridge1
+{
+	p0 = b;
+	p1 = c;
+}
+
+hole punching...
+
+//--------------------------------------------
+
+AskRedirectionStep
+{
+	if( first-do || over-time )
+	{
+		send s ASK_IF_RDR;
+	}
+	else if( last-time )
+	{
+		return abort;
+	}
+
+	if ( recv == NO_RDR )
+	{
+		return done;
+	}
+
+	return GO_ON;
+}
+
+AskRegisterStep
+{
+	if( first-do || over-time )
+	{
+		send s register;
+	}
+	else if( last-time )
+	{
+		return abort;
+	}
+
+	if ( recv == RegisterSucc )
+	{
+		return done;
+	}
+	else if (recv == error_code )
+	{
+		...
+	}
+
+	return GO_ON;
+}
+
+HolePuchingServerStep
+{
+	if(recv == hole-punching)
+	{
+		return done;
+	}
+
+	return redo;
+}
+
+SendHolePuchingFinish
+{
+	...
+}
+
+ConnectSb
+{
+	if( first-do || over-time )
+	{
+		send to s connect to b;
+	}
+
+	if( recv == error-code )
+	{
+		... ;
+	}
+}
+
+hello
