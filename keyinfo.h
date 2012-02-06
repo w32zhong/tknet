@@ -55,6 +55,8 @@ KeyInfoTry(struct KeyInfoCache * , uchar );
 char*
 GetNextSeparateStr(char ** );
 
+DECLARATION_STRUCT_CONSTRUCTOR( KeyInfoCache )
+
 struct FindKeyInfoByTypePa
 {
 	uchar TypeToFind;

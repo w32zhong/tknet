@@ -168,7 +168,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceKeyInfo)
 	SWITCH_CPY_STRING(case,KEY_INFO_VALID_UNSURE,"?",valid);
 	SWITCH_CPY_STRING(case,KEY_INFO_VALID_NOT,"X",valid);
 	SWITCH_CPY_STRING(case,KEY_INFO_VALID_WORKS,"ok",valid);
-	SWITCH_CPY_STRING(default,,"err",valid);
+	SWITCH_CPY_STRING(;,default,"err",valid);
 	}
 
 	switch(pInfo->type)
@@ -177,7 +177,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceKeyInfo)
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_BRIDGEPEER,"BridgePeer",type);
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_STUNSERVER,"STUNServer",type);
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_SMTPSERVER,"SMTPServer",type);
-	SWITCH_CPY_STRING(default,,"err",type);
+	SWITCH_CPY_STRING(;,default,"err",valid);
 	}
 
 	GetAddrText(&pInfo->addr,addr);
