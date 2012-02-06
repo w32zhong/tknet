@@ -58,6 +58,12 @@ struct FindStepWithFlagNumPa
 	struct Iterator   IFound;
 };
 
+struct FindStepByNamePa
+{
+	const char           *pNameToFind;
+	struct ProcessStep   *pFound;
+};
+
 DECLARATION_STRUCT_CONSTRUCTOR( Process )
 DECLARATION_STRUCT_CONSTRUCTOR( ProcessingList )
 
@@ -67,6 +73,9 @@ FlagNum(uchar pa_FlagNum)
 	return pa_FlagNum;
 }
 
+uchar
+FlagName(struct Process * ,const char *);
+	
 void 
 ProcessAddStep( struct Process* , StepCallbk , uint , uchar , const char* );
 

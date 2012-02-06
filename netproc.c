@@ -277,3 +277,39 @@ ProcessTraceSteps(struct Process *pa_pProc)
 {
 	ForEach( &pa_pProc->IProcessHead , &TraceProcStep , pa_pProc );
 }
+
+static BOOL 
+LIST_ITERATION_CALLBACK_FUNCTION( FindStepByName )
+{
+	struct ProcessStep *pProcStep = GET_STRUCT_ADDR_FROM_IT( pa_pINow , struct ProcessStep , ProcStepLN );
+	DEF_AND_CAST(pFsbnpa,struct FindStepByNamePa,pa_else);
+
+	if( strcmp(pFsbnpa->pNameToFind , pProcStep->pName) == 0 )
+	{
+		pFsbnpa->pFound = pProcStep;
+		return 1;
+	}
+	else
+	{
+		return pa_pINow->now == pa_pIHead->last;
+	}
+}
+
+uchar
+FlagName(struct Process *pa_pProc ,const char *pa_pName)
+{
+	struct FindStepByNamePa fsbnpa;
+	fsbnpa.pFound = NULL;
+	fsbnpa.pNameToFind = pa_pName;
+
+	ForEach( &pa_pProc->IProcessHead , &FindStepByName , &fsbnpa );
+
+	if(fsbnpa.pFound)
+	{
+		return fsbnpa.pFound->FlagNum;
+	}
+	else
+	{
+		return PS_CALLBK_RET_DONE;
+	}
+}

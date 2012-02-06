@@ -3,6 +3,7 @@
 #define KEY_INFO_TYPE_MAILSERVER  0x01
 #define KEY_INFO_TYPE_BRIDGEPEER  0x02
 #define KEY_INFO_TYPE_STUNSERVER  0x03
+#define KEY_INFO_TYPE_SMTPSERVER  0x04
 
 #define KEY_INFO_VALID_UNSURE  0x04
 #define KEY_INFO_VALID_NOT     0x05
@@ -50,3 +51,42 @@ KeyInfoUse( struct KeyInfo * , struct KeyInfoCache * );
 
 BOOL 
 KeyInfoTry(struct KeyInfoCache * , uchar );
+
+char*
+GetNextSeparateStr(char ** );
+
+struct FindKeyInfoByTypePa
+{
+	uchar TypeToFind;
+	struct KeyInfo *found;
+};
+
+struct FindKeyInfoByNumPa
+{
+	int NumToFind;
+	struct KeyInfo *found;
+};
+
+struct FindKeyInfoByValidPa
+{
+	uchar valid;
+	struct KeyInfo *found;
+};
+
+struct FindKeyInfoByAddrPa
+{
+	struct NetAddr addr;
+	struct KeyInfo *found;
+};
+
+BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByType);
+
+BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByNum);
+
+BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByValid);
+
+BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByAddr);

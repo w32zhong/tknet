@@ -110,33 +110,114 @@ BkgdNatTypeNotify(struct Process *pa_)
 	BkgdProcEndCallbk( pa_ );
 }
 
+static void
+SetPop3ProcByKeyInfo(struct POP3Proc *pa_pPop3Proc ,struct KeyInfo *pa_pKeyInfo)
+{
+	char *pStr,buff[KEY_INFO_MAX_LEN];
+	char *pBuff = buff;
+	uint i;
+	strcpy(buff,pa_pKeyInfo->text);
+
+	pStr = GetNextSeparateStr(&pBuff);
+	pStr = GetNextSeparateStr(&pBuff);
+	pStr = GetNextSeparateStr(&pBuff);
+	//skip info type, IP , port.
+
+	pa_pPop3Proc->HostIPVal = htonl(pa_pKeyInfo->addr.IPv4);
+	pa_pPop3Proc->HostPort = pa_pKeyInfo->addr.port;
+
+	pStr = GetNextSeparateStr(&pBuff);
+	sscanf(pStr,"%d",&i);
+	pa_pPop3Proc->ifEnableSSL = (BOOL)i;
+
+	pStr = GetNextSeparateStr(&pBuff);
+	strcpy(pa_pPop3Proc->UsrName,pStr);
+
+	pStr = GetNextSeparateStr(&pBuff);
+	strcpy(pa_pPop3Proc->PassWord,pStr);
+}
+
+static void
+SetSmtpProcByKeyInfo(struct SMTPProc *pa_pSmtpProc ,struct KeyInfo *pa_pKeyInfo)
+{
+	char *pStr,buff[KEY_INFO_MAX_LEN];
+	char *pBuff = buff;
+	uint i;
+	strcpy(buff,pa_pKeyInfo->text);
+
+	pStr = GetNextSeparateStr(&pBuff);
+	pStr = GetNextSeparateStr(&pBuff);
+	pStr = GetNextSeparateStr(&pBuff);
+	//skip info type, IP , port.
+
+	pa_pSmtpProc->HostIPVal = htonl(pa_pKeyInfo->addr.IPv4);
+	pa_pSmtpProc->HostPort = pa_pKeyInfo->addr.port;
+
+	pStr = GetNextSeparateStr(&pBuff);
+	sscanf(pStr,"%d",&i);
+	pa_pSmtpProc->ifEnableSSL = (BOOL)i;
+
+	pStr = GetNextSeparateStr(&pBuff);
+	strcpy(pa_pSmtpProc->UsrName,pStr);
+
+	pStr = GetNextSeparateStr(&pBuff);
+	strcpy(pa_pSmtpProc->PassWord,pStr);
+
+	pStr = GetNextSeparateStr(&pBuff);
+	strcpy(pa_pSmtpProc->MailAddr,pStr);
+}
+
+static void
+SetStunProcByKeyInfo(struct STUNProc *pa_pStunProc ,struct KeyInfo *pa_pKeyInfo)
+{
+	pa_pStunProc->HostIPVal = htonl(pa_pKeyInfo->addr.IPv4);
+	pa_pStunProc->HostPort = pa_pKeyInfo->addr.port;
+}
+
+static struct KeyInfo*
+FindKeyInfoByStrArg(struct KeyInfoCache *pa_pInfoChache,char *pa_pStrArg)
+{
+	struct FindKeyInfoByNumPa fkipa;
+	int i;
+	sscanf(pa_pStrArg,"%d",&i);
+
+	fkipa.found = NULL;
+	fkipa.NumToFind = i;
+
+	ForEach( &pa_pInfoChache->IKeyInfo , &FindKeyInfoByNum , &fkipa );
+
+	return fkipa.found;
+}
+
 TK_THREAD( BackGround )
 {
-	DEF_AND_CAST( pProcList , struct ProcessingList , pa_else );
+	DEF_AND_CAST( pBkgdArgs , struct BackGroundArgs , pa_else );
 	struct Sock sock;
 	BOOL SockOpened = 0;
 	struct POP3Proc Pop3Proc;
 	struct STUNProc StunProc;
 	struct SMTPProc SmtpProc;
 	BOOL SmtpSockOpened = 0;
+	char *pCmd,*pArg0,*pArg1;
+	struct KeyInfo *pKeyInfo;
 
-	BackGroundPOP3ProcMake( &Pop3Proc ,"220.181.12.101" ,110,0,"li28jhyxy76223","g131517");
+	BackGroundPOP3ProcMake( &Pop3Proc ,"IP" ,0,0,"username","password");
 	Pop3Proc.proc.NotifyCallbk = &BkgdProcEndCallbk;
 	Pop3Proc.pSock = &sock;
 
-	MakeProtoStunProc(&StunProc ,&sock , "132.177.123.13",STUN_DEFAULT_PORT);
+	MakeProtoStunProc(&StunProc ,&sock , "IP",STUN_DEFAULT_PORT);
 	StunProc.proc.NotifyCallbk = &BkgdNatTypeNotify;
 
-	SMTPProcMake(&SmtpProc ,"113.108.225.10" , 25,0,
-			"li28jhyxy76223","g131517","li28jhyxy76223@163.com","Ok");
+	SMTPProcMake(&SmtpProc ,"IP" , 0,0,"username","password","adress","content");
 	SmtpProc.proc.NotifyCallbk = &BkgdProcEndCallbk;
 
 	while(1)
 	{
 		fgets(sta_BkgdCmd,32,stdin);
 		sta_BkgdCmd[ strlen(sta_BkgdCmd) - 1 ] = '\0';
+
 		MutexLock(&g_BkgdMutex);
-		
+
 		if( sta_ifBkgdSubProcess )
 		{
 			if( sta_ifBkgdCmdComing == 0 )
@@ -148,60 +229,118 @@ TK_THREAD( BackGround )
 				sta_ifBkgdCmdComing = 0;
 			}
 		}
-		else if( strcmp(sta_BkgdCmd ,"help") == 0 )
-		{
-			printf("valid cmd: pop3,exit,nat,smtp,peers.\n");
-		}
-		else if( strcmp(sta_BkgdCmd ,"pop3") == 0 )
-		{
-			if(SockOpened)
-			{
-				SockClose( &sock );
-			}
-
-			SockOpen( &sock , TCP , 0);
-			SockOpened = 1;
-
-			ProcessStart( &Pop3Proc.proc , pProcList );
-			sta_ifBkgdSubProcess = 1;
-		}
-		else if( strcmp(sta_BkgdCmd ,"exit") == 0 )
-		{
-			break;
-		}
-		else if( strcmp(sta_BkgdCmd ,"nat") == 0 )
-		{
-			if(SockOpened)
-			{
-				SockClose( &sock );
-			}
-
-			SockOpen( &sock , UDP , 8821);
-			SockSetNonblock( &sock );
-			SockOpened = 1;
-
-			ProcessStart( &StunProc.proc , pProcList );
-			sta_ifBkgdSubProcess = 1;
-		}
-		else if( strcmp(sta_BkgdCmd ,"smtp") == 0 )
-		{
-			if(SmtpSockOpened)
-			{
-				SockClose( &SmtpProc.Sock );
-				SockOpen(  &SmtpProc.Sock , TCP , 0);
-			}
-
-			ProcessStart( &SmtpProc.proc , pProcList );
-			SmtpSockOpened = 1;
-			sta_ifBkgdSubProcess = 1;
-		}
-		else if( strcmp(sta_BkgdCmd ,"peers") == 0 )
-		{
-			//Not implemented.
-		}
 		else
 		{
-			printf("unknown bkgd cmd.\n");
+			pArg1 = sta_BkgdCmd;
+			pCmd = GetNextSeparateStr(&pArg1);
+			pArg0 = GetNextSeparateStr(&pArg1);
+
+			if( strcmp(pCmd ,"help") == 0 )
+			{
+				printf("valid cmd:\n"
+						"  pop3 arg\n"
+						"  exit\n"
+						"  nat arg\n"
+						"  smtp arg0 arg1\n"
+						"  key\n"
+						"  peers\n");
+			}
+			else if( strcmp(pCmd ,"key") == 0 )
+			{
+				KeyInfoTrace(pBkgdArgs->pInfoCache);
+			}
+			else if( strcmp(pCmd ,"pop3") == 0 )
+			{
+				if(SockOpened)
+				{
+					SockClose( &sock );
+				}
+
+				SockOpen( &sock , TCP , 0);
+				SockOpened = 1;
+
+				pKeyInfo = FindKeyInfoByStrArg(pBkgdArgs->pInfoCache,pArg0);
+
+				if(pKeyInfo)
+				{
+					SetPop3ProcByKeyInfo(&Pop3Proc,pKeyInfo);
+					ProcessStart( &Pop3Proc.proc , pBkgdArgs->pProcList );
+					sta_ifBkgdSubProcess = 1;
+				}
+				else
+				{
+					printf("unable to find the key.\n");
+				}
+			}
+			else if( strcmp(sta_BkgdCmd ,"exit") == 0 )
+			{
+				break;
+			}
+			else if( strcmp(sta_BkgdCmd ,"nat") == 0 )
+			{
+				if(SockOpened)
+				{
+					SockClose( &sock );
+				}
+
+				SockOpen( &sock , UDP , 8821);
+				SockSetNonblock( &sock );
+				SockOpened = 1;
+
+				pKeyInfo = FindKeyInfoByStrArg(pBkgdArgs->pInfoCache,pArg0);
+
+				if(pKeyInfo)
+				{
+					SetStunProcByKeyInfo(&StunProc,pKeyInfo);
+					ProcessStart( &StunProc.proc , pBkgdArgs->pProcList );
+					sta_ifBkgdSubProcess = 1;
+				}
+				else
+				{
+					printf("unable to find the key.\n");
+				}
+			}
+			else if( strcmp(sta_BkgdCmd ,"smtp") == 0 )
+			{
+				if(SmtpSockOpened)
+				{
+					SockClose( &SmtpProc.Sock );
+					SockOpen(  &SmtpProc.Sock , TCP , 0);
+				}
+
+				pKeyInfo = FindKeyInfoByStrArg(pBkgdArgs->pInfoCache,pArg0);
+
+				if(pKeyInfo)
+				{
+					SetSmtpProcByKeyInfo(&SmtpProc,pKeyInfo);
+
+					pKeyInfo = FindKeyInfoByStrArg(pBkgdArgs->pInfoCache,pArg1);
+
+					if(pKeyInfo)
+					{
+						strcpy(SmtpProc.SendBuff,pKeyInfo->text);
+						ProcessStart( &SmtpProc.proc , pBkgdArgs->pProcList );
+						SmtpSockOpened = 1;
+						sta_ifBkgdSubProcess = 1;
+					}
+					else
+					{
+						printf("unable to find the key to the content.\n");
+					}
+				}
+				else
+				{
+					printf("unable to find the key.\n");
+				}
+			}
+			else if( strcmp(sta_BkgdCmd ,"peers") == 0 )
+			{
+				//Not implemented.
+			}
+			else
+			{
+				printf("unknown bkgd cmd.\n");
+			}
 		}
 			
 		MutexUnlock(&g_BkgdMutex);

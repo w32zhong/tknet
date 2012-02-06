@@ -17,15 +17,18 @@ void tkNetUninit()
 	printf("unfree memory:%d \n",g_allocs);
 }
 
-/*int smain()
+int main()
 {
 	struct KeyInfoCache KeyInfoCache;
-	BOOL res;
+	struct ProcessingList ProcList;
+	struct BackGroundArgs BkgdArgs;
 	tkNetInit();
+	
+	ProcessingListCons( &ProcList );
 
 	KeyInfoCacheCons(&KeyInfoCache);
 	KeyInfoReadFile(&KeyInfoCache,"tknet.info");
-
+	
 	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_STUNSERVER))
 	{
 		if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER))
@@ -34,41 +37,22 @@ void tkNetUninit()
 			goto exit;
 		}
 	}
+	printf("NAT: %d\n",g_NATtype);
 
-	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_BRIDGEPEER))
+	/*while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_BRIDGEPEER))
 	{
 		if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER))
 		{
 			printf("No way :( \n");
 			goto exit;
 		}
-	}
-
-
-	printf("NAT: %d\n",g_NATtype);
-exit:
-
-	KeyInfoTrace(&KeyInfoCache);
-	KeyInfoUpdate( &KeyInfoCache );
-	KeyInfoTrace(&KeyInfoCache);
-	KeyInfoWriteFile(&KeyInfoCache,"baba.info");
-	KeyInfoFree(&KeyInfoCache);
-
-	tkNetUninit();
-
-	return 0;
-}
-*/
-
-int main()
-{
-	struct ProcessingList ProcList;
-
-	tkNetInit();
-	ProcessingListCons( &ProcList );
+	}*/
 
 	MutexInit(&g_BkgdMutex);
-	tkBeginThread( &BackGround , &ProcList );
+
+	BkgdArgs.pInfoCache = &KeyInfoCache;
+	BkgdArgs.pProcList = &ProcList;
+	tkBeginThread( &BackGround , &BkgdArgs );
 
 	while( g_MainLoopFlag )
 	{
@@ -79,6 +63,11 @@ int main()
 		tkMsSleep(100);
 	}
 
+exit:
+
+	KeyInfoUpdate( &KeyInfoCache );
+	KeyInfoWriteFile(&KeyInfoCache,"baba.info");
+	KeyInfoFree(&KeyInfoCache);
 	MutexDelete(&g_BkgdMutex);
 	tkNetUninit();
 	return 0;

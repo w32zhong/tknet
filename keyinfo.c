@@ -5,36 +5,12 @@ static BOOL sta_ProcRes;
 static struct KeyInfoCache *sta_pKeyInfoCache;
 extern uchar g_NATtype;
 
-struct FindKeyInfoByTypePa
-{
-	uchar TypeToFind;
-	struct KeyInfo *found;
-};
-
-struct FindKeyInfoByNumPa
-{
-	int NumToFind;
-	struct KeyInfo *found;
-};
-
-struct FindKeyInfoByValidPa
-{
-	uchar valid;
-	struct KeyInfo *found;
-};
-
-struct FindKeyInfoByAddrPa
-{
-	struct NetAddr addr;
-	struct KeyInfo *found;
-};
-
 DEF_STRUCT_CONSTRUCTOR( KeyInfoCache ,
 		out_cons->KeyInfoNumbers = 0;
 		out_cons->IKeyInfo = GetIterator(NULL);
 		)
 
-static char*
+char*
 GetNextSeparateStr(char ** io_pStrNow)
 {
 	char *pResStr;
@@ -99,6 +75,10 @@ NewKeyInfoFromStrLine(char *io_pStr)
 	else if( strcmp(pNextWord,"STUNServer") == 0 )
 	{
 		type = KEY_INFO_TYPE_STUNSERVER;
+	}
+	else if( strcmp(pNextWord,"SMTPServer") == 0 )
+	{
+		type = KEY_INFO_TYPE_SMTPSERVER;
 	}
 	else
 	{
@@ -196,6 +176,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceKeyInfo)
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_MAILSERVER,"MailServer",type);
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_BRIDGEPEER,"BridgePeer",type);
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_STUNSERVER,"STUNServer",type);
+	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_SMTPSERVER,"SMTPServer",type);
 	SWITCH_CPY_STRING(default,,"err",type);
 	}
 
@@ -222,7 +203,7 @@ KeyInfoFree(struct KeyInfoCache *pa_pCache)
 	ForEach( &pa_pCache->IKeyInfo , &FreeKeyInfo , NULL );
 }
 
-static BOOL
+BOOL
 LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByType)
 {
 	struct KeyInfo *pInfo = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct KeyInfo,ln);
@@ -257,7 +238,7 @@ KeyInfoSelectA( struct KeyInfoCache *pa_pCache , uchar pa_type )
 	return fkipa.found;
 }
 
-static BOOL
+BOOL
 LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByNum)
 {
 	struct KeyInfo *pInfo = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct KeyInfo,ln);
@@ -289,7 +270,7 @@ KeyInfoWorksFine( struct KeyInfoCache *pa_pCache , int pa_num )
 	}
 }
 
-static BOOL
+BOOL
 LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByValid)
 {
 	struct KeyInfo *pInfo = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct KeyInfo,ln);
@@ -351,7 +332,7 @@ KeyInfoUpdate( struct KeyInfoCache *pa_pCache )
 	}
 }
 
-static BOOL
+BOOL
 LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByAddr)
 {
 	struct KeyInfo *pInfo = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct KeyInfo,ln);
