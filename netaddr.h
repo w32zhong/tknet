@@ -1,7 +1,9 @@
 struct NetAddr
 {		
-	uint    IPv4;
-	ushort  port;
+	uint    IPv4; 
+	// = ntohl( GetIPVal(IP text) ) 
+	// IP text = GetAddrText(GetAddrFromSockAddr(sock_addr))
+	ushort  port; 
 };
 
 static __inline void
@@ -37,17 +39,4 @@ static __inline BOOL
 ifNetAddrEqual(struct NetAddr *pa_0,struct NetAddr *pa_1)
 {
 	return ( pa_0->IPv4 == pa_1->IPv4 && pa_0->port == pa_1->port );
-}
-
-static __inline BOOL
-ifNetAddrLessThan(struct NetAddr *pa_0,struct NetAddr *pa_1)
-{
-	if( pa_0->port != pa_1->port )
-	{
-		return pa_0->port < pa_1->port;
-	}
-	else
-	{
-		return pa_0->IPv4 < pa_1->IPv4;
-	}
 }

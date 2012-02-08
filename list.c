@@ -59,6 +59,22 @@ AddOneToListHead(struct Iterator* io_IHead , struct ListNode* in_NodeOfAdding )
 	*io_IHead = GetIterator( io_IHead->last );
 }
 
+void 
+AddOneToListTailSafe(struct Iterator* pa_pIHead, struct Iterator* pa_pINow , struct Iterator* pa_pIForward , struct ListNode* in_NodeOfAdding )
+{
+	AddOneToListTail(pa_pIHead,in_NodeOfAdding);
+
+	*pa_pINow = GetIterator(pa_pINow->now);
+	*pa_pIForward = GetIterator(pa_pINow->now->next);
+}
+
+void 
+AddOneToListHeadSafe(struct Iterator* pa_pIHead, struct Iterator* pa_pINow , struct Iterator* pa_pIForward , struct ListNode* in_NodeOfAdding )
+{
+	AddOneToListTailSafe( pa_pIHead , pa_pINow , pa_pIForward , in_NodeOfAdding );
+	*pa_pIHead = GetIterator( pa_pIHead->last );
+}
+
 void
 ForEach(struct Iterator* io_IHead , ListNodeCallBack pa_node_callback ,void* pa_else )
 {

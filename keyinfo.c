@@ -4,6 +4,7 @@ static BOOL sta_LoopFlag;
 static BOOL sta_ProcRes;
 static struct KeyInfoCache *sta_pKeyInfoCache;
 extern uchar g_NATtype;
+extern struct NetAddr g_BdgPeerAddr;
 
 DEF_STRUCT_CONSTRUCTOR( KeyInfoCache ,
 		out_cons->KeyInfoNumbers = 0;
@@ -204,13 +205,13 @@ KeyInfoFree(struct KeyInfoCache *pa_pCache)
 }
 
 BOOL
-LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByType)
+LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoNotUsedByType)
 {
 	struct KeyInfo *pInfo = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct KeyInfo,ln);
 	DEF_AND_CAST(pFkipa,struct FindKeyInfoByTypePa ,pa_else);
 
 	if(pFkipa->TypeToFind == pInfo->type &&
-			pInfo->valid != KEY_INFO_VALID_NOT )
+			pInfo->valid == KEY_INFO_VALID_UNSURE )
 	{
 		pFkipa->found = pInfo;
 		return 1;
@@ -228,7 +229,7 @@ KeyInfoSelectA( struct KeyInfoCache *pa_pCache , uchar pa_type )
 	fkipa.TypeToFind = pa_type;
 	fkipa.found = NULL;
 
-	ForEach( &pa_pCache->IKeyInfo , &FindKeyInfoByType , &fkipa );
+	ForEach( &pa_pCache->IKeyInfo , &FindKeyInfoNotUsedByType , &fkipa );
 
 	if(fkipa.found)
 	{
@@ -414,12 +415,28 @@ StunNotify(struct Process *pa_)
 	sta_LoopFlag = 0;
 }
 
-BOOL
-KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache )
+static void 
+BdgHelloNotify(struct Process *pa_)
 {
-	struct Sock sock;
+	struct BridgeProc *pProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
+	DEF_AND_CAST(pProcPa,struct BridgeHelloStepPa , pProc->Else);
+
+	g_BdgPeerAddr = pProcPa->ValidAddr;
+	
+	sta_ProcRes = pProcPa->res;
+	sta_LoopFlag = 0;
+	
+	ProcessFree( pa_ );
+}
+
+BOOL
+KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,struct Sock *pa_pMainSock)
+{
+	struct Sock Pop3Sock;
 	struct POP3Proc Pop3Proc;
 	struct STUNProc StunProc;
+	struct BridgeProc BdgProc;
+	struct BridgeHelloStepPa BdgProcPa;
 	struct ProcessingList ProcList;
 	char   text[KEY_INFO_MAX_LEN];
 	uint i,ifEnableSSL;
@@ -466,8 +483,8 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache )
 		MakeProtoPOP3Proc( &Pop3Proc , AddrText , pa_pInfo->addr.port ,ifEnableSSL,buff1,buff2);
 
 		Pop3Proc.proc.NotifyCallbk = &Pop3Notify;
-		Pop3Proc.pSock = &sock;
-		SockOpen( &sock , TCP , 0);
+		Pop3Proc.pSock = &Pop3Sock;
+		SockOpen( &Pop3Sock , TCP , 0);
 		sta_pKeyInfoCache = pa_pKeyInfoCache;
 		
 		ProcessStart( &Pop3Proc.proc , &ProcList );
@@ -475,18 +492,20 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache )
 	else if( pa_pInfo->type == KEY_INFO_TYPE_STUNSERVER )
 	{
 		printf("stun proc:%s/%d.\n",AddrText , pa_pInfo->addr.port);
-		MakeProtoStunProc(&StunProc ,&sock ,AddrText,pa_pInfo->addr.port);
+		MakeProtoStunProc(&StunProc ,pa_pMainSock ,AddrText,pa_pInfo->addr.port);
 		
 		StunProc.proc.NotifyCallbk = &StunNotify;
-		SockOpen( &sock , UDP , 8821);
-		SockSetNonblock( &sock );
 		
 		ProcessStart( &StunProc.proc , &ProcList );
 	}
 	else if( pa_pInfo->type == KEY_INFO_TYPE_BRIDGEPEER )
 	{
-		//Not implemented.
-		return 0;
+		printf("bridge 'hello proc':%s/%d.\n",AddrText , pa_pInfo->addr.port);
+		BdgProcPa.res = 0;
+		BridgeMakeHelloProc(&BdgProc,&BdgProcPa,pa_pMainSock,&pa_pInfo->addr);
+		BdgProc.proc.NotifyCallbk = &BdgHelloNotify;
+
+		ProcessStart( &BdgProc.proc , &ProcList );
 	}
 	else
 	{
@@ -500,13 +519,16 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache )
 		tkMsSleep(100);
 	}
 
-	SockClose( &sock );
+	if( pa_pInfo->type == KEY_INFO_TYPE_MAILSERVER )
+	{
+		SockClose( &Pop3Sock );
+	}
 
 	return sta_ProcRes;
 }
 
 BOOL 
-KeyInfoTry(struct KeyInfoCache *pa_pInfoChache , uchar pa_type)
+KeyInfoTry(struct KeyInfoCache *pa_pInfoChache , uchar pa_type , struct Sock *pa_pMainSock)
 {
 	struct KeyInfo *pKeyInfo;
 	BOOL res = 0;
@@ -518,7 +540,7 @@ KeyInfoTry(struct KeyInfoCache *pa_pInfoChache , uchar pa_type)
 			break;
 		}
 
-		res = KeyInfoUse(pKeyInfo,pa_pInfoChache);
+		res = KeyInfoUse(pKeyInfo,pa_pInfoChache , pa_pMainSock);
 	}
 
 	if(res)

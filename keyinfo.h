@@ -47,10 +47,10 @@ void
 KeyInfoUpdate( struct KeyInfoCache * );
 
 BOOL
-KeyInfoUse( struct KeyInfo * , struct KeyInfoCache * );
+KeyInfoUse( struct KeyInfo * , struct KeyInfoCache * , struct Sock* );
 
 BOOL 
-KeyInfoTry(struct KeyInfoCache * , uchar );
+KeyInfoTry(struct KeyInfoCache * , uchar , struct Sock* );
 
 char*
 GetNextSeparateStr(char ** );
@@ -82,7 +82,7 @@ struct FindKeyInfoByAddrPa
 };
 
 BOOL
-LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByType);
+LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoNotUsedByType);
 
 BOOL
 LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByNum);

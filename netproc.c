@@ -57,6 +57,14 @@ ProcessStart( struct Process *pa_pProc , struct ProcessingList *pa_pProcList )
 	AddOneToListTail( &pa_pProcList->IUndergoProcess , &pa_pProc->UndergoLN );
 }
 
+void 
+ProcessSafeStart( struct Process *pa_pProc , struct ProcessingList *pa_pProcList , struct Iterator *pa_pINow , struct Iterator *pa_pIForward )
+{
+	pa_pProc->IProcessNow = pa_pProc->IProcessHead;
+	ProcessUpdateCurrentStep( pa_pProc );
+	AddOneToListTailSafe( &pa_pProcList->IUndergoProcess , pa_pINow , pa_pIForward , &pa_pProc->UndergoLN );
+}
+
 static BOOL 
 LIST_ITERATION_CALLBACK_FUNCTION( FindStepWithFlagNum )
 {
@@ -111,7 +119,7 @@ LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )
 		}
 	}
 
-	ps_res = pStep->StepDo( pProc , ps_state );
+	ps_res = pStep->StepDo( pProc , ps_state , pa_pINow , pa_pIForward );
 
 	if( (ps_res & 0x80) == 0x00 )
 	{

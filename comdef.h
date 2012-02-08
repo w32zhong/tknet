@@ -21,7 +21,7 @@ typedef unsigned char  uchar;
             void _type_name ## Cons( struct _type_name * );
 
 #define DEF_AND_CAST( _to_var , _type_tag_casting_to , _from_var ) \
-	_type_tag_casting_to * _to_var = ( _type_tag_casting_to *) _from_var
+	_type_tag_casting_to * _to_var = ( _type_tag_casting_to *)( _from_var )
 
 #define MEMBER_OFFSET( _type_tag , _member ) (int)(&( (( _type_tag *)0)-> _member ))
 
@@ -56,7 +56,7 @@ struct Bys
 	uint  len;
 };
 
-#define BYS( _obj ) _Bys( (char*)& _obj , sizeof( _obj ) )
+#define BYS( _obj ) _Bys( (char*)& ( _obj ) , sizeof( _obj ) )
 
 static __inline struct Bys
 _Bys( char* pa_p , uint pa_size )

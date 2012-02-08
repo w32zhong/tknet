@@ -1,48 +1,4 @@
-/*
-   PeerData* MapPeerData(PeerKey* in_key)
-   PeerData* FindPeerData(PeerKey* in_key )
-   GetFreeSeed
-   void PeerData::DeleteThisPeerDate()
-*/
-struct PeerData
-{
-	struct NetAddr   addr;
-	uchar            NATType;
-	struct Treap     tpnd;
-};
 
-BOOL NetAddrCompare(struct BinTreeNode* pa_pBinNode0 ,
-		struct BinTreeNode* pa_pBinNode1 , void* pa_else)
-{
-	struct PeerData* p0 = GET_STRUCT_ADDR( pa_pBinNode0 , struct PeerData , tpnd.btnd );
-	struct PeerData* p1 = GET_STRUCT_ADDR( pa_pBinNode1 , struct PeerData , tpnd.btnd );
-
-	if( p0->addr.port != p1->addr.port )
-	{
-		return p0->addr.port > p1->addr.port;
-	}
-	else
-	{
-		return p0->addr.IPv4 > p1->addr.IPv4;
-	}
-}
-
-BOOL ifNetAddrEqual(struct BinTreeNode* pa_pBinNode0 ,
-		struct BinTreeNode* pa_pBinNode1 , void* pa_else)
-{
-	struct PeerData* p0 = GET_STRUCT_ADDR( pa_pBinNode0 , struct PeerData , tpnd.btnd );
-	struct PeerData* p1 = GET_STRUCT_ADDR( pa_pBinNode1 , struct PeerData , tpnd.btnd );
-
-	if( p0->addr.IPv4 == p1->addr.IPv4 && p0->addr.port == p1->addr.port)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-
-}
 //------------------
 
 struct BridgeProc

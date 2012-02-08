@@ -335,7 +335,7 @@ TK_THREAD( BackGround )
 			}
 			else if( strcmp(sta_BkgdCmd ,"peers") == 0 )
 			{
-				//Not implemented.
+				PeerDataTrace(pBkgdArgs->pPeerDataRoot);
 			}
 			else
 			{

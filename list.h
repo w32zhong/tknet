@@ -80,6 +80,12 @@ AddOneToListTail(struct Iterator*  , struct ListNode* );
 void
 AddOneToListHead(struct Iterator* , struct ListNode* );
 
+void 
+AddOneToListTailSafe(struct Iterator* , struct Iterator* , struct Iterator* , struct ListNode* );
+
+void 
+AddOneToListHeadSafe(struct Iterator* , struct Iterator* , struct Iterator* , struct ListNode* );
+
 void
 ForEach(struct Iterator* , ListNodeCallBack ,void* );
 

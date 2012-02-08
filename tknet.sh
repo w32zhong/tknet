@@ -2,6 +2,9 @@
 if [ ! $1 ]
 then
 	scons && echo ----run---- && ./run
+	cp run ./testbin/bin0
+	cp run ./testbin/bin1
+	cp run ./testbin/bin2
 	ctags -R
 elif [ $1 == 'c' ]
 then

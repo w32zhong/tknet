@@ -29,15 +29,15 @@ struct Process
 	void (*NotifyCallbk)( struct Process * );
 };
 
-typedef uchar (*StepCallbk)( struct Process* , uchar );
+typedef uchar (*StepCallbk)( struct Process* , uchar, struct Iterator*, struct Iterator*);
 
 #define STEP( _step_name ) \
 	const char ProcessStepName ## _step_name [] = # _step_name ; \
-	uchar ProcessStep ## _step_name (struct Process* pa_pProc , uchar pa_state )
+	uchar ProcessStep ## _step_name (struct Process* pa_pProc , uchar pa_state , struct Iterator* pa_pINow, struct Iterator* pa_pIForward )
 
 #define EXTERN_STEP( _step_name ) \
 	extern const char ProcessStepName ## _step_name []; \
-	uchar ProcessStep ## _step_name (struct Process* , uchar )
+	uchar ProcessStep ## _step_name (struct Process* , uchar , struct Iterator*, struct Iterator*)
 
 #define PROCESS_ADD_STEP( _pProc , _step , _WaitClocks , _MaxRetrys ) \
 	ProcessAddStep( _pProc , & ( ProcessStep ## _step ) , _WaitClocks , _MaxRetrys , ProcessStepName ## _step )
@@ -84,6 +84,9 @@ ProcessConsAndSetSteps( struct Process* , struct Process* );
 
 void 
 ProcessStart( struct Process * , struct ProcessingList* );
+
+void 
+ProcessSafeStart( struct Process *, struct ProcessingList *, struct Iterator *, struct Iterator *);
 
 void 
 DoProcessing( struct ProcessingList* );

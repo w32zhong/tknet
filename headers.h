@@ -23,5 +23,9 @@
 #include "stun.h"
 #include "nattype.h"
 
+struct PeerData;
+#include "message.h"
+#include "peerdata.h"
+
 #include "keyinfo.h"
 #include "bkgd.h"
