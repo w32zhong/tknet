@@ -12,7 +12,6 @@
 struct ProcessingList
 {
 	struct Iterator  IUndergoProcess;
-	struct Iterator  IUpdateProcess;
 };
 
 struct Process
@@ -20,7 +19,6 @@ struct Process
 	struct Iterator  IProcessHead;
 	struct Iterator  IProcessNow;
 	struct ListNode  UndergoLN;
-	struct ListNode  UpdateLN;
 	long             CurrentStepStartTime;
 	uchar            CurrentStepRetrys;
 	BOOL             isCurrentStepFirstTime;

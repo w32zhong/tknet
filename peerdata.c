@@ -8,6 +8,7 @@ DEF_STRUCT_CONSTRUCTOR( PeerData ,
 		out_cons->TreeLevel = 0;
 		strcpy(out_cons->NameID,"unnamed");
 		out_cons->NATType = NAT_T_UNKNOWN;
+		out_cons->pSeedPeer = NULL;
 		)
 
 static BOOL
@@ -81,10 +82,11 @@ LIST_ITERATION_CALLBACK_FUNCTION( TracePeerData )
 	char PosFlagChar;
 	struct BinTreeNode *pBinFather;
 	char AddrBuff[32];
+	char SeedStr[16];
 
 	for( i = 0 ; i < pData->TreeLevel ; i++ )
 	{
-		printf("  ");
+		printf("--");
 	}
 
 	pBinFather = GET_STRUCT_ADDR(pData->tpnd.btnd.tnd.pFather, struct BinTreeNode , tnd);
@@ -102,10 +104,19 @@ LIST_ITERATION_CALLBACK_FUNCTION( TracePeerData )
 		PosFlagChar = '?';
 	}
 
+	if(pData->pSeedPeer != NULL)
+	{
+		sprintf(SeedStr,"(Seed,%d)",(uint)pData->pSeedPeer->Relays);
+	}
+	else
+	{
+		SeedStr[0] = '\0';
+	}
+
 	GetAddrText(&pData->addr,AddrBuff);
 
-	printf("%s(%s) %c,%d,%d,%d.\n",pData->NameID,AddrBuff,PosFlagChar,
-				pData->TreeLevel,pData->NATType,pData->tpnd.RanPriority);
+	printf("%s(%s) %c,Level%d,NAT%d%s,RAN%d.\n",pData->NameID,AddrBuff,PosFlagChar,
+				pData->TreeLevel,pData->NATType,SeedStr,pData->tpnd.RanPriority);
 
 	return pa_pINow->now == pa_pIHead->last;
 }
@@ -133,4 +144,98 @@ void
 PeerDataDestroy(struct PeerData *pa_pRoot)
 {
 	Traversal(&(pa_pRoot->tpnd.btnd.tnd),&PostorderDFS,&FreePeerData,NULL);
+}
+
+void 
+PeerDataSelectAsSeed(struct PeerData* pa_pPD , struct Iterator *pa_pISeedList)
+{
+	struct SeedPeer *pSP = tkmalloc(struct SeedPeer);
+	
+	ListNodeCons(&pSP->ln);
+	pSP->pPD = pa_pPD;
+	pSP->Relays = 0;
+	
+	AddOneToListTail(pa_pISeedList,&pSP->ln);
+
+	pa_pPD->pSeedPeer = pSP;
+}
+
+static 
+DEF_FREE_LIST_ELEMENT_SAFE_FUNCTION(FreeSeedPeer,struct SeedPeer,ln,;)
+
+void 
+PeerDataDele(struct PeerData *pa_pPD, struct Iterator *pa_pISeedList)
+{
+	struct Iterator *pIHead,IForward,INow;
+	TreapDragOut(&pa_pPD->tpnd);
+	
+	if( pa_pPD->pSeedPeer == NULL )
+	{
+		goto free_PD;
+	}
+
+	pIHead = pa_pISeedList;
+	INow = GetIterator(&pa_pPD->pSeedPeer->ln);
+	IForward = GetIterator(INow.now->next);
+
+	FreeSeedPeer(pIHead,&INow,&IForward,NULL);
+
+free_PD:
+	
+	tkfree(pa_pPD);
+}
+
+void 
+PeerDataUpdateSeedInfo(struct PeerData *pa_pPD,uchar pa_relays)
+{
+	if( pa_pPD->pSeedPeer == NULL )
+	{
+		return;
+	}
+
+	pa_pPD->pSeedPeer->Relays = pa_relays;
+}
+
+struct FindSeedPeerOfLeastRelaysPa
+{
+	struct SeedPeer *pFound;
+	uchar           LeastRelays;
+};
+
+BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindSeedPeerOfLeastRelays)
+{
+	struct SeedPeer *pSP = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct SeedPeer,ln);
+	DEF_AND_CAST(pFSPOLRPa ,struct FindSeedPeerOfLeastRelaysPa ,pa_else);
+
+	if( pSP->Relays <= pFSPOLRPa->LeastRelays )
+	{
+		pFSPOLRPa->pFound = pSP;
+		return 1;
+	}
+	else
+	{
+		return pa_pINow->now == pa_pIHead->last;
+	}
+}
+
+struct PeerData * 
+SeedPeerSelectOne(struct Iterator *pa_pISeedList)
+{
+	struct FindSeedPeerOfLeastRelaysPa FSPOLRPa;
+	FSPOLRPa.LeastRelays = 0;
+
+	while(1)
+	{
+		FSPOLRPa.pFound = NULL;
+		
+		ForEach(pa_pISeedList,&FindSeedPeerOfLeastRelays,&FSPOLRPa);
+		
+		if(FSPOLRPa.pFound)
+		{
+			return FSPOLRPa.pFound->pPD;
+		}
+		
+		FSPOLRPa.LeastRelays ++;
+	}
 }

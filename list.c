@@ -186,19 +186,3 @@ ReverseList( struct Iterator* io_IHead)
 	ForEach( io_IHead , &ReverseListCallback , &INewList);
 	*io_IHead = INewList;
 }
-
-BOOL
-LIST_ITERATION_CALLBACK_FUNCTION( CleanedOutOfList )
-{
-	tk( pa_pINow , pa_pIForward ); 
-	if( pa_pINow->now == pa_pIHead->last ) 
-	{ 
-		*pa_pIHead = GetIterator( NULL ); 
-		return 1; 
-	} else 
-	{ 
-		return 0; 
-	} 
-}
-
-

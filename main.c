@@ -25,14 +25,19 @@ int main(int pa_argn,char **in_args)
 	struct ProcessingList ProcList;
 	struct BackGroundArgs BkgdArgs;
 	struct PeerData       PeerDataRoot;
+	struct Iterator       ISeedPeer;
 	struct Sock           MainSock;
 	struct BridgeProc     BdgServerProc;
 	struct BridgeProc     BdgClientProc;
+	BOOL                  ifBdgClientProcMade = 0;
 	char                  BdgPeerAddrStr[32];
 	int                   LocalBindingPort;
 	char MyName[32] = "Unnamed";
 
 	tkNetInit();
+	MutexInit(&g_BkgdMutex);
+
+	ISeedPeer = GetIterator(NULL);
 
 	PeerDataCons(&PeerDataRoot);
 	PeerDataRoot.tpnd.RanPriority = 0;
@@ -86,17 +91,16 @@ int main(int pa_argn,char **in_args)
 
 	BridgeMakeClientProc(&BdgClientProc,&MainSock,&g_BdgPeerAddr,MyName,NAT_T_FULL_CONE);
 	ProcessStart(&BdgClientProc.proc,&ProcList);
+	ifBdgClientProcMade = 1;
 
 go_on:
-
-	MutexInit(&g_BkgdMutex);
 
 	BkgdArgs.pPeerDataRoot = &PeerDataRoot;
 	BkgdArgs.pInfoCache = &KeyInfoCache;
 	BkgdArgs.pProcList = &ProcList;
 	tkBeginThread( &BackGround , &BkgdArgs );
 
-	ConsAndStartBridgeServer(&BdgServerProc,&PeerDataRoot,&ProcList,&MainSock);
+	ConsAndStartBridgeServer(&BdgServerProc,&PeerDataRoot,&ProcList,&MainSock,&ISeedPeer);
 
 	while( g_MainLoopFlag )
 	{
@@ -109,9 +113,12 @@ go_on:
 
 	SockClose(&MainSock);
 
+	if(ifBdgClientProcMade)
+		FreeBdgClientProc(&BdgClientProc);
+	FreeBridgeServer(&BdgServerProc);
+
 exit:
 
-	FreeBridgeServer(&BdgServerProc);
 	PeerDataDestroy(&PeerDataRoot);
 	KeyInfoUpdate( &KeyInfoCache );
 	KeyInfoWriteFile(&KeyInfoCache,"baba.info");

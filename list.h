@@ -22,6 +22,21 @@
 		} \
 	}
 
+#define LIST_SAFE_RETURN \
+	if( pa_pINow->now == pa_pIForward->last ) \
+	{ \
+		*pa_pIHead = GetIterator( NULL ); \
+		return 1; \
+	} else \
+	{ \
+		if( pa_pINow->now == pa_pIHead->now || \
+				pa_pINow->now == pa_pIHead->last ) \
+		{ \
+			*pa_pIHead = *pa_pIForward; \
+		} \
+		return 0; \
+	}do{}while(0)
+
 #define DEF_FREE_LIST_ELEMENT_SAFE_FUNCTION( _fun_name , _type_tag , _list_node_member_name , _other_statements ) \
 	BOOL \
 	LIST_ITERATION_CALLBACK_FUNCTION( _fun_name ) \
@@ -30,19 +45,7 @@
 		_other_statements \
 		tk( pa_pINow , pa_pIForward ); \
 		tkfree(pNow); \
-		if( pa_pINow->now == pa_pIForward->last ) \
-		{ \
-			*pa_pIHead = GetIterator( NULL ); \
-			return 1; \
-		} else \
-		{ \
-			if( pa_pINow->now == pa_pIHead->now || \
-					pa_pINow->now == pa_pIHead->last ) \
-			{ \
-				*pa_pIHead = *pa_pIForward; \
-			} \
-			return 0; \
-		} \
+		LIST_SAFE_RETURN; \
 	}
 
 struct ListNode
@@ -97,6 +100,3 @@ SortList( struct Iterator*  , struct SortingInsertPa* );
 
 void
 ReverseList( struct Iterator* );
-
-BOOL
-LIST_ITERATION_CALLBACK_FUNCTION( CleanedOutOfList );

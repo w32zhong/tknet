@@ -2,6 +2,7 @@
 
 DEF_STRUCT_CONSTRUCTOR( BridgeProc ,
 		out_cons->pPeerDataRoot = NULL;
+		out_cons->pSeedPeerCache = NULL;
 		ProcessCons(&out_cons->proc);
 		out_cons->pSock = NULL;
 		out_cons->WaitAddr.IPv4 = 0;
@@ -11,28 +12,7 @@ DEF_STRUCT_CONSTRUCTOR( BridgeProc ,
 
 static struct BridgeProc sta_BdgSubServerProc;
 
-STEP( test )
-{
-	if( pa_state == PS_STATE_FIRST_TIME )
-	{
-		printf("hello\n");
-	}
-	else if( pa_state == PS_STATE_OVERTIME )
-	{
-		return PS_CALLBK_RET_REDO;
-	}
-
-	return PS_CALLBK_RET_GO_ON;
-}
-
-static void 
-BdgSubServerProcInit()
-{
-	ProcessCons(&sta_BdgSubServerProc.proc);
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , test , 2000 , 8 );
-}
-
-static void 
+static __inline void 
 BdgSubServerProcFree()
 {
 	ProcessFree(&sta_BdgSubServerProc.proc);
@@ -46,22 +26,38 @@ BdgMsgRead(struct Process *in_proc , uchar pa_option)
 	DEF_AND_CAST(pMsg,struct TkNetMsg,pBdgProc->pSock->RecvBuff);
 	DEF_AND_CAST(pBdgMsg,struct BridgeMsg,&(pMsg->msg.BdgMsg));
 
-	if( pMsg->flag != TK_NET_BDG_MSG_FLAG )
+	//---------
+	char AddrText[32];
+	GetAddrText(&FromAddr,AddrText);
+	//--------
+
+	if( pMsg->flag != TK_NET_BDG_MSG_FLAG ||
+		pBdgProc->pSock->RecvLen <= 0 )
 	{
 		return NULL;
 	}
 	else if( pa_option == READ_MSG_OPT_ANY )
 	{
+		printf("Bdg Recved any %s(%d)\n",AddrText,pMsg->flag);
+
 		return pBdgMsg;
 	}
 	else if( ifNetAddrEqual(&FromAddr,&pBdgProc->WaitAddr) )
 	{
+		printf("Bdg Recved spe %s(%d)\n",AddrText,pMsg->flag);
 		return pBdgMsg;
 	}
 	else
 	{
 		return NULL;
 	}
+}
+
+static __inline void
+BdgMsgClean(struct Process *in_proc )
+{
+	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(in_proc,struct BridgeProc,proc);
+	pBdgProc->pSock->RecvLen = 0;
 }
 
 static __inline void
@@ -75,10 +71,64 @@ BdgMsgWrite(struct Process *in_proc ,struct BridgeMsg *in_msg , struct NetAddr *
 	SendingMsg.msg.BdgMsg = *in_msg;
 
 	GetAddrText(pa_pAddr,AddrText);
-	printf("Bdg Write to %s \n",AddrText);
+	printf("Bdg Write to %s,(%d) \n",AddrText,SendingMsg.flag);
 	
 	SockLocateTa(pBdgProc->pSock,htonl(pa_pAddr->IPv4),pa_pAddr->port);
 	SockWrite(pBdgProc->pSock,BYS(SendingMsg));
+}
+
+STEP( BdgConnectionServer )
+{
+	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(pa_pProc,struct BridgeProc,proc);
+	struct BridgeMsg  SendingMsg;
+	struct BridgeMsg  *pBdgMsg;
+	struct PeerData *pPD = GET_STRUCT_ADDR(pBdgProc,struct PeerData,BdgProc);
+
+	pBdgMsg = BdgMsgRead(pa_pProc,READ_MSG_OPT_SPECIFIC);
+
+	if(pBdgMsg)
+	{
+		if(pBdgMsg->info == BRIDGE_MSG_INFO_ECHO)
+		{
+			PeerDataUpdateSeedInfo(pPD,pBdgMsg->Relays);
+			
+			BdgMsgClean(pa_pProc);
+			return PS_CALLBK_RET_REDO;
+		}
+		else if(pBdgMsg->info == BRIDGE_MSG_INFO_CONNECT)
+		{
+			//...
+		}
+	}
+
+	if( pa_state == PS_STATE_OVERTIME )
+	{
+		SendingMsg.info = BRIDGE_MSG_INFO_ECHO_REQUEST;
+		BdgMsgWrite(pa_pProc,&SendingMsg,&pBdgProc->WaitAddr);
+	}
+	else if(pa_state == PS_STATE_LAST_TIME)
+	{
+		return PS_CALLBK_RET_ABORT;
+	}
+
+	return PS_CALLBK_RET_GO_ON;
+}
+
+static void 
+BdgSubServerProcInit()
+{
+	ProcessCons(&sta_BdgSubServerProc.proc);
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectionServer , 4000 , 3 );
+}
+
+static void
+BdgSubServerProcNotify(struct Process *pa_)
+{
+	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
+	struct PeerData *pPD = GET_STRUCT_ADDR(pBdgProc,struct PeerData,BdgProc);
+
+	PeerDataDele(pPD,pBdgProc->pSeedPeerCache);
+	printf("PROC END\n");
 }
 
 STEP( BridgeMain )
@@ -88,7 +138,6 @@ STEP( BridgeMain )
 	struct BridgeMsg  *pBdgMsg;
 	struct BridgeMsg  SendingMsg;
 	struct PeerData   *pPD;
-	char AddrText[32];
 
 	if(!SockRead(pBdgProc->pSock))
 	{
@@ -100,8 +149,6 @@ STEP( BridgeMain )
 	if(pBdgMsg)
 	{
 		FromAddr = GetAddrFromSockAddr(&pBdgProc->pSock->AddrRecvfrom);
-		GetAddrText(&FromAddr,AddrText);
-		printf("Bdg Recved from %s\n",AddrText);
 
 		switch(pBdgMsg->info)
 		{
@@ -110,6 +157,7 @@ STEP( BridgeMain )
 			SendingMsg.info = BRIDGE_MSG_INFO_IAM_HERE;
 			BdgMsgWrite(pa_pProc,&SendingMsg,&FromAddr);
 
+			BdgMsgClean(pa_pProc);
 			break;
 
 		case BRIDGE_MSG_INFO_REGISTER:
@@ -124,22 +172,29 @@ STEP( BridgeMain )
 				PeerDataCons(pPD);
 				pPD->addr = FromAddr;
 				pPD->NATType = pBdgMsg->NATType;
+				if( pBdgMsg->NATType != NAT_T_SYMMETRIC)
+				{
+					PeerDataSelectAsSeed(pPD,pBdgProc->pSeedPeerCache);
+				}
 				strcpy(pPD->NameID,pBdgMsg->NameID);
 
 				pPD->BdgProc.pPeerDataRoot = pBdgProc->pPeerDataRoot;
+				pPD->BdgProc.pSeedPeerCache = pBdgProc->pSeedPeerCache;
 				pPD->BdgProc.pSock = pBdgProc->pSock;
 				pPD->BdgProc.pProcList = pBdgProc->pProcList;
 				pPD->BdgProc.WaitAddr = FromAddr;
 
 				PeerDataInsert(pPD,pBdgProc->pPeerDataRoot);
 				ProcessConsAndSetSteps(&(pPD->BdgProc.proc), &sta_BdgSubServerProc.proc );
+				pPD->BdgProc.proc.NotifyCallbk = &BdgSubServerProcNotify;
 				ProcessSafeStart(&(pPD->BdgProc.proc),pBdgProc->pProcList,pa_pINow,pa_pIForward);
 
-				SendingMsg.info = BRIDGE_MSG_INFO_OK;
+				SendingMsg.info = BRIDGE_MSG_INFO_RGST_OK;
 			}
 
 			BdgMsgWrite(pa_pProc,&SendingMsg,&FromAddr);
 
+			BdgMsgClean(pa_pProc);
 			break;
 		}
 	}
@@ -148,11 +203,12 @@ STEP( BridgeMain )
 }
 
 void 
-ConsAndStartBridgeServer(struct BridgeProc *pa_pBdgProc , struct PeerData *pa_pPeerDataRoot , struct ProcessingList *pa_pProcList , struct Sock *pa_pMainSock)
+ConsAndStartBridgeServer(struct BridgeProc *pa_pBdgProc , struct PeerData *pa_pPeerDataRoot , struct ProcessingList *pa_pProcList , struct Sock *pa_pMainSock , struct Iterator *pa_pSeedPeerCache)
 {
 	BdgSubServerProcInit();
 	BridgeProcCons(pa_pBdgProc);
 	pa_pBdgProc->pPeerDataRoot = pa_pPeerDataRoot;	
+	pa_pBdgProc->pSeedPeerCache = pa_pSeedPeerCache;	
 	pa_pBdgProc->pSock = pa_pMainSock;
 	pa_pBdgProc->pProcList = pa_pProcList;	
 
@@ -223,13 +279,14 @@ STEP( BdgClientRegister )
 
 	if(pBdgMsg)
 	{
-		if(pBdgMsg->info == BRIDGE_MSG_INFO_OK)
+		if(pBdgMsg->info == BRIDGE_MSG_INFO_RGST_OK)
 		{
-			printf("^_^!\n");
+			BdgMsgClean(pa_pProc);
 			return PS_CALLBK_RET_DONE;
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_ERR_NAMEID_EXIST)
 		{
+			BdgMsgClean(pa_pProc);
 			return PS_CALLBK_RET_ABORT;
 		}
 	}
@@ -244,6 +301,36 @@ STEP( BdgClientRegister )
 		BdgMsgWrite(pa_pProc,&SendingMsg,&pBdgProc->WaitAddr);
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
+	{
+		return PS_CALLBK_RET_ABORT;
+	}
+
+	return PS_CALLBK_RET_GO_ON;
+}
+
+STEP( BdgClientWait )
+{
+	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(pa_pProc,struct BridgeProc,proc);
+	struct BridgeMsg  SendingMsg;
+	struct BridgeMsg  *pBdgMsg;
+	DEF_AND_CAST(pBCPPa,struct BridgeClientProcPa,pBdgProc->Else);
+
+	pBdgMsg = BdgMsgRead(pa_pProc,READ_MSG_OPT_SPECIFIC);
+
+	if(pBdgMsg)
+	{
+		if(pBdgMsg->info == BRIDGE_MSG_INFO_ECHO_REQUEST)
+		{
+			SendingMsg.info = BRIDGE_MSG_INFO_ECHO;
+			SendingMsg.Relays = 5;
+			BdgMsgWrite(pa_pProc,&SendingMsg,&pBdgProc->WaitAddr);
+			BdgMsgClean(pa_pProc);
+	
+			return PS_CALLBK_RET_REDO;
+		}
+	}
+
+	if(pa_state == PS_STATE_LAST_TIME)
 	{
 		return PS_CALLBK_RET_ABORT;
 	}
@@ -276,4 +363,12 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 	pBCPPa->MyNatType = pa_MyNatType;
 
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientRegister , 2000 , 2);
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientWait , 4000 , 3);
+}
+
+void 
+FreeBdgClientProc(struct BridgeProc *pa_pBdgProc)
+{
+	ProcessFree(&pa_pBdgProc->proc);
+	tkfree(pa_pBdgProc->Else);
 }

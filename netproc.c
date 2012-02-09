@@ -4,7 +4,6 @@ DEF_STRUCT_CONSTRUCTOR( Process ,
 		out_cons->IProcessHead = GetIterator(NULL);
 		out_cons->IProcessNow = GetIterator(NULL);
 		ListNodeCons(&out_cons->UndergoLN);
-		ListNodeCons(&out_cons->UpdateLN);
 		out_cons->CurrentStepStartTime = 0;
 		out_cons->CurrentStepRetrys = 0;
 		out_cons->NotifyCallbk = NULL;
@@ -13,7 +12,6 @@ DEF_STRUCT_CONSTRUCTOR( Process ,
 
 DEF_STRUCT_CONSTRUCTOR( ProcessingList ,
 		out_cons->IUndergoProcess = GetIterator(NULL);
-		out_cons->IUpdateProcess = GetIterator(NULL);
 		)
 
 static void
@@ -142,10 +140,12 @@ LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )
 	switch( ps_res )
 	{
 		case PS_CALLBK_RET_ABORT:
-
-			AddOneToListTail( &pProcList->IUpdateProcess , &pProc->UpdateLN );
-			break;
-
+			
+			tk(pa_pINow,pa_pIForward);
+			if( pProc->NotifyCallbk != NULL )
+				pProc->NotifyCallbk( pProc );
+			LIST_SAFE_RETURN;
+		
 		case PS_CALLBK_RET_GO_ON:
 			
 			if( ps_state != PS_STATE_LAST_TIME )
@@ -157,8 +157,10 @@ LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )
 
 			if( pProc->IProcessNow.now == pProc->IProcessHead.last )
 			{
-				AddOneToListTail( &pProcList->IUpdateProcess , &pProc->UpdateLN );
-				break;
+				tk(pa_pINow,pa_pIForward);
+				if( pProc->NotifyCallbk != NULL )
+					pProc->NotifyCallbk( pProc );
+				LIST_SAFE_RETURN;
 			}
 			else
 			{
@@ -180,50 +182,11 @@ ret:
 	return pa_pINow->now == pa_pIHead->last;
 }
 
-static BOOL 
-LIST_ITERATION_CALLBACK_FUNCTION( UpdateProcess )
-{
-	struct Process *pUpdatingProc = GET_STRUCT_ADDR_FROM_IT( pa_pINow , struct Process , UpdateLN );
-	DEF_AND_CAST( pProcList , struct ProcessingList ,pa_else);
-	struct Iterator IUndergoNow , IUndergoForward , *pIUndergoHead;
-
-	pIUndergoHead = &pProcList->IUndergoProcess;
-	IUndergoNow = GetIterator( &pUpdatingProc->UndergoLN );
-	IUndergoForward = GetIterator( IUndergoNow.now->next );
-
-	tk( &IUndergoNow , &IUndergoForward );
-
-	if( IUndergoNow.now == IUndergoForward.last )
-	{
-		*pIUndergoHead = GetIterator( NULL );
-	}
-	else 
-	{
-		if( IUndergoNow.now == pIUndergoHead->now ||
-				IUndergoNow.now == pIUndergoHead->last )
-		{
-			*pIUndergoHead = IUndergoForward;
-		}
-	}
-
-	//now , this process has been taken out from the undergo list
-
-	if( pUpdatingProc->NotifyCallbk != NULL )
-	{
-		pUpdatingProc->NotifyCallbk( pUpdatingProc );
-	}
-
-	return pa_pINow->now == pa_pIHead->last;
-}
-
 void 
 DoProcessing( struct ProcessingList *pa_pProcList )
 {
 	ForEach( &pa_pProcList->IUndergoProcess , &DoProcess , pa_pProcList );
-	ForEach( &pa_pProcList->IUpdateProcess , &UpdateProcess , pa_pProcList );
-	ForEach( &pa_pProcList->IUpdateProcess , &CleanedOutOfList , NULL );
 }
-
 
 DEF_FREE_LIST_ELEMENT_CALLBACK_FUNCTION( FreeProcStep , struct ProcessStep , ProcStepLN , ; )
 

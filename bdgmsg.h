@@ -2,19 +2,21 @@
 
 #define TK_NET_DATA_LEN 64
 
-#define TK_NET_BDG_MSG_FLAG  0x0
+#define TK_NET_BDG_MSG_FLAG     0
+
+#define READ_MSG_OPT_ANY             0
+#define READ_MSG_OPT_SPECIFIC        1
 
 #define BRIDGE_MSG_INFO_UNKNOWN           0
 #define BRIDGE_MSG_INFO_REGISTER          1
 #define BRIDGE_MSG_INFO_CONNECT           2
 #define BRIDGE_MSG_INFO_CONNECT_ADDR      3
 #define BRIDGE_MSG_INFO_HELLO             4
-#define BRIDGE_MSG_INFO_OK                5
+#define BRIDGE_MSG_INFO_ECHO_REQUEST      5
 #define BRIDGE_MSG_INFO_IAM_HERE          6
 #define BRIDGE_MSG_ERR_NAMEID_EXIST       7
-
-#define READ_MSG_OPT_ANY       0x0
-#define READ_MSG_OPT_SPECIFIC  0x1
+#define BRIDGE_MSG_INFO_ECHO              8
+#define BRIDGE_MSG_INFO_RGST_OK           9
 
 struct BridgeHelloStepPa
 {
@@ -32,6 +34,7 @@ struct BridgeClientProcPa
 struct BridgeProc
 {
 	struct PeerData *pPeerDataRoot;
+	struct Iterator *pSeedPeerCache;
 	struct Process  proc;
 	struct Sock     *pSock;
 	struct NetAddr  WaitAddr;
@@ -46,6 +49,7 @@ struct BridgeMsg
 	uint           RelayID;
 	char           NameID[PEER_NAME_ID_LEN];
 	uchar          NATType;
+	uchar          Relays;
 };
 
 struct TkNetMsg
@@ -61,7 +65,7 @@ struct TkNetMsg
 DECLARATION_STRUCT_CONSTRUCTOR( BridgeProc )
 
 void 
-ConsAndStartBridgeServer(struct BridgeProc * , struct PeerData * , struct ProcessingList * , struct Sock *);
+ConsAndStartBridgeServer(struct BridgeProc * , struct PeerData * , struct ProcessingList * , struct Sock *,struct Iterator *);
 
 void 
 FreeBridgeServer(struct BridgeProc *);
@@ -71,3 +75,6 @@ BridgeMakeHelloProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock
 
 void 
 BridgeMakeClientProc(struct BridgeProc *, struct Sock * ,struct NetAddr *, char * ,uchar );
+
+void 
+FreeBdgClientProc(struct BridgeProc *);

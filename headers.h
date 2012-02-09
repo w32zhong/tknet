@@ -24,7 +24,7 @@
 #include "nattype.h"
 
 struct PeerData;
-#include "message.h"
+#include "bdgmsg.h"
 #include "peerdata.h"
 
 #include "keyinfo.h"

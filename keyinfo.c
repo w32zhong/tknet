@@ -300,14 +300,14 @@ LIST_ITERATION_CALLBACK_FUNCTION( DeleKeyInfoByType )
 	if( pInfo->valid == KEY_INFO_VALID_NOT &&
 			pInfo->type == *pType )
 	{
-		SafeFreeKeyInfo( pa_pIHead , pa_pINow , pa_pIForward , NULL );
+		return SafeFreeKeyInfo( pa_pIHead , pa_pINow , pa_pIForward , NULL );
 	}
 	if( pInfo->valid == KEY_INFO_VALID_WORKS &&
 			pInfo->type == *pType )
 	{
 		pInfo->valid = KEY_INFO_VALID_UNSURE;
 	}
-
+	
 	return pa_pINow->now == pa_pIHead->last;
 }
 
