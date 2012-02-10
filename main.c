@@ -32,8 +32,11 @@ int main(int pa_argn,char **in_args)
 	BOOL                  ifBdgClientProcMade = 0;
 	char                  BdgPeerAddrStr[32];
 	int                   LocalBindingPort;
-	char MyName[32] = "Unnamed";
+	char MyName[32] = "no one";
+	char TaName[32] = "no one";
+	char *pTaName;
 
+	printf("test version \n");
 	tkNetInit();
 	MutexInit(&g_BkgdMutex);
 
@@ -49,15 +52,24 @@ int main(int pa_argn,char **in_args)
 	KeyInfoCacheCons(&KeyInfoCache);
 	KeyInfoReadFile(&KeyInfoCache,"tknet.info");
 
-	if(pa_argn == 3)
+	if(pa_argn >= 3)
 	{
 		sscanf(in_args[1],"%d",&LocalBindingPort);
 		strcpy(MyName,in_args[2]);
+		if(pa_argn == 4)
+		{
+			pTaName = TaName;
+			strcpy(TaName,in_args[3]);
+		}
+		else
+		{
+			pTaName = NULL;
+		}
 		
 		SockOpen(&MainSock,UDP,(ushort)LocalBindingPort);
 		SockSetNonblock(&MainSock);
 		
-		printf("port %d & %s \n",LocalBindingPort,MyName);
+		printf("port %d  %s->%s \n",LocalBindingPort,MyName,TaName);
 	}
 	else
 	{
@@ -89,7 +101,7 @@ int main(int pa_argn,char **in_args)
 	GetAddrText(&g_BdgPeerAddr,BdgPeerAddrStr);
 	printf("using Bridge peer: %s\n",BdgPeerAddrStr);
 
-	BridgeMakeClientProc(&BdgClientProc,&MainSock,&g_BdgPeerAddr,MyName,NAT_T_FULL_CONE);
+	BridgeMakeClientProc(&BdgClientProc,&MainSock,&g_BdgPeerAddr,MyName,NAT_T_FULL_CONE,pTaName);//TaName can be NULL
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 	ifBdgClientProcMade = 1;
 

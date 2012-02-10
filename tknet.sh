@@ -1,4 +1,9 @@
 #!/bin/bash
+function get_window_id() 
+{
+    window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
+}
+
 if [ ! $1 ]
 then
 	scons && echo ----run---- && ./run
@@ -23,9 +28,9 @@ then
 elif [ $1 == 'clean' ]
 then
 	scons -c
-	rm a.out
-	rm tags
-	rm *.log
+	rm -f a.out
+	rm -f tags
+	rm -f '*.log'
 elif [ $1 == 'bkup' ]
 then
 	date --rfc-3339=seconds | grep -o '.*+' > name.tmp
@@ -36,6 +41,57 @@ then
 	zip "$zipfilename" ./* ./demos/*
 	mkdir -p backups
 	mv *.zip backups/
+elif [ $1 == 'close' ]
+then	
+	for window in $(cat ~/windows.tmp)
+	do
+		wmctrl -i -c $window
+		echo "close $window ..."
+	done
+elif [ $1 == 'open' ]
+then	
+	dir="/home/think/Desktop/lib/"
+	rm -f ~/windows.tmp
+
+	width1=$(wmctrl -d | grep -o WA.* | grep -o '[1-9]*x' | grep -o '[1-9]*')
+	let "width2=$width1*2"
+	let "width3=$width1*3"
+
+	sleep 5
+	
+	wmctrl -o 0,0
+	gnome-terminal --working-directory="$dir/testbin/bin0" --command="bash -c 'ls;exec bash'" &
+	sleep 1.5
+	get_window_id "think-laptop" ; echo "$window_id" >> ~/windows.tmp
+	wmctrl -i -r "$window_id" -b remove,maximized_horz,maximized_vert
+	wmctrl -i -r "$window_id" -e 0,0,0,580,300
+
+	gnome-terminal --working-directory="$dir/testbin/bin1" --command="bash -c 'ls;exec bash'" &
+	sleep 1.5
+	get_window_id "think-laptop" ; echo "$window_id" >> ~/windows.tmp
+	wmctrl -i -r "$window_id" -e 0,590,0,580,300
+
+	gnome-terminal --working-directory="$dir/testbin/bin2" --command="bash -c 'ls;exec bash'" &
+	sleep 1.5
+	get_window_id "think-laptop" ; echo "$window_id" >> ~/windows.tmp
+	wmctrl -i -r "$window_id" -e 0,590,320,580,300
+
+	wmctrl -o $width1,0
+	sleep 2.5
+	gnome-terminal --working-directory="$dir" --command="bash -c 'ls;./tknet.sh clean;exec bash'" &
+	sleep 1.5
+	get_window_id "think-laptop" ; echo "$window_id" >> ~/windows.tmp
+	wmctrl -i -r "$window_id" -b add,maximized_horz,maximized_vert
+	sleep 1.5
+
+	wmctrl -o $width2,0
+	sleep 1.5
+	gnome-terminal --working-directory="$dir" --command="bash -c 'vi main.c;exec bash'" &
+	sleep 1.5
+	get_window_id "think-laptop"
+	wmctrl -i -r "$window_id" -b add,maximized_horz,maximized_vert
+	sleep 1.5
+
 elif [ $1 == 'win' ]
 then
 	mkdir -p Dos\ format
