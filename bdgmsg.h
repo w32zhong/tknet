@@ -9,32 +9,51 @@
 #define BDG_READ_OPT_MSG_FILTER      2
 
 #define BRIDGE_MSG_INFO_UNKNOWN           0
-#define BRIDGE_MSG_INFO_REGISTER          1
-#define BRIDGE_MSG_INFO_CONNECT           2
-#define BRIDGE_MSG_INFO_CONNECT_ADDR      3
-#define BRIDGE_MSG_INFO_HELLO_BDG         4
-#define BRIDGE_MSG_INFO_ECHO_REQUEST      5
-#define BRIDGE_MSG_INFO_IAM_HERE          6
-#define BRIDGE_MSG_ERR_NAMEID_EXIST       7
-#define BRIDGE_MSG_INFO_ECHO              8
-#define BRIDGE_MSG_INFO_RGST_OK           9
+
+#define BRIDGE_MSG_INFO_HELLO_BDG         1
+#define BRIDGE_MSG_INFO_IAM_HERE          2
+
+#define BRIDGE_MSG_INFO_REGISTER          3
+#define BRIDGE_MSG_ERR_NAMEID_EXIST       4
+#define BRIDGE_MSG_INFO_RGST_OK           5
+
+#define BRIDGE_MSG_INFO_WAITING           6
+#define BRIDGE_MSG_INFO_ECHO              7
+
+#define BRIDGE_MSG_INFO_CONNECT           8
+#define BRIDGE_MSG_INFO_CONNECT_BEGIN     9
 #define BRIDGE_MSG_ERR_NO_NAMEID          10
+
 #define BRIDGE_MSG_INFO_PUNCHING          11
 #define BRIDGE_MSG_INFO_PUNCHING_FINISH   12
-#define BRIDGE_MSG_INFO_CONNECT_BEGIN     13
-#define BRIDGE_MSG_INFO_IAM_WAIT          14
+
+#define BRIDGE_MSG_INFO_CONNECT_ADDR      13
+#define BRIDGE_MSG_ERR_CONNECT_ADDR       14
+
+#define BRIDGE_MSG_INFO_HELLO             15
+#define BRIDGE_MSG_INFO_ESTABLISHED       16
+
+#define CONNECT_DECISION_FLAG_BEGIN        1
+#define CONNECT_DECISION_FLAG_DIRECT       2
+#define CONNECT_DECISION_FLAG_ERROR        3
+#define CONNECT_DECISION_FLAG_ESTABLISHED  4
 
 struct BridgeHelloStepPa
 {
 	BOOL           res;
-	struct NetAddr ValidAddr;
+	struct NetAddr addr;
 };
 
 struct BridgeClientProcPa
 {
 	char *pMyNameID;
 	char *pTargetNameID;
-	uchar MyNatType;
+};
+
+struct Peer
+{
+	struct NetAddr addr;
+	uchar          NATType;
 };
 
 struct BridgeProc
@@ -44,12 +63,15 @@ struct BridgeProc
 	struct Process  proc;
 	struct Sock     *pSock;
 	struct ProcessingList *pProcList;
-	struct NetAddr  s,a,b;
-	uchar           ConRelayID;
-	uchar           ConStepFlag;
-	struct NetAddr  PunAddr,ConAddr;
+	struct Peer     s,a,b,sx;
+	uint            DecisionRelayID;
+	uchar           DecisionFlag;
+	struct NetAddr  DecisionPunAddr,DecisionConAddr;
+	struct NetAddr  MultiSendTo;
+	uchar           MultiSendInfo;
 	void   *Else;
 };
+
 
 struct BridgeMsg
 {
@@ -72,6 +94,7 @@ struct TkNetMsg
 };
 
 DECLARATION_STRUCT_CONSTRUCTOR( BridgeProc )
+DECLARATION_STRUCT_CONSTRUCTOR( Peer )
 
 void 
 ConsAndStartBridgeServer(struct BridgeProc * , struct PeerData * , struct ProcessingList * , struct Sock *,struct Iterator *);
@@ -80,10 +103,46 @@ void
 FreeBridgeServer(struct BridgeProc *);
 
 void 
-BridgeMakeHelloProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock *,struct NetAddr *);
+BridgeClientTryBdgServerProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock *);
 
 void 
 BridgeMakeClientProc(struct BridgeProc *, struct Sock * ,struct NetAddr *, char * ,uchar , char*);
 
 void 
 FreeBdgClientProc(struct BridgeProc *);
+
+void
+SetPeerByPeerData(struct Peer *,struct PeerData *);
+
+#define BDG_ADDR( _name , _p_bdg_proc ) \
+	&( _p_bdg_proc-> _name .addr )
+
+#define IF_NEAD_RELAY( _NAT0 , _NAT1 ) ( _NAT0 + _NAT1 >= 5)
+
+struct BridgeMsg*
+BdgMsgRead(struct Process * , uchar , uchar , struct NetAddr *);
+
+void
+BdgMsgWrite(struct Process * ,struct BridgeMsg * , struct NetAddr *);
+
+struct PeerData*
+NewPeerDataWithBdgProc(struct NetAddr ,uchar ,char *,struct BridgeProc *);
+
+void 
+BdgSubServerProcInit();
+
+EXTERN_STEP( BdgClientTryBdgServer )
+
+EXTERN_STEP( BridgeMain )
+EXTERN_STEP( BdgBeginSubServer )
+EXTERN_STEP( BdgConnectRequireServer )
+EXTERN_STEP( BdgConnectRequireReply )
+EXTERN_STEP( BdgConnectDecision )
+EXTERN_STEP( BdgPunchingServer )
+EXTERN_STEP( BdgConnectAddrServer )
+
+EXTERN_STEP( BdgClientRegister )
+EXTERN_STEP( BdgClientWait )
+EXTERN_STEP( BdgClientConnectRequire )
+EXTERN_STEP( BdgClientDoConnectAddr )
+EXTERN_STEP( BdgClientMultiSendNotify )

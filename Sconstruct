@@ -1,1 +1,1 @@
-Program('run',Glob('*.c'),LIBS=['mcheck','ssl','crypto','dl','pthread'],CCFLAGS = '-Werror=return-type');
+Program('run',Glob('*.c'),LIBS=['mcheck','ssl','crypto','dl','pthread'],CCFLAGS = '-Wall -Werror=return-type');

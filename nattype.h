@@ -1,8 +1,8 @@
-#define NAT_T_UNKNOWN         0x00
-#define NAT_T_FULL_CONE       0x01
-#define NAT_T_RESTRICTED      0x02
-#define NAT_T_PORT_RESTRICTED 0x03
-#define NAT_T_SYMMETRIC       0x04
+#define NAT_T_FULL_CONE       0x00
+#define NAT_T_RESTRICTED      0x01
+#define NAT_T_PORT_RESTRICTED 0x02
+#define NAT_T_SYMMETRIC       0x03
+#define NAT_T_UNKNOWN         0x04
 
 struct STUNProc
 {

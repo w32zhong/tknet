@@ -35,7 +35,7 @@ typedef uchar (*StepCallbk)( struct Process* , uchar, struct Iterator*, struct I
 
 #define EXTERN_STEP( _step_name ) \
 	extern const char ProcessStepName ## _step_name []; \
-	uchar ProcessStep ## _step_name (struct Process* , uchar , struct Iterator*, struct Iterator*)
+	uchar ProcessStep ## _step_name (struct Process* , uchar , struct Iterator*, struct Iterator*);
 
 #define PROCESS_ADD_STEP( _pProc , _step , _WaitClocks , _MaxRetrys ) \
 	ProcessAddStep( _pProc , & ( ProcessStep ## _step ) , _WaitClocks , _MaxRetrys , ProcessStepName ## _step )

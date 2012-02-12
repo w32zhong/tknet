@@ -1,0 +1,602 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AddOneToListHead	list.c	/^AddOneToListHead(struct Iterator* io_IHead , struct ListNode* in_NodeOfAdding )$/;"	f
+AddOneToListHeadSafe	list.c	/^AddOneToListHeadSafe(struct Iterator* pa_pIHead, struct Iterator* pa_pINow , struct Iterator* pa_pIForward , struct ListNode* in_NodeOfAdding )$/;"	f
+AddOneToListTail	list.c	/^AddOneToListTail(struct Iterator* io_IHead , struct ListNode* in_NodeOfAdding )$/;"	f
+AddOneToListTailSafe	list.c	/^AddOneToListTailSafe(struct Iterator* pa_pIHead, struct Iterator* pa_pINow , struct Iterator* pa_pIForward , struct ListNode* in_NodeOfAdding )$/;"	f
+AddrMe	sock.h	/^	struct sockaddr_in AddrTa,AddrMe,AddrRecvfrom;$/;"	m	struct:Sock	typeref:struct:Sock::
+AddrRecvfrom	sock.h	/^	struct sockaddr_in AddrTa,AddrMe,AddrRecvfrom;$/;"	m	struct:Sock	typeref:struct:Sock::
+AddrTa	sock.h	/^	struct sockaddr_in AddrTa,AddrMe,AddrRecvfrom;$/;"	m	struct:Sock	typeref:struct:Sock::sockaddr_in
+AttachTo	tree.c	/^AttachTo(struct TreeNode* pa_pFrom ,struct TreeNode* pa_pTo )$/;"	f
+BDG_ADDR	bdgmsg.h	117;"	d
+BDG_READ_OPT_ADDR_FILTER	bdgmsg.h	8;"	d
+BDG_READ_OPT_ANY	bdgmsg.h	7;"	d
+BDG_READ_OPT_MSG_FILTER	bdgmsg.h	9;"	d
+BKGD_CMD_MAX_LEN	bkgd.c	2;"	d	file:
+BOOL	comdef.h	6;"	d
+BOOL	sock.h	23;"	d
+BRIDGE_MSG_ERR_CONNECT_ADDR	bdgmsg.h	31;"	d
+BRIDGE_MSG_ERR_NAMEID_EXIST	bdgmsg.h	17;"	d
+BRIDGE_MSG_ERR_NO_NAMEID	bdgmsg.h	25;"	d
+BRIDGE_MSG_INFO_CONNECT	bdgmsg.h	23;"	d
+BRIDGE_MSG_INFO_CONNECT_ADDR	bdgmsg.h	30;"	d
+BRIDGE_MSG_INFO_CONNECT_BEGIN	bdgmsg.h	24;"	d
+BRIDGE_MSG_INFO_ECHO	bdgmsg.h	21;"	d
+BRIDGE_MSG_INFO_ESTABLISHED	bdgmsg.h	34;"	d
+BRIDGE_MSG_INFO_HELLO	bdgmsg.h	33;"	d
+BRIDGE_MSG_INFO_HELLO_BDG	bdgmsg.h	13;"	d
+BRIDGE_MSG_INFO_IAM_HERE	bdgmsg.h	14;"	d
+BRIDGE_MSG_INFO_PUNCHING	bdgmsg.h	27;"	d
+BRIDGE_MSG_INFO_PUNCHING_FINISH	bdgmsg.h	28;"	d
+BRIDGE_MSG_INFO_REGISTER	bdgmsg.h	16;"	d
+BRIDGE_MSG_INFO_RGST_OK	bdgmsg.h	18;"	d
+BRIDGE_MSG_INFO_UNKNOWN	bdgmsg.h	11;"	d
+BRIDGE_MSG_INFO_WAITING	bdgmsg.h	20;"	d
+BYS	comdef.h	59;"	d
+BackGroundArgs	bkgd.h	/^struct BackGroundArgs$/;"	s
+BackGroundPOP3ProcMake	bkgd.c	/^BackGroundPOP3ProcMake( struct POP3Proc *pa_pPop3Proc , const char *pa_pHostIP , ushort pa_HostPort , BOOL pa_ifEnableSSL , const char *pa_pUsrName , const char *pa_pPassWord )$/;"	f	file:
+Base64Encode	base64.c	/^Base64Encode(char *src, int src_len, char *dst)$/;"	f
+BdgClientProcNotify	bdgfun.c	/^BdgClientProcNotify(struct Process *pa_)$/;"	f
+BdgHelloNotify	keyinfo.c	/^BdgHelloNotify(struct Process *pa_)$/;"	f	file:
+BdgMsg	bdgmsg.h	/^		struct BridgeMsg BdgMsg;$/;"	m	union:TkNetMsg::__anon1	typeref:struct:TkNetMsg::__anon1::BridgeMsg
+BdgMsgRead	bdgfun.c	/^BdgMsgRead(struct Process *in_proc , uchar pa_option , uchar pa_msg , struct NetAddr *pa_pAddr)$/;"	f
+BdgMsgWrite	bdgfun.c	/^BdgMsgWrite(struct Process *in_proc ,struct BridgeMsg *in_msg , struct NetAddr *pa_pAddr)$/;"	f
+BdgProc	peerdata.h	/^	struct BridgeProc  BdgProc;$/;"	m	struct:PeerData	typeref:struct:PeerData::BridgeProc
+BdgSubServerProcInit	bdgfun.c	/^BdgSubServerProcInit()$/;"	f
+BdgSubServerProcNotify	bdgfun.c	/^BdgSubServerProcNotify(struct Process *pa_)$/;"	f
+BinAttachTo	tree.c	/^BinAttachTo(struct BinTreeNode* pa_pFrom , struct BinTreeNode* pa_pTo , BOOL pa_ifRight)$/;"	f
+BinDisattach	tree.c	/^BinDisattach(struct BinTreeNode* pa_pBtn)$/;"	f
+BinTreeCompareCallback	tree.h	/^typedef BOOL (*BinTreeCompareCallback)(struct BinTreeNode* ,struct BinTreeNode* , void*);$/;"	t
+BinTreeFind	tree.c	/^BinTreeFind(struct BinTreeNode* pa_pBtn , struct BinTreeNode* pa_pFind , BinTreeCompareCallback pa_cmp ,BinTreeCompareCallback pa_CmpEq , void* pa_else)$/;"	f
+BinTreeInorderTraversal	tree.c	/^BinTreeInorderTraversal(struct BinTreeNode* pa_pRoot , ListNodeCallBack pa_NodeCallback , void* pa_else )$/;"	f
+BinTreeInsert	tree.c	/^BinTreeInsert(struct BinTreeNode* pa_pFrom , struct BinTreeNode* pa_pTo ,BinTreeCompareCallback pa_cmp , void* pa_else)$/;"	f
+BinTreeNode	tree.h	/^struct BinTreeNode$/;"	s
+BkgdNatTypeNotify	bkgd.c	/^BkgdNatTypeNotify(struct Process *pa_)$/;"	f	file:
+BkgdProcEndCallbk	bkgd.c	/^BkgdProcEndCallbk(struct Process *pa_)$/;"	f	file:
+Branch	tree.h	/^struct Branch$/;"	s
+BridgeClientProcPa	bdgmsg.h	/^struct BridgeClientProcPa$/;"	s
+BridgeClientTryBdgServerProc	bdgfun.c	/^BridgeClientTryBdgServerProc(struct BridgeProc *pa_pBdgProc,struct BridgeHelloStepPa *pa_pProcPa , struct Sock *pa_pMainSock)$/;"	f
+BridgeHelloStepPa	bdgmsg.h	/^struct BridgeHelloStepPa$/;"	s
+BridgeMakeClientProc	bdgfun.c	/^BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char *pa_pTargetNameID)$/;"	f
+BridgeMsg	bdgmsg.h	/^struct BridgeMsg$/;"	s
+BridgeProc	bdgmsg.h	/^struct BridgeProc$/;"	s
+Bys	comdef.h	/^struct Bys$/;"	s
+CACERT	sock.h	42;"	d
+CERTF	sock.h	40;"	d
+CONNECT_DECISION_FLAG_BEGIN	bdgmsg.h	36;"	d
+CONNECT_DECISION_FLAG_DIRECT	bdgmsg.h	37;"	d
+CONNECT_DECISION_FLAG_ERROR	bdgmsg.h	38;"	d
+CONNECT_DECISION_FLAG_ESTABLISHED	bdgmsg.h	39;"	d
+ChangeRequest	stun.h	/^struct ChangeRequest$/;"	s
+ConsAndStartBridgeServer	bdgfun.c	/^ConsAndStartBridgeServer(struct BridgeProc *pa_pBdgProc , struct PeerData *pa_pPeerDataRoot , struct ProcessingList *pa_pProcList , struct Sock *pa_pMainSock , struct Iterator *pa_pSeedPeerCache)$/;"	f
+CurrentStepRetrys	netproc.h	/^	uchar            CurrentStepRetrys;$/;"	m	struct:Process
+CurrentStepStartTime	netproc.h	/^	long             CurrentStepStartTime;$/;"	m	struct:Process
+DECLARATION_STRUCT_CONSTRUCTOR	comdef.h	20;"	d
+DEF_AND_CAST	comdef.h	23;"	d
+DEF_FREE_LIST_ELEMENT_CALLBACK_FUNCTION	list.h	7;"	d
+DEF_FREE_LIST_ELEMENT_SAFE_FUNCTION	list.h	40;"	d
+DEF_FREE_TREE_ELEMENT_CALLBACK_FUNCTION	tree.h	1;"	d
+DEF_STRUCT_CONSTRUCTOR	comdef.h	13;"	d
+DataMsg	bdgmsg.h	/^		char DataMsg[TK_NET_DATA_LEN];$/;"	m	union:TkNetMsg::__anon1
+DecisionConAddr	bdgmsg.h	/^	struct NetAddr  DecisionPunAddr,DecisionConAddr;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::
+DecisionFlag	bdgmsg.h	/^	uchar           DecisionFlag;$/;"	m	struct:BridgeProc
+DecisionPunAddr	bdgmsg.h	/^	struct NetAddr  DecisionPunAddr,DecisionConAddr;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::NetAddr
+DecisionRelayID	bdgmsg.h	/^	uint            DecisionRelayID;$/;"	m	struct:BridgeProc
+Disattach	tree.c	/^Disattach(struct TreeNode* pa_pTn)$/;"	f
+DoProcessing	netproc.c	/^DoProcessing( struct ProcessingList *pa_pProcList )$/;"	f
+EXTERN_STEP	netproc.h	36;"	d
+Else	bdgmsg.h	/^	void   *Else;$/;"	m	struct:BridgeProc
+FindKeyInfoByAddrPa	keyinfo.h	/^struct FindKeyInfoByAddrPa$/;"	s
+FindKeyInfoByNumPa	keyinfo.h	/^struct FindKeyInfoByNumPa$/;"	s
+FindKeyInfoByStrArg	bkgd.c	/^FindKeyInfoByStrArg(struct KeyInfoCache *pa_pInfoChache,char *pa_pStrArg)$/;"	f	file:
+FindKeyInfoByTypePa	keyinfo.h	/^struct FindKeyInfoByTypePa$/;"	s
+FindKeyInfoByValidPa	keyinfo.h	/^struct FindKeyInfoByValidPa$/;"	s
+FindSeedPeerOfLeastRelaysPa	peerdata.c	/^struct FindSeedPeerOfLeastRelaysPa$/;"	s	file:
+FindStepByNamePa	netproc.h	/^struct FindStepByNamePa$/;"	s
+FindStepWithFlagNumPa	netproc.h	/^struct FindStepWithFlagNumPa$/;"	s
+FlagName	netproc.c	/^FlagName(struct Process *pa_pProc ,const char *pa_pName)$/;"	f
+FlagNum	netproc.h	/^	uchar            FlagNum;$/;"	m	struct:ProcessStep
+FlagNum	netproc.h	/^FlagNum(uchar pa_FlagNum)$/;"	f
+FlagNumToFind	netproc.h	/^	uchar             FlagNumToFind;$/;"	m	struct:FindStepWithFlagNumPa
+ForEach	list.c	/^ForEach(struct Iterator* io_IHead , ListNodeCallBack pa_node_callback ,void* pa_else )$/;"	f
+FreeBdgClientProc	bdgfun.c	/^FreeBdgClientProc(struct BridgeProc *pa_pBdgProc)$/;"	f
+FreeBridgeServer	bdgfun.c	/^FreeBridgeServer(struct BridgeProc *pa_pBdgProc)$/;"	f
+GET_STRUCT_ADDR	comdef.h	28;"	d
+GET_STRUCT_ADDR_FROM_IT	list.h	1;"	d
+GetAddrFromSockAddr	netaddr.h	/^GetAddrFromSockAddr( struct sockaddr_in *in_SockAddr)$/;"	f
+GetAddrText	netaddr.h	/^GetAddrText( struct NetAddr *pa_pAddr , char *out_str)$/;"	f
+GetIPText	netaddr.h	/^GetIPText( struct NetAddr *pa_pAddr , char *out_str)$/;"	f
+GetIPTextAndPort	sock.c	/^GetIPTextAndPort(struct sockaddr_in* in_addr , ushort* out_pPort , char* pa_pBuff )$/;"	f
+GetIPVal	sock.c	/^uint GetIPVal(const char* in_text)$/;"	f
+GetIterator	list.c	/^GetIterator(struct ListNode* in_node)$/;"	f
+GetLevelPa	tree.c	/^struct GetLevelPa$/;"	s	file:
+GetNextSeparateStr	keyinfo.c	/^GetNextSeparateStr(char ** io_pStrNow)$/;"	f
+HostIPVal	nattype.h	/^	int            HostIPVal;$/;"	m	struct:STUNProc
+HostIPVal	popmail.h	/^	int             HostIPVal;$/;"	m	struct:POP3Proc
+HostIPVal	smtpmail.h	/^	int             HostIPVal;$/;"	m	struct:SMTPProc
+HostPort	nattype.h	/^	ushort         HostPort;$/;"	m	struct:STUNProc
+HostPort	popmail.h	/^	ushort          HostPort;$/;"	m	struct:POP3Proc
+HostPort	smtpmail.h	/^	ushort          HostPort;$/;"	m	struct:SMTPProc
+I	demos/list-demo.c	/^struct I$/;"	s	file:
+IChildren	tree.h	/^	struct Iterator IChildren;$/;"	m	struct:TreeNode	typeref:struct:TreeNode::Iterator
+IF_NEAD_RELAY	bdgmsg.h	120;"	d
+IFound	netproc.h	/^	struct Iterator   IFound;$/;"	m	struct:FindStepWithFlagNumPa	typeref:struct:FindStepWithFlagNumPa::Iterator
+IKeyInfo	keyinfo.h	/^	struct Iterator IKeyInfo;$/;"	m	struct:KeyInfoCache	typeref:struct:KeyInfoCache::Iterator
+IMailsHead	popmail.h	/^	struct Iterator IMailsHead;$/;"	m	struct:POP3Proc	typeref:struct:POP3Proc::Iterator
+IProcessHead	netproc.h	/^	struct Iterator  IProcessHead;$/;"	m	struct:Process	typeref:struct:Process::Iterator
+IProcessNow	netproc.h	/^	struct Iterator  IProcessNow;$/;"	m	struct:Process	typeref:struct:Process::Iterator
+IPv4	netaddr.h	/^	uint    IPv4; $/;"	m	struct:NetAddr
+IRetrieveNow	popmail.h	/^	struct Iterator IRetrieveNow;$/;"	m	struct:POP3Proc	typeref:struct:POP3Proc::Iterator
+IS_DEPTH_END	tree.c	309;"	d	file:
+IS_LIST_END	tree.c	308;"	d	file:
+IUndergoProcess	netproc.h	/^	struct Iterator  IUndergoProcess;$/;"	m	struct:ProcessingList	typeref:struct:ProcessingList::Iterator
+Iterator	list.h	/^struct Iterator$/;"	s
+KEYF	sock.h	41;"	d
+KEY_INFO_MAX_LEN	keyinfo.h	1;"	d
+KEY_INFO_TYPE_BRIDGEPEER	keyinfo.h	4;"	d
+KEY_INFO_TYPE_MAILSERVER	keyinfo.h	3;"	d
+KEY_INFO_TYPE_SMTPSERVER	keyinfo.h	6;"	d
+KEY_INFO_TYPE_STUNSERVER	keyinfo.h	5;"	d
+KEY_INFO_VALID_NOT	keyinfo.h	9;"	d
+KEY_INFO_VALID_UNSURE	keyinfo.h	8;"	d
+KEY_INFO_VALID_WORKS	keyinfo.h	10;"	d
+KeyInfo	keyinfo.h	/^struct KeyInfo$/;"	s
+KeyInfoCache	keyinfo.h	/^struct KeyInfoCache$/;"	s
+KeyInfoFree	keyinfo.c	/^KeyInfoFree(struct KeyInfoCache *pa_pCache)$/;"	f
+KeyInfoNumbers	keyinfo.h	/^	int KeyInfoNumbers;$/;"	m	struct:KeyInfoCache
+KeyInfoReadFile	keyinfo.c	/^KeyInfoReadFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )$/;"	f
+KeyInfoSelectA	keyinfo.c	/^KeyInfoSelectA( struct KeyInfoCache *pa_pCache , uchar pa_type )$/;"	f
+KeyInfoTrace	keyinfo.c	/^KeyInfoTrace( struct KeyInfoCache *pa_pCache )$/;"	f
+KeyInfoTry	keyinfo.c	/^KeyInfoTry(struct KeyInfoCache *pa_pInfoChache , uchar pa_type , struct Sock *pa_pMainSock)$/;"	f
+KeyInfoUpdate	keyinfo.c	/^KeyInfoUpdate( struct KeyInfoCache *pa_pCache )$/;"	f
+KeyInfoUse	keyinfo.c	/^KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,struct Sock *pa_pMainSock)$/;"	f
+KeyInfoWorksFine	keyinfo.c	/^KeyInfoWorksFine( struct KeyInfoCache *pa_pCache , int pa_num )$/;"	f
+KeyInfoWriteFile	keyinfo.c	/^KeyInfoWriteFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	demos/list-demo.c	/^LIST_ITERATION_CALLBACK_FUNCTION(trace)$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	demos/treap-demo.c	/^LIST_ITERATION_CALLBACK_FUNCTION( TraceTreap )$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	demos/tree-demo.c	/^LIST_ITERATION_CALLBACK_FUNCTION( TraceBinTree )$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	keyinfo.c	/^LIST_ITERATION_CALLBACK_FUNCTION( DeleKeyInfoByType )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	keyinfo.c	/^LIST_ITERATION_CALLBACK_FUNCTION( LoadMail )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	keyinfo.c	/^LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByAddr)$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	keyinfo.c	/^LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByNum)$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	keyinfo.c	/^LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByValid)$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	keyinfo.c	/^LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoNotUsedByType)$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	keyinfo.c	/^LIST_ITERATION_CALLBACK_FUNCTION(TraceKeyInfo)$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	keyinfo.c	/^LIST_ITERATION_CALLBACK_FUNCTION(WriteKeyInfo)$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	list.c	/^LIST_ITERATION_CALLBACK_FUNCTION( SortingInsert )$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	list.c	/^LIST_ITERATION_CALLBACK_FUNCTION(ReverseListCallback)$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	list.c	/^LIST_ITERATION_CALLBACK_FUNCTION(SortListCallback)$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	list.h	4;"	d
+LIST_ITERATION_CALLBACK_FUNCTION	netproc.c	/^LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	netproc.c	/^LIST_ITERATION_CALLBACK_FUNCTION( FindStepByName )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	netproc.c	/^LIST_ITERATION_CALLBACK_FUNCTION( FindStepWithFlagNum )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	netproc.c	/^LIST_ITERATION_CALLBACK_FUNCTION( TraceProcStep )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	peerdata.c	/^LIST_ITERATION_CALLBACK_FUNCTION( TracePeerData )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	peerdata.c	/^LIST_ITERATION_CALLBACK_FUNCTION(FindSeedPeerOfLeastRelays)$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	popmail.c	/^LIST_ITERATION_CALLBACK_FUNCTION( TraceMail )$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	tree.c	/^LIST_ITERATION_CALLBACK_FUNCTION( BFS )$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	tree.c	/^LIST_ITERATION_CALLBACK_FUNCTION( CopyBranchesCallback )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	tree.c	/^LIST_ITERATION_CALLBACK_FUNCTION( GetLevelCallback )$/;"	f	file:
+LIST_ITERATION_CALLBACK_FUNCTION	tree.c	/^LIST_ITERATION_CALLBACK_FUNCTION( PostorderDFS )$/;"	f
+LIST_ITERATION_CALLBACK_FUNCTION	tree.c	/^LIST_ITERATION_CALLBACK_FUNCTION( PreorderDFS )$/;"	f
+LIST_SAFE_RETURN	list.h	25;"	d
+LOG_FILES	sysi.h	25;"	d
+LOG_FOPEN	sysi.c	59;"	d	file:
+LeastRelays	peerdata.c	/^	uchar           LeastRelays;$/;"	m	struct:FindSeedPeerOfLeastRelaysPa	file:
+LeftChild	tree.h	/^	struct BinTreeNode 	*LeftChild,*RightChild;$/;"	m	struct:BinTreeNode	typeref:struct:BinTreeNode::BinTreeNode
+LevelStack	tree.c	/^	struct Iterator LevelStack;$/;"	m	struct:GetLevelPa	typeref:struct:GetLevelPa::Iterator	file:
+LevelStackEle	tree.c	/^struct LevelStackEle$/;"	s	file:
+ListNode	list.h	/^struct ListNode$/;"	s
+ListNodeCallBack	list.h	/^typedef BOOL (*ListNodeCallBack)(struct Iterator* , struct Iterator* ,struct Iterator* ,void*);$/;"	t
+MAX_MAIL_CONTENT_LEN	popmail.h	1;"	d
+MAX_NUM	demos/treap-demo.c	75;"	d	file:
+MEMBER_OFFSET	comdef.h	26;"	d
+MagicCookieTemp	nattype.h	/^	uint           MagicCookieTemp;$/;"	m	struct:STUNProc
+MailAddr	smtpmail.h	/^	char            MailAddr[SMTP_PROTO_MAIL_ADDR_MAX_LEN];$/;"	m	struct:SMTPProc
+MailContentBuff	popmail.h	/^	char            MailContentBuff[SOCK_RECV_BUFF_LEN];$/;"	m	struct:POP3Proc
+MakeProtoPOP3Proc	popmail.c	/^MakeProtoPOP3Proc( struct POP3Proc *pa_pPop3Proc , const char *pa_pHostIP , ushort pa_HostPort , BOOL pa_ifEnableSSL , const char *pa_pUsrName , const char *pa_pPassWord )$/;"	f
+MakeProtoStunProc	nattype.c	/^MakeProtoStunProc( struct STUNProc *pa_pStunProc ,struct Sock *pa_pSock , const char *pa_pHostIP , ushort pa_HostPort )$/;"	f
+MapAddrTemp	nattype.h	/^	struct NetAddr MapAddrTemp;$/;"	m	struct:STUNProc	typeref:struct:STUNProc::NetAddr
+MaxRetrys	netproc.h	/^	uchar            MaxRetrys;$/;"	m	struct:ProcessStep
+MultiSendInfo	bdgmsg.h	/^	uchar           MultiSendInfo;$/;"	m	struct:BridgeProc
+MultiSendTo	bdgmsg.h	/^	struct NetAddr  MultiSendTo;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::NetAddr
+MutexDelete	sysi.h	58;"	d
+MutexDelete	sysi.h	66;"	d
+MutexInit	sysi.h	55;"	d
+MutexInit	sysi.h	63;"	d
+MutexLock	sysi.h	56;"	d
+MutexLock	sysi.h	64;"	d
+MutexUnlock	sysi.h	57;"	d
+MutexUnlock	sysi.h	65;"	d
+NATType	bdgmsg.h	/^	uchar          NATType;$/;"	m	struct:BridgeMsg
+NATType	bdgmsg.h	/^	uchar          NATType;$/;"	m	struct:Peer
+NATType	peerdata.h	/^	uchar              NATType;$/;"	m	struct:PeerData
+NAT_T_FULL_CONE	nattype.h	1;"	d
+NAT_T_PORT_RESTRICTED	nattype.h	3;"	d
+NAT_T_RESTRICTED	nattype.h	2;"	d
+NAT_T_SYMMETRIC	nattype.h	4;"	d
+NAT_T_UNKNOWN	nattype.h	5;"	d
+NULL	comdef.h	2;"	d
+NameID	bdgmsg.h	/^	char           NameID[PEER_NAME_ID_LEN];$/;"	m	struct:BridgeMsg
+NameID	peerdata.h	/^	char               NameID[PEER_NAME_ID_LEN];$/;"	m	struct:PeerData
+NatTypeRes	nattype.h	/^	uchar          NatTypeRes;$/;"	m	struct:STUNProc
+NetAddr	netaddr.h	/^struct NetAddr$/;"	s
+NetInfoMail	popmail.h	/^struct NetInfoMail$/;"	s
+NewKeyInfoFromStrLine	keyinfo.c	/^NewKeyInfoFromStrLine(char *io_pStr)$/;"	f	file:
+NewPeerDataWithBdgProc	bdgfun.c	/^NewPeerDataWithBdgProc(struct NetAddr pa_addr,uchar pa_NATType,char *pa_pName,struct BridgeProc *pa_pBdgProc)$/;"	f
+Notify	demos/nattype-demo.c	/^void Notify(struct Process *pa_)$/;"	f
+Notify	demos/netproc-demo.c	/^void Notify( struct Process *pa_pProc)$/;"	f
+Notify	demos/popmail-demo.c	/^void Notify( struct Process *pa_pProc)$/;"	f
+Notify	demos/smtpmail-demo.c	/^void Notify(struct Process *pa_)$/;"	f
+NotifyCallbk	netproc.h	/^	void (*NotifyCallbk)( struct Process * );$/;"	m	struct:Process
+NumToFind	keyinfo.h	/^	int NumToFind;$/;"	m	struct:FindKeyInfoByNumPa
+PEER_NAME_ID_LEN	bdgmsg.h	1;"	d
+POP3Proc	popmail.h	/^struct POP3Proc$/;"	s
+POP3ProcFree	popmail.c	/^POP3ProcFree( struct POP3Proc *pa_pPop3Proc )$/;"	f
+POP3_PROTO_PASSWORD_MAX_LEN	popmail.h	3;"	d
+POP3_PROTO_USRNAME_MAX_LEN	popmail.h	2;"	d
+PROCESS_ADD_STEP	netproc.h	40;"	d
+PS_CALLBK_RET_ABORT	netproc.h	6;"	d
+PS_CALLBK_RET_DONE	netproc.h	8;"	d
+PS_CALLBK_RET_GO_ON	netproc.h	7;"	d
+PS_CALLBK_RET_REDO	netproc.h	9;"	d
+PS_CALLBK_RET_TO_END	netproc.h	10;"	d
+PS_STATE_FIRST_TIME	netproc.h	1;"	d
+PS_STATE_LAST_TIME	netproc.h	4;"	d
+PS_STATE_NORMAL	netproc.h	2;"	d
+PS_STATE_OVERTIME	netproc.h	3;"	d
+ParseSpecialContentToSpace	popmail.c	/^ParseSpecialContentToSpace(char *pa_pStr)$/;"	f	file:
+PassWord	popmail.h	/^	char            PassWord[POP3_PROTO_PASSWORD_MAX_LEN];$/;"	m	struct:POP3Proc
+PassWord	smtpmail.h	/^	char            PassWord[SMTP_PROTO_PASSWORD_MAX_LEN];$/;"	m	struct:SMTPProc
+Peer	bdgmsg.h	/^struct Peer$/;"	s
+PeerData	peerdata.h	/^struct PeerData$/;"	s
+PeerDataDele	peerdata.c	/^PeerDataDele(struct PeerData *pa_pPD, struct Iterator *pa_pISeedList)$/;"	f
+PeerDataDestroy	peerdata.c	/^PeerDataDestroy(struct PeerData *pa_pRoot)$/;"	f
+PeerDataFind	peerdata.c	/^PeerDataFind(struct PeerData *pa_pRoot,char *pa_pNameToFind)$/;"	f
+PeerDataInsert	peerdata.c	/^PeerDataInsert(struct PeerData *pa_pPD,struct PeerData *pa_pRoot)$/;"	f
+PeerDataSelectAsSeed	peerdata.c	/^PeerDataSelectAsSeed(struct PeerData* pa_pPD , struct Iterator *pa_pISeedList)$/;"	f
+PeerDataSetTreeLevel	peerdata.c	/^PeerDataSetTreeLevel(struct TreeNode* pa_pTnd , uint pa_level)$/;"	f	file:
+PeerDataTrace	peerdata.c	/^PeerDataTrace(struct PeerData *pa_pRoot)$/;"	f
+PeerDataTreapNodeCompare	peerdata.c	/^PeerDataTreapNodeCompare(struct BinTreeNode* pa_pBinNode0 ,$/;"	f	file:
+PeerDataUpdateSeedInfo	peerdata.c	/^PeerDataUpdateSeedInfo(struct PeerData *pa_pPD,uchar pa_relays)$/;"	f
+Pop3Notify	keyinfo.c	/^Pop3Notify(struct Process *pa_)$/;"	f	file:
+ProcStepLN	netproc.h	/^	struct ListNode  ProcStepLN;$/;"	m	struct:ProcessStep	typeref:struct:ProcessStep::ListNode
+Process	netproc.h	/^struct Process$/;"	s
+ProcessAddStep	netproc.c	/^ProcessAddStep( struct Process *pa_pProc , StepCallbk pa_StepDo , uint pa_WaitClocks , uchar pa_MaxRetrys , const char *pa_pName )$/;"	f
+ProcessConsAndSetSteps	netproc.c	/^ProcessConsAndSetSteps( struct Process *out_proc , struct Process *in_proc )$/;"	f
+ProcessFree	netproc.c	/^void ProcessFree( struct Process *pa_pProc )$/;"	f
+ProcessSafeStart	netproc.c	/^ProcessSafeStart( struct Process *pa_pProc , struct ProcessingList *pa_pProcList , struct Iterator *pa_pINow , struct Iterator *pa_pIForward )$/;"	f
+ProcessStart	netproc.c	/^ProcessStart( struct Process *pa_pProc , struct ProcessingList *pa_pProcList )$/;"	f
+ProcessStep	netproc.h	/^struct ProcessStep$/;"	s
+ProcessTraceSteps	netproc.c	/^ProcessTraceSteps(struct Process *pa_pProc)$/;"	f
+ProcessUpdateCurrentStep	netproc.c	/^ProcessUpdateCurrentStep(struct Process *pa_pProc)$/;"	f	file:
+ProcessingList	netproc.h	/^struct ProcessingList$/;"	s
+RanPriority	treap.h	/^	uint RanPriority;$/;"	m	struct:Treap
+RecvBuff	sock.h	/^	char	RecvBuff[ SOCK_RECV_BUFF_LEN ];$/;"	m	struct:Sock
+RecvLen	sock.h	/^	uint	RecvLen;$/;"	m	struct:Sock
+RelayID	bdgmsg.h	/^	uint           RelayID;$/;"	m	struct:BridgeMsg
+Relays	bdgmsg.h	/^	uchar          Relays;$/;"	m	struct:BridgeMsg
+Relays	peerdata.h	/^	uchar           Relays;$/;"	m	struct:SeedPeer
+Retrieves	popmail.h	/^	uint            Retrieves;$/;"	m	struct:POP3Proc
+ReverseList	list.c	/^ReverseList( struct Iterator* io_IHead)$/;"	f
+RightChild	tree.h	/^	struct BinTreeNode 	*LeftChild,*RightChild;$/;"	m	struct:BinTreeNode	typeref:struct:BinTreeNode::
+SMTPProc	smtpmail.h	/^struct SMTPProc$/;"	s
+SMTPProcMake	smtpmail.c	/^SMTPProcMake( struct SMTPProc *pa_pSMTPProc , const char *pa_pHostIPText , ushort pa_HostPort , BOOL pa_ifEnableSSL , const char *pa_pUsrName , const char *pa_pPassWord , const char *pa_pMailAddress , const char *pa_pSendBuff )$/;"	f
+SMTP_PROTO_MAIL_ADDR_MAX_LEN	smtpmail.h	3;"	d
+SMTP_PROTO_PASSWORD_MAX_LEN	smtpmail.h	2;"	d
+SMTP_PROTO_USRNAME_MAX_LEN	smtpmail.h	1;"	d
+SOCKVAL	sock.h	/^typedef SOCKET SOCKVAL;$/;"	t
+SOCKVAL	sock.h	/^typedef int SOCKVAL;$/;"	t
+SOCK_ERROR_CDT	sock.h	12;"	d
+SOCK_ERROR_CDT	sock.h	28;"	d
+SOCK_RECV_BUFF_LEN	sock.h	46;"	d
+STEP	bdgstep.c	/^STEP( BdgBeginSubServer )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgClientConnectRequire )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgClientDoConnectAddr )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgClientMultiSendNotify )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgClientRegister )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgClientTryBdgServer )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgClientWait )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgConnectAddrServer )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgConnectDecision )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgConnectRequireReply )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgConnectRequireServer )$/;"	f
+STEP	bdgstep.c	/^STEP( BdgPunchingServer )$/;"	f
+STEP	bdgstep.c	/^STEP( BridgeMain )$/;"	f
+STEP	bkgd.c	/^STEP( ProtoPOP3BackGround )$/;"	f
+STEP	demos/netproc-demo.c	/^STEP( First )$/;"	f
+STEP	demos/netproc-demo.c	/^STEP( Second )$/;"	f
+STEP	demos/netproc-demo.c	/^STEP( Third )$/;"	f
+STEP	demos/netproc-demo.c	/^STEP( circle )$/;"	f
+STEP	nattype.c	/^STEP( BindingRequest )$/;"	f
+STEP	nattype.c	/^STEP( BindingRequestToAnotherIP )$/;"	f
+STEP	nattype.c	/^STEP( ChangeIP )$/;"	f
+STEP	nattype.c	/^STEP( ChangePort )$/;"	f
+STEP	netproc.h	32;"	d
+STEP	popmail.c	/^STEP( ProtoPOP3Connect )$/;"	f
+STEP	popmail.c	/^STEP( ProtoPOP3FirstRecv )$/;"	f
+STEP	popmail.c	/^STEP( ProtoPOP3List  )$/;"	f
+STEP	popmail.c	/^STEP( ProtoPOP3Password  )$/;"	f
+STEP	popmail.c	/^STEP( ProtoPOP3Quit  )$/;"	f
+STEP	popmail.c	/^STEP( ProtoPOP3Retr )$/;"	f
+STEP	popmail.c	/^STEP( ProtoPOP3User  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPConnect )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPContent  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPData  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPFirstRecv )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPHello  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPMailFrom  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPPassWord  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPQuit  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPRcptTo  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPStartAuth  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPTitle  )$/;"	f
+STEP	smtpmail.c	/^STEP( SMTPUsrName  )$/;"	f
+STUNProc	nattype.h	/^struct STUNProc$/;"	s
+STUN_CHANGE_BOTH_IP_PORT	stun.h	4;"	d
+STUN_CHANGE_IP	stun.h	5;"	d
+STUN_CHANGE_PORT	stun.h	6;"	d
+STUN_DEFAULT_PORT	stun.h	1;"	d
+STUN_MAX_VALUES	stun.h	2;"	d
+SWITCH_CPY_STRING	keyinfo.c	155;"	d	file:
+SeedPeer	peerdata.h	/^struct SeedPeer$/;"	s
+SeedPeerSelectOne	peerdata.c	/^SeedPeerSelectOne(struct Iterator *pa_pISeedList)$/;"	f
+SendBuff	smtpmail.h	/^	char            SendBuff[MAX_MAIL_CONTENT_LEN];$/;"	m	struct:SMTPProc
+ServerAddrTemp	nattype.h	/^	struct NetAddr ServerAddrTemp;$/;"	m	struct:STUNProc	typeref:struct:STUNProc::NetAddr
+SetIPRes	stun.c	/^SetIPRes( uint pa_IPVal )$/;"	f	file:
+SetLevel	demos/treap-demo.c	/^void SetLevel(struct TreeNode* pa_pTnd , uint pa_level)$/;"	f
+SetLevel	demos/tree-demo.c	/^void SetLevel(struct TreeNode* pa_pTnd , int pa_level)$/;"	f
+SetLevelCallback	tree.h	/^typedef void (*SetLevelCallback)(struct TreeNode* , uint );$/;"	t
+SetPeerByPeerData	bdgfun.c	/^SetPeerByPeerData(struct Peer *pa_pPeer,struct PeerData *pa_pPD)$/;"	f
+SetPop3ProcByKeyInfo	bkgd.c	/^SetPop3ProcByKeyInfo(struct POP3Proc *pa_pPop3Proc ,struct KeyInfo *pa_pKeyInfo)$/;"	f	file:
+SetPortRes	stun.c	/^SetPortRes( ushort pa_port )$/;"	f	file:
+SetSmtpProcByKeyInfo	bkgd.c	/^SetSmtpProcByKeyInfo(struct SMTPProc *pa_pSmtpProc ,struct KeyInfo *pa_pKeyInfo)$/;"	f	file:
+SetStunProcByKeyInfo	bkgd.c	/^SetStunProcByKeyInfo(struct STUNProc *pa_pStunProc ,struct KeyInfo *pa_pKeyInfo)$/;"	f	file:
+Sock	smtpmail.h	/^	struct Sock     Sock;$/;"	m	struct:SMTPProc	typeref:struct:SMTPProc::Sock
+Sock	sock.h	/^struct Sock$/;"	s
+SockClose	sock.c	/^SockClose( struct Sock* pa_sock )$/;"	f
+SockDestory	sock.c	/^SockDestory()$/;"	f
+SockGetLastErr	sock.c	/^SockGetLastErr()$/;"	f
+SockGetLocalIP	sock.c	/^SockGetLocalIP( void (*Callback)(char* ,void*) , void* pa_else )$/;"	f
+SockInit	sock.c	/^SockInit()$/;"	f
+SockLocateTa	sock.c	/^SockLocateTa( struct Sock* pa_sock , uint in_IPVal , ushort pa_port )$/;"	f
+SockOpen	sock.c	/^SockOpen(struct Sock* out_sock , int pa_proto , ushort pa_port)$/;"	f
+SockRead	sock.c	/^SockRead( struct Sock* pa_sock )$/;"	f
+SockSSLConnect	sock.c	/^SockSSLConnect( struct Sock* out_sock )$/;"	f
+SockSetNonblock	sock.c	/^SockSetNonblock( struct Sock* pa_sock )$/;"	f
+SockWrite	sock.c	/^SockWrite( struct Sock* pa_sock , struct Bys pa_bys )$/;"	f
+SortList	list.c	/^SortList( struct Iterator* io_IHead , struct SortingInsertPa* in_sip)$/;"	f
+SortListCallbackPa	list.c	/^struct SortListCallbackPa$/;"	s	file:
+SortingInsertCallBack	list.h	/^typedef BOOL (*SortingInsertCallBack)(struct Iterator*, struct Iterator* , void*);$/;"	t
+SortingInsertPa	list.h	/^struct SortingInsertPa$/;"	s
+StepCallbk	netproc.h	/^typedef uchar (*StepCallbk)( struct Process* , uchar, struct Iterator*, struct Iterator*);$/;"	t
+StepDo	netproc.h	/^	StepCallbk       StepDo;$/;"	m	struct:ProcessStep
+StrBys	comdef.h	/^StrBys(const char* in_str)$/;"	f
+StrTraceFormat	sysi.c	/^StrTraceFormat( char *in_str )$/;"	f
+StunAttribute	stun.h	/^struct StunAttribute$/;"	s
+StunFormulateChangeRequest	stun.c	/^StunFormulateChangeRequest(struct ChangeRequest* out_head , uchar pa_opt)$/;"	f
+StunFormulateRequest	stun.c	/^StunFormulateRequest(struct StunHead* out_head)$/;"	f
+StunGetAttrLenFromHead	stun.c	/^StunGetAttrLenFromHead( void *in_data , uint pa_MagicCookie )$/;"	f	file:
+StunGetAttributes	stun.c	/^StunGetAttributes(void *in_data , uint *out_acc , uint pa_MagicCookie)$/;"	f	file:
+StunGetPublicNetAddr	stun.c	/^StunGetPublicNetAddr(void *in_data, uint pa_len , uint pa_MagicCookie)$/;"	f
+StunGetValue	stun.c	/^StunGetValue(ushort pa_attr, uint pa_i , int pa_val , uint pa_MagicCookie)$/;"	f	file:
+StunHead	stun.h	/^struct StunHead$/;"	s
+StunNotify	keyinfo.c	/^StunNotify(struct Process *pa_)$/;"	f	file:
+TCP	sock.h	49;"	d
+TK_CONFIG_SOCK_SSL_ENABLE	headers.h	13;"	d
+TK_EXCEPTION	comdef.h	31;"	d
+TK_NET_BDG_MSG_FLAG	bdgmsg.h	5;"	d
+TK_NET_DATA_LEN	bdgmsg.h	3;"	d
+TK_THREAD	bkgd.c	/^TK_THREAD( BackGround )$/;"	f
+TK_THREAD	sysi.h	48;"	d
+Test	demos/treap-demo.c	/^struct Test$/;"	s	file:
+Test	demos/tree-demo.c	/^struct Test$/;"	s	file:
+Test_compare	demos/treap-demo.c	/^BOOL Test_compare(struct BinTreeNode* pa_bigger,$/;"	f
+Test_eq	demos/treap-demo.c	/^BOOL Test_eq(struct BinTreeNode* pa_bigger,$/;"	f
+TkNetMsg	bdgmsg.h	/^struct TkNetMsg$/;"	s
+Traversal	tree.c	/^Traversal(struct TreeNode* pa_pRoot , ListNodeCallBack pa_TraversalWay , ListNodeCallBack pa_NodeCallback , void* pa_else )$/;"	f
+Treap	treap.h	/^struct Treap$/;"	s
+TreapDragOut	treap.c	/^TreapDragOut( struct Treap* pa_pTp )$/;"	f
+TreapInsert	treap.c	/^TreapInsert(struct Treap* pa_pFrom , struct Treap* pa_pTo , BinTreeCompareCallback pa_cmp , void* pa_else)$/;"	f
+TreapRoateUp	treap.c	/^TreapRoateUp(struct Treap* pa_pTp)$/;"	f
+TreeGetNodesLevel	tree.c	/^TreeGetNodesLevel(struct TreeNode* pa_pRoot , SetLevelCallback pa_slcbk)$/;"	f
+TreeLevel	peerdata.h	/^	uint               TreeLevel;$/;"	m	struct:PeerData
+TreeNode	tree.h	/^struct TreeNode$/;"	s
+TreeSearchPa	tree.c	/^struct TreeSearchPa$/;"	s	file:
+TypeToFind	keyinfo.h	/^	uchar TypeToFind;$/;"	m	struct:FindKeyInfoByTypePa
+UDP	sock.h	48;"	d
+UndergoLN	netproc.h	/^	struct ListNode  UndergoLN;$/;"	m	struct:Process	typeref:struct:Process::ListNode
+UsrName	popmail.h	/^	char            UsrName[POP3_PROTO_USRNAME_MAX_LEN];$/;"	m	struct:POP3Proc
+UsrName	smtpmail.h	/^	char            UsrName[SMTP_PROTO_USRNAME_MAX_LEN];$/;"	m	struct:SMTPProc
+VCK	comdef.h	45;"	d
+WSACLEAN	sock.h	14;"	d
+WSACLEAN	sock.h	29;"	d
+WSAINIT	sock.h	13;"	d
+WSAINIT	sock.h	30;"	d
+WaitClocks	netproc.h	/^	long             WaitClocks;$/;"	m	struct:ProcessStep
+_BinTreeInorderTraversal	tree.c	/^_BinTreeInorderTraversal(struct BinTreeNode* pa_pBtn , ListNodeCallBack pa_NodeCallback , void* pa_else )$/;"	f	file:
+_Bys	comdef.h	/^_Bys( char* pa_p , uint pa_size )$/;"	f
+_descr_exception_	comdef.h	/^_descr_exception_(const char* pa_presay ,uint pa_l)$/;"	f
+_tkfree	sysi.c	/^_tkfree( void* pa_mem )$/;"	f
+_tkmalloc	sysi.c	/^_tkmalloc( uint pa_len )$/;"	f
+a	bdgmsg.h	/^	struct Peer     s,a,b,sx;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::
+addr	bdgmsg.h	/^	struct NetAddr addr;$/;"	m	struct:BridgeHelloStepPa	typeref:struct:BridgeHelloStepPa::NetAddr
+addr	bdgmsg.h	/^	struct NetAddr addr;$/;"	m	struct:BridgeMsg	typeref:struct:BridgeMsg::NetAddr
+addr	bdgmsg.h	/^	struct NetAddr addr;$/;"	m	struct:Peer	typeref:struct:Peer::NetAddr
+addr	keyinfo.h	/^	struct NetAddr  addr;$/;"	m	struct:KeyInfo	typeref:struct:KeyInfo::NetAddr
+addr	keyinfo.h	/^	struct NetAddr addr;$/;"	m	struct:FindKeyInfoByAddrPa	typeref:struct:FindKeyInfoByAddrPa::NetAddr
+addr	peerdata.h	/^	struct NetAddr     addr;$/;"	m	struct:PeerData	typeref:struct:PeerData::NetAddr
+b	bdgmsg.h	/^	struct Peer     s,a,b,sx;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::
+btnd	demos/tree-demo.c	/^	struct BinTreeNode btnd;$/;"	m	struct:Test	typeref:struct:Test::BinTreeNode	file:
+btnd	treap.h	/^	struct BinTreeNode btnd;$/;"	m	struct:Treap	typeref:struct:Treap::BinTreeNode
+compare	demos/list-demo.c	/^compare(struct Iterator* compared0 , struct Iterator* compared1 , void* pa_else)$/;"	f
+content	popmail.h	/^	char   content[MAX_MAIL_CONTENT_LEN];$/;"	m	struct:NetInfoMail
+cst_ifEnableLogFile	sysi.c	/^static BOOL cst_ifEnableLogFile[ LOG_FILES ];$/;"	v	file:
+ctx	sock.h	/^	SSL_CTX     *ctx;$/;"	m	struct:Sock
+else_pa	list.h	/^	void*			else_pa;$/;"	m	struct:SortingInsertPa
+else_pa	tree.c	/^	void*             else_pa;$/;"	m	struct:TreeSearchPa	file:
+flag	bdgmsg.h	/^	uchar           flag;$/;"	m	struct:TkNetMsg
+flag	demos/popmail-demo.c	/^BOOL flag = 1;$/;"	v
+found	keyinfo.h	/^	struct KeyInfo *found;$/;"	m	struct:FindKeyInfoByAddrPa	typeref:struct:FindKeyInfoByAddrPa::KeyInfo
+found	keyinfo.h	/^	struct KeyInfo *found;$/;"	m	struct:FindKeyInfoByNumPa	typeref:struct:FindKeyInfoByNumPa::KeyInfo
+found	keyinfo.h	/^	struct KeyInfo *found;$/;"	m	struct:FindKeyInfoByTypePa	typeref:struct:FindKeyInfoByTypePa::KeyInfo
+found	keyinfo.h	/^	struct KeyInfo *found;$/;"	m	struct:FindKeyInfoByValidPa	typeref:struct:FindKeyInfoByValidPa::KeyInfo
+g_BdgPeerAddr	main.c	/^struct NetAddr g_BdgPeerAddr;$/;"	v	typeref:struct:NetAddr
+g_BkgdMutex	bkgd.c	/^tkMutex g_BkgdMutex;$/;"	v
+g_MainLoopFlag	demos/bkgd-demo.c	/^BOOL g_MainLoopFlag = 1;$/;"	v
+g_MainLoopFlag	demos/keyinfo-demo.c	/^BOOL g_MainLoopFlag = 1;$/;"	v
+g_MainLoopFlag	main.c	/^BOOL g_MainLoopFlag = 1;$/;"	v
+g_NATtype	demos/bkgd-demo.c	/^uchar g_NATtype = NAT_T_UNKNOWN;$/;"	v
+g_NATtype	demos/keyinfo-demo.c	/^uchar g_NATtype = NAT_T_UNKNOWN;$/;"	v
+g_NATtype	main.c	/^uchar g_NATtype = NAT_T_UNKNOWN;$/;"	v
+g_allocs	sysi.c	/^uint g_allocs = 0;$/;"	v
+g_flag	demos/nattype-demo.c	/^BOOL g_flag = 1;$/;"	v
+g_flag	demos/smtpmail-demo.c	/^BOOL g_flag = 1;$/;"	v
+get_window_id	tknet.sh	/^function get_window_id() $/;"	f
+head	stun.h	/^	struct StunHead head;$/;"	m	struct:ChangeRequest	typeref:struct:ChangeRequest::StunHead
+i	demos/list-demo.c	/^	int i;$/;"	m	struct:I	file:
+i	demos/treap-demo.c	/^	uint i;$/;"	m	struct:Test	file:
+i	demos/tree-demo.c	/^	int i;$/;"	m	struct:Test	file:
+ifEnableSSL	popmail.h	/^	BOOL            ifEnableSSL;$/;"	m	struct:POP3Proc
+ifEnableSSL	smtpmail.h	/^	BOOL            ifEnableSSL;$/;"	m	struct:SMTPProc
+ifEnterSucc	popmail.h	/^	BOOL			ifEnterSucc;$/;"	m	struct:POP3Proc
+ifGetPublicAddrSucc	stun.h	/^ifGetPublicAddrSucc(struct NetAddr *pa_pNetAddr)$/;"	f
+ifNetAddrEqual	netaddr.h	/^ifNetAddrEqual(struct NetAddr *pa_0,struct NetAddr *pa_1)$/;"	f
+ifPeerDataTreapNodeEqual	peerdata.c	/^ifPeerDataTreapNodeEqual(struct BinTreeNode* pa_pBinNode0 ,$/;"	f	file:
+info	bdgmsg.h	/^	uchar          info;$/;"	m	struct:BridgeMsg
+isCurrentStepFirstTime	netproc.h	/^	BOOL             isCurrentStepFirstTime;$/;"	m	struct:Process
+last	list.h	/^	struct ListNode *next,*last;$/;"	m	struct:ListNode	typeref:struct:ListNode::
+last	list.h	/^	struct ListNode *now,*last;$/;"	m	struct:Iterator	typeref:struct:Iterator::
+len	comdef.h	/^	uint  len;$/;"	m	struct:Bys
+length	stun.h	/^	ushort length;$/;"	m	struct:ChangeRequest
+length	stun.h	/^	ushort length;$/;"	m	struct:StunAttribute
+length	stun.h	/^	ushort length;$/;"	m	struct:StunHead
+level	demos/treap-demo.c	/^	uint level;$/;"	m	struct:Test	file:
+level	demos/tree-demo.c	/^	int level;$/;"	m	struct:Test	file:
+level	tree.c	/^	uint      level;$/;"	m	struct:LevelStackEle	file:
+level	tree.c	/^	uint level;$/;"	m	struct:GetLevelPa	file:
+ln	keyinfo.h	/^	struct ListNode ln;$/;"	m	struct:KeyInfo	typeref:struct:KeyInfo::ListNode
+ln	peerdata.h	/^	struct ListNode ln;$/;"	m	struct:SeedPeer	typeref:struct:SeedPeer::ListNode
+ln	popmail.h	/^	struct ListNode ln;$/;"	m	struct:NetInfoMail	typeref:struct:NetInfoMail::ListNode
+ln	tree.c	/^	struct ListNode  ln;$/;"	m	struct:LevelStackEle	typeref:struct:LevelStackEle::ListNode	file:
+ln	tree.h	/^	struct ListNode  ln;$/;"	m	struct:Branch	typeref:struct:Branch::ListNode
+ln_cbk	tree.c	/^	ListNodeCallBack  ln_cbk;$/;"	m	struct:TreeSearchPa	file:
+main	demos/bkgd-demo.c	/^int main()$/;"	f
+main	demos/keyinfo-demo.c	/^int main()$/;"	f
+main	demos/list-demo.c	/^int main()$/;"	f
+main	demos/nattype-demo.c	/^int main()$/;"	f
+main	demos/netproc-demo.c	/^int main()$/;"	f
+main	demos/peerdata-demo.c	/^int main()$/;"	f
+main	demos/popmail-demo.c	/^int main()$/;"	f
+main	demos/smtpmail-demo.c	/^int main()$/;"	f
+main	demos/sock-demo.c	/^main()$/;"	f
+main	demos/treap-demo.c	/^int main()$/;"	f
+main	demos/tree-demo.c	/^int main()$/;"	f
+main	main.c	/^int main(int pa_argn,char **in_args)$/;"	f
+msg	bdgmsg.h	/^	}msg;$/;"	m	struct:TkNetMsg	typeref:union:TkNetMsg::__anon1
+next	list.h	/^	struct ListNode *next,*last;$/;"	m	struct:ListNode	typeref:struct:ListNode::ListNode
+now	list.h	/^	struct ListNode *now,*last;$/;"	m	struct:Iterator	typeref:struct:Iterator::ListNode
+num	keyinfo.h	/^	int      num;$/;"	m	struct:KeyInfo
+num	popmail.h	/^	int    num;$/;"	m	struct:NetInfoMail
+pBranch	tree.h	/^	struct Branch	*pBranch;$/;"	m	struct:TreeNode	typeref:struct:TreeNode::Branch
+pBytes	comdef.h	/^	const char* pBytes;$/;"	m	struct:Bys
+pChild	tree.h	/^	struct TreeNode* pChild;$/;"	m	struct:Branch	typeref:struct:Branch::TreeNode
+pFather	tree.h	/^	struct TreeNode	*pFather;$/;"	m	struct:TreeNode	typeref:struct:TreeNode::TreeNode
+pFound	netproc.h	/^	struct ProcessStep   *pFound;$/;"	m	struct:FindStepByNamePa	typeref:struct:FindStepByNamePa::ProcessStep
+pFound	peerdata.c	/^	struct SeedPeer *pFound;$/;"	m	struct:FindSeedPeerOfLeastRelaysPa	typeref:struct:FindSeedPeerOfLeastRelaysPa::SeedPeer	file:
+pIInsert	list.h	/^	struct Iterator*	pIInsert;$/;"	m	struct:SortingInsertPa	typeref:struct:SortingInsertPa::Iterator
+pInfoCache	bkgd.h	/^	struct KeyInfoCache    *pInfoCache;$/;"	m	struct:BackGroundArgs	typeref:struct:BackGroundArgs::KeyInfoCache
+pMyNameID	bdgmsg.h	/^	char *pMyNameID;$/;"	m	struct:BridgeClientProcPa
+pName	netproc.h	/^	const char       *pName;$/;"	m	struct:ProcessStep
+pNameToFind	netproc.h	/^	const char           *pNameToFind;$/;"	m	struct:FindStepByNamePa
+pNewList	list.c	/^	struct Iterator*		pNewList;$/;"	m	struct:SortListCallbackPa	typeref:struct:SortListCallbackPa::Iterator	file:
+pPD	peerdata.h	/^	struct PeerData *pPD;$/;"	m	struct:SeedPeer	typeref:struct:SeedPeer::PeerData
+pPeerDataRoot	bdgmsg.h	/^	struct PeerData *pPeerDataRoot;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::PeerData
+pPeerDataRoot	bkgd.h	/^	struct PeerData        *pPeerDataRoot;$/;"	m	struct:BackGroundArgs	typeref:struct:BackGroundArgs::PeerData
+pProcList	bdgmsg.h	/^	struct ProcessingList *pProcList;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::ProcessingList
+pProcList	bkgd.h	/^	struct ProcessingList  *pProcList;$/;"	m	struct:BackGroundArgs	typeref:struct:BackGroundArgs::ProcessingList
+pSeedPeer	peerdata.h	/^	struct SeedPeer    *pSeedPeer;$/;"	m	struct:PeerData	typeref:struct:PeerData::SeedPeer
+pSeedPeerCache	bdgmsg.h	/^	struct Iterator *pSeedPeerCache;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::Iterator
+pSip	list.c	/^	struct SortingInsertPa*	pSip;$/;"	m	struct:SortListCallbackPa	typeref:struct:SortListCallbackPa::SortingInsertPa	file:
+pSock	bdgmsg.h	/^	struct Sock     *pSock;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::Sock
+pSock	nattype.h	/^	struct Sock    *pSock;$/;"	m	struct:STUNProc	typeref:struct:STUNProc::Sock
+pSock	popmail.h	/^	struct Sock     *pSock;$/;"	m	struct:POP3Proc	typeref:struct:POP3Proc::Sock
+pTargetNameID	bdgmsg.h	/^	char *pTargetNameID;$/;"	m	struct:BridgeClientProcPa
+port	netaddr.h	/^	ushort  port; $/;"	m	struct:NetAddr
+proc	bdgmsg.h	/^	struct Process  proc;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::Process
+proc	nattype.h	/^	struct Process proc;$/;"	m	struct:STUNProc	typeref:struct:STUNProc::Process
+proc	popmail.h	/^	struct Process  proc;$/;"	m	struct:POP3Proc	typeref:struct:POP3Proc::Process
+proc	smtpmail.h	/^	struct Process  proc;$/;"	m	struct:SMTPProc	typeref:struct:SMTPProc::Process
+proto	sock.h	/^	int 	proto;$/;"	m	struct:Sock
+res	bdgmsg.h	/^	BOOL           res;$/;"	m	struct:BridgeHelloStepPa
+s	bdgmsg.h	/^	struct Peer     s,a,b,sx;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::Peer
+sajfkjh	demos/list-demo.c	/^	struct ListNode sajfkjh;$/;"	m	struct:I	typeref:struct:I::ListNode	file:
+si_cbk	list.h	/^	SortingInsertCallBack 	si_cbk;$/;"	m	struct:SortingInsertPa
+slcbk	tree.c	/^	SetLevelCallback slcbk;$/;"	m	struct:GetLevelPa	file:
+socket	sock.h	/^	SOCKVAL	socket;$/;"	m	struct:Sock
+ssl	sock.h	/^	SSL         *ssl;$/;"	m	struct:Sock
+sta_BdgSubServerProc	bdgfun.c	/^static struct BridgeProc sta_BdgSubServerProc;$/;"	v	typeref:struct:BridgeProc	file:
+sta_BkgdCmd	bkgd.c	/^char    sta_BkgdCmd[BKGD_CMD_MAX_LEN];$/;"	v
+sta_LoopFlag	keyinfo.c	/^static BOOL sta_LoopFlag;$/;"	v	file:
+sta_ProcRes	keyinfo.c	/^static BOOL sta_ProcRes;$/;"	v	file:
+sta_addr	stun.c	/^struct NetAddr sta_addr;$/;"	v	typeref:struct:NetAddr
+sta_ifBkgdCmdComing	bkgd.c	/^BOOL    sta_ifBkgdCmdComing;$/;"	v
+sta_ifBkgdSubProcess	bkgd.c	/^BOOL    sta_ifBkgdSubProcess = 0;$/;"	v
+sta_pKeyInfoCache	keyinfo.c	/^static struct KeyInfoCache *sta_pKeyInfoCache;$/;"	v	typeref:struct:KeyInfoCache	file:
+sta_pLogFile	sysi.c	/^static FILE *sta_pLogFile[ LOG_FILES ];$/;"	v	file:
+sta_tim	sysi.c	/^sta_tim;$/;"	v	typeref:struct:timeval	file:
+steps	netproc.h	/^	uchar            steps;$/;"	m	struct:Process
+sx	bdgmsg.h	/^	struct Peer     s,a,b,sx;$/;"	m	struct:BridgeProc	typeref:struct:BridgeProc::
+test_compare	demos/tree-demo.c	/^BOOL test_compare(struct BinTreeNode* pa_bigger,$/;"	f
+test_eq	demos/tree-demo.c	/^BOOL test_eq(struct BinTreeNode* pa_bigger,$/;"	f
+text	keyinfo.h	/^	char     text[KEY_INFO_MAX_LEN];$/;"	m	struct:KeyInfo
+tk	list.c	/^tk(struct Iterator* i0 ,struct Iterator* i1)$/;"	f
+tkBeginThread	sysi.c	/^tkBeginThread(void* (*pa_thread)(void*) ,void *pa_else )$/;"	f
+tkFormatStr	sysi.c	/^tkFormatStr(char* pa_pDest, const char* pa_pFormat , ... )$/;"	f
+tkGetRandom	sysi.c	/^tkGetRandom()$/;"	f
+tkInitRandom	sysi.c	/^tkInitRandom()$/;"	f
+tkLog	sysi.c	/^tkLog( uint pa_LogNum , const char* pa_log )$/;"	f
+tkLogClose	sysi.c	/^tkLogClose()$/;"	f
+tkLogInit	sysi.c	/^tkLogInit()$/;"	f
+tkMilliseconds	sysi.c	/^tkMilliseconds()$/;"	f
+tkMsSleep	sysi.c	/^tkMsSleep( unsigned long pa_ms )$/;"	f
+tkMutex	sysi.h	54;"	d
+tkMutex	sysi.h	62;"	d
+tkNetInit	demos/bkgd-demo.c	/^void tkNetInit()$/;"	f
+tkNetInit	demos/keyinfo-demo.c	/^void tkNetInit()$/;"	f
+tkNetInit	demos/nattype-demo.c	/^void tkNetInit()$/;"	f
+tkNetInit	demos/peerdata-demo.c	/^void tkNetInit()$/;"	f
+tkNetInit	demos/popmail-demo.c	/^void tkNetInit()$/;"	f
+tkNetInit	demos/smtpmail-demo.c	/^void tkNetInit()$/;"	f
+tkNetInit	main.c	/^void tkNetInit()$/;"	f
+tkNetUninit	demos/bkgd-demo.c	/^void tkNetUninit()$/;"	f
+tkNetUninit	demos/keyinfo-demo.c	/^void tkNetUninit()$/;"	f
+tkNetUninit	demos/nattype-demo.c	/^void tkNetUninit()$/;"	f
+tkNetUninit	demos/peerdata-demo.c	/^void tkNetUninit()$/;"	f
+tkNetUninit	demos/popmail-demo.c	/^void tkNetUninit()$/;"	f
+tkNetUninit	demos/smtpmail-demo.c	/^void tkNetUninit()$/;"	f
+tkNetUninit	main.c	/^void tkNetUninit()$/;"	f
+tkfree	sysi.h	15;"	d
+tkmalloc	sysi.h	12;"	d
+tnd	tree.h	/^	struct TreeNode 	tnd;$/;"	m	struct:BinTreeNode	typeref:struct:BinTreeNode::TreeNode
+tpnd	peerdata.h	/^	struct Treap       tpnd;$/;"	m	struct:PeerData	typeref:struct:PeerData::Treap
+transId1	stun.h	/^	uint transId1;\/\/MagicCookie$/;"	m	struct:StunHead
+transId2	stun.h	/^	uint transId2;$/;"	m	struct:StunHead
+transId3	stun.h	/^	uint transId3;$/;"	m	struct:StunHead
+transId4	stun.h	/^	uint transId4;$/;"	m	struct:StunHead
+trp	demos/treap-demo.c	/^	struct	Treap trp;$/;"	m	struct:Test	typeref:struct:Test::Treap	file:
+type	keyinfo.h	/^	uchar    type;$/;"	m	struct:KeyInfo
+type	stun.h	/^	ushort type;$/;"	m	struct:ChangeRequest
+type	stun.h	/^	ushort type;$/;"	m	struct:StunAttribute
+type	stun.h	/^	ushort type;$/;"	m	struct:StunHead
+uchar	comdef.h	/^typedef unsigned char  uchar;$/;"	t
+uint	comdef.h	/^typedef unsigned int   uint;$/;"	t
+ushort	comdef.h	/^typedef unsigned short ushort;$/;"	t
+valid	keyinfo.h	/^	uchar    valid;$/;"	m	struct:KeyInfo
+valid	keyinfo.h	/^	uchar valid;$/;"	m	struct:FindKeyInfoByValidPa
+value	stun.h	/^	uint   value[STUN_MAX_VALUES];$/;"	m	struct:StunAttribute
+value	stun.h	/^	uint  value;$/;"	m	struct:ChangeRequest

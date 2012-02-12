@@ -35,10 +35,10 @@ POP3ProcFree( struct POP3Proc* );
 BOOL 
 LIST_ITERATION_CALLBACK_FUNCTION( TraceMail );
 
-EXTERN_STEP( ProtoPOP3Connect );
+EXTERN_STEP( ProtoPOP3Connect )
 
-EXTERN_STEP( ProtoPOP3FirstRecv );
+EXTERN_STEP( ProtoPOP3FirstRecv )
 
-EXTERN_STEP( ProtoPOP3User );
+EXTERN_STEP( ProtoPOP3User )
 
-EXTERN_STEP( ProtoPOP3Password );
+EXTERN_STEP( ProtoPOP3Password )

@@ -421,7 +421,7 @@ BdgHelloNotify(struct Process *pa_)
 	struct BridgeProc *pProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
 	DEF_AND_CAST(pProcPa,struct BridgeHelloStepPa , pProc->Else);
 
-	g_BdgPeerAddr = pProcPa->ValidAddr;
+	g_BdgPeerAddr = pProcPa->addr;
 	
 	sta_ProcRes = pProcPa->res;
 	sta_LoopFlag = 0;
@@ -502,7 +502,8 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 	{
 		printf("bridge 'hello proc':%s/%d.\n",AddrText , pa_pInfo->addr.port);
 		BdgProcPa.res = 0;
-		BridgeMakeHelloProc(&BdgProc,&BdgProcPa,pa_pMainSock,&pa_pInfo->addr);
+		BdgProcPa.addr = pa_pInfo->addr;
+		BridgeClientTryBdgServerProc(&BdgProc,&BdgProcPa,pa_pMainSock);
 		BdgProc.proc.NotifyCallbk = &BdgHelloNotify;
 
 		ProcessStart( &BdgProc.proc , &ProcList );

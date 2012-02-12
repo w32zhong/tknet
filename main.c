@@ -117,7 +117,9 @@ go_on:
 	while( g_MainLoopFlag )
 	{
 		MutexLock(&g_BkgdMutex);
+		SockRead(&MainSock);
 		DoProcessing( &ProcList );
+		MainSock.RecvLen = 0;
 		MutexUnlock(&g_BkgdMutex);
 
 		tkMsSleep(100);

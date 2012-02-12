@@ -87,7 +87,6 @@ LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )
 	long     dt;
 	struct Process *pProc = GET_STRUCT_ADDR_FROM_IT( pa_pINow , struct Process , UndergoLN );
 	struct ProcessStep *pStep = GET_STRUCT_ADDR_FROM_IT( &pProc->IProcessNow , struct ProcessStep , ProcStepLN );
-	DEF_AND_CAST( pProcList , struct ProcessingList , pa_else );
 	struct FindStepWithFlagNumPa fswfpa;
 
 	if( pProc->isCurrentStepFirstTime )
