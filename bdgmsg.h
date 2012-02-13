@@ -79,7 +79,6 @@ struct BridgeProc
 	void   *Else;
 };
 
-
 struct BridgeMsg
 {
 	uchar          info;
@@ -100,8 +99,6 @@ struct TkNetMsg
 		char DataMsg[TK_NET_DATA_LEN];
 	}msg;
 };
-
-extern uint g_BdgRelaysNow;
 
 DECLARATION_STRUCT_CONSTRUCTOR( BridgeProc )
 DECLARATION_STRUCT_CONSTRUCTOR( Peer )

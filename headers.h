@@ -25,6 +25,7 @@
 
 struct PeerData;
 #include "bdgmsg.h"
+#include "relay.h"
 #include "peerdata.h"
 
 #include "keyinfo.h"

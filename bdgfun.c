@@ -20,8 +20,6 @@ DEF_STRUCT_CONSTRUCTOR( BridgeProc ,
 		PeerCons(&out_cons->sx);
 		)
 
-uint g_BdgRelaysNow = 0;
-
 static struct BridgeProc sta_BdgSubServerProc;
 
 void
