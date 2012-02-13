@@ -237,5 +237,12 @@ SeedPeerSelectOne(struct Iterator *pa_pISeedList)
 		}
 		
 		FSPOLRPa.LeastRelays ++;
+
+		if(FSPOLRPa.LeastRelays >= MAX_RELAYS_TO_SELECT_SEED)
+		{
+			break;
+		}
 	}
+
+	return NULL;
 }

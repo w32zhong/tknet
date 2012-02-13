@@ -180,6 +180,7 @@ BdgSubServerProcInit()
 	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectDecision , 2000 , 2 );
 	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgPunchingServer , 2000 , 2 );
 	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectAddrServer , 2000 , 2 );
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgErrReturnServer , 2000 , 2 );
 }
 
 void 

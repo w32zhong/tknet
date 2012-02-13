@@ -41,11 +41,12 @@ SockSSLConnect( struct Sock* out_sock )
 #endif
 
 // 'pa_port' is discarded when use TCP
-void
+int
 SockOpen(struct Sock* out_sock , int pa_proto , ushort pa_port)
 {
+	int res;
 	VCK( (out_sock->socket = socket(AF_INET, pa_proto ,0))
-			SOCK_ERROR_CDT , WSACLEAN; return );
+			SOCK_ERROR_CDT , WSACLEAN; return 0 );
 
 	if( pa_proto == UDP )
 	{
@@ -55,9 +56,10 @@ SockOpen(struct Sock* out_sock , int pa_proto , ushort pa_port)
 		//since INADDR_ANY is defined in host byte order ,
 		//it need to be converted to network byte order.
 
-		VCK( bind( out_sock->socket ,(struct sockaddr*)&out_sock->AddrMe ,
-					sizeof(struct sockaddr_in)) SOCK_ERROR_CDT ,
-				 	return );
+		res = bind( out_sock->socket ,(struct sockaddr*)&out_sock->AddrMe ,
+					sizeof(struct sockaddr_in));
+
+		VCK( res SOCK_ERROR_CDT ,return 0 );
 	}
 
 	out_sock->proto = pa_proto;
@@ -66,6 +68,8 @@ SockOpen(struct Sock* out_sock , int pa_proto , ushort pa_port)
 	out_sock->ctx = NULL;
 	out_sock->ssl = NULL;
 #endif
+
+	return 1;
 }
 
 void

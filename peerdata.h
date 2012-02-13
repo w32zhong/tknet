@@ -1,3 +1,5 @@
+#define MAX_RELAYS_TO_SELECT_SEED 2
+
 struct SeedPeer;
 
 struct PeerData

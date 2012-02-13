@@ -81,6 +81,10 @@ NewKeyInfoFromStrLine(char *io_pStr)
 	{
 		type = KEY_INFO_TYPE_SMTPSERVER;
 	}
+	else if( strcmp(pNextWord,"Config") == 0 )
+	{
+		type = KEY_INFO_TYPE_CONFIG;
+	}
 	else
 	{
 		TK_EXCEPTION("KeyInfo type");
@@ -178,6 +182,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceKeyInfo)
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_BRIDGEPEER,"BridgePeer",type);
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_STUNSERVER,"STUNServer",type);
 	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_SMTPSERVER,"SMTPServer",type);
+	SWITCH_CPY_STRING(case,KEY_INFO_TYPE_CONFIG,"config",type);
 	SWITCH_CPY_STRING(;,default,"err",valid);
 	}
 
@@ -507,6 +512,51 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 		BdgProc.proc.NotifyCallbk = &BdgHelloNotify;
 
 		ProcessStart( &BdgProc.proc , &ProcList );
+	}
+	else if( pa_pInfo->type == KEY_INFO_TYPE_CONFIG )
+	{
+		for( i = 0 ; i < 4 ; i++ )
+		{
+			pNextWord = GetNextSeparateStr(&pText);
+			VCK( pNextWord == NULL , return 0; );
+
+			if(pNextWord[0] == '\0')
+			{
+				return 0;
+			}
+
+			if(i == 3)
+			{
+				strcpy(g_MyName,pNextWord);
+			}
+		}
+			
+		pNextWord = GetNextSeparateStr(&pText);
+		//Target Name is an optional config item.
+		if(pNextWord)
+		{
+			strcpy(g_TargetName,pNextWord);
+		}
+
+		printf("use config: port %d,named %s.\n",pa_pInfo->addr.port,g_MyName);
+		
+		i = 0;//to count times of trys.
+		while(!SockOpen(pa_pMainSock,UDP,pa_pInfo->addr.port))
+		{
+			printf("port binded , change and retry ...\n");
+			pa_pInfo->addr.port ++;
+			i ++;
+
+			if(i>2)
+			{
+				printf("port binding retry exceed.\n");
+				return 0;
+			}
+		}
+		SockSetNonblock(pa_pMainSock);
+
+		sta_ProcRes = 1;
+		sta_LoopFlag = 0;
 	}
 	else
 	{

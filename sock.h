@@ -71,7 +71,7 @@ SockDestory();
 void
 SockSSLConnect( struct Sock* );
 
-void 
+int 
 SockOpen(struct Sock* , int , ushort);
 
 void

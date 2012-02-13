@@ -76,6 +76,11 @@ then
 	get_window_id "think-laptop" ; echo "$window_id" >> ~/windows.tmp
 	wmctrl -i -r "$window_id" -e 0,590,320,580,300
 
+	gnome-terminal --working-directory="$dir/testbin/bin3" --command="bash -c 'ls;exec bash'" &
+	sleep 1.5
+	get_window_id "think-laptop" ; echo "$window_id" >> ~/windows.tmp
+	wmctrl -i -r "$window_id" -e 0,0,320,580,300
+
 	wmctrl -o $width1,0
 	sleep 2.5
 	gnome-terminal --working-directory="$dir" --command="bash -c 'ls;./tknet.sh clean;exec bash'" &

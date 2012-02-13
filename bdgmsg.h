@@ -33,10 +33,16 @@
 #define BRIDGE_MSG_INFO_HELLO             15
 #define BRIDGE_MSG_INFO_ESTABLISHED       16
 
-#define CONNECT_DECISION_FLAG_BEGIN        1
-#define CONNECT_DECISION_FLAG_DIRECT       2
-#define CONNECT_DECISION_FLAG_ERROR        3
-#define CONNECT_DECISION_FLAG_ESTABLISHED  4
+#define BRIDGE_MSG_ERR_NO_SEED_TO_RELAY   17
+#define BRIDGE_MSG_ERR_ERROR              18
+#define BRIDGE_MSG_INFO_ACKNOWLEDGE       19
+
+
+#define CONNECT_DECISION_FLAG_BEGIN          1
+#define CONNECT_DECISION_FLAG_DIRECT         2
+#define CONNECT_DECISION_FLAG_ERR            3
+#define CONNECT_DECISION_FLAG_A_SIDE_RELAY   4
+#define CONNECT_DECISION_FLAG_B_SIDE_RELAY   5
 
 struct BridgeHelloStepPa
 {
@@ -69,6 +75,7 @@ struct BridgeProc
 	struct NetAddr  DecisionPunAddr,DecisionConAddr;
 	struct NetAddr  MultiSendTo;
 	uchar           MultiSendInfo;
+	uchar           ErrCode;
 	void   *Else;
 };
 
@@ -81,6 +88,7 @@ struct BridgeMsg
 	char           NameID[PEER_NAME_ID_LEN];
 	uchar          NATType;
 	uchar          Relays;
+	uchar          ErrCode;
 };
 
 struct TkNetMsg
@@ -140,6 +148,7 @@ EXTERN_STEP( BdgConnectRequireReply )
 EXTERN_STEP( BdgConnectDecision )
 EXTERN_STEP( BdgPunchingServer )
 EXTERN_STEP( BdgConnectAddrServer )
+EXTERN_STEP( BdgErrReturnServer )
 
 EXTERN_STEP( BdgClientRegister )
 EXTERN_STEP( BdgClientWait )

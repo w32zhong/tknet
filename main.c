@@ -1,10 +1,19 @@
 #include "headers.h"
 
+BOOL g_MainLoopFlag = 1;
+uchar g_NATtype = NAT_T_UNKNOWN;
+struct NetAddr g_BdgPeerAddr;
+char g_TargetName[PEER_NAME_ID_LEN];
+char g_MyName[PEER_NAME_ID_LEN];
+
 void tkNetInit()
 {
 	tkInitRandom();
 	tkLogInit();
 	SockInit();
+
+	g_TargetName[0]='\0';
+	g_MyName[0]='\0';
 }
 
 void tkNetUninit()
@@ -13,11 +22,6 @@ void tkNetUninit()
 	tkLogClose();
 	printf("unfree memory:%d \n",g_allocs);
 }
-
-BOOL g_MainLoopFlag = 1;
-uchar g_NATtype = NAT_T_UNKNOWN;
-struct NetAddr g_BdgPeerAddr;
-
 
 int main(int pa_argn,char **in_args)
 {
@@ -31,12 +35,8 @@ int main(int pa_argn,char **in_args)
 	struct BridgeProc     BdgClientProc;
 	BOOL                  ifBdgClientProcMade = 0;
 	char                  BdgPeerAddrStr[32];
-	int                   LocalBindingPort;
-	char MyName[32] = "no one";
-	char TaName[32] = "no one";
-	char *pTaName;
+	char                  *pTargetName = NULL;
 
-	printf("test version \n");
 	tkNetInit();
 	MutexInit(&g_BkgdMutex);
 
@@ -52,60 +52,58 @@ int main(int pa_argn,char **in_args)
 	KeyInfoCacheCons(&KeyInfoCache);
 	KeyInfoReadFile(&KeyInfoCache,"tknet.info");
 
-	if(pa_argn >= 3)
+	if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_CONFIG,&MainSock))
 	{
-		sscanf(in_args[1],"%d",&LocalBindingPort);
-		strcpy(MyName,in_args[2]);
-		if(pa_argn == 4)
-		{
-			pTaName = TaName;
-			strcpy(TaName,in_args[3]);
-		}
-		else
-		{
-			pTaName = NULL;
-		}
-		
-		SockOpen(&MainSock,UDP,(ushort)LocalBindingPort);
-		SockSetNonblock(&MainSock);
-		
-		printf("port %d  %s->%s \n",LocalBindingPort,MyName,TaName);
+		printf("please config port & name\n");
+		goto exit;
+	}
+
+	if(pa_argn == 2)
+	{
+		strcpy(g_TargetName,in_args[1]);
+	}
+	
+	if( g_TargetName[0] != '\0' )
+	{
+		printf("Target Name: %s \n",g_TargetName);
+		pTargetName = g_TargetName; 
 	}
 	else
 	{
-		printf("please specify port & name\n");
-		goto exit;
-	}
-/*
-	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_STUNSERVER,&MainSock))
-	{
-		if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
-		{
-			printf("No way to get NAT type :( \n");
-			goto exit;
-		}
+		printf("Target Name unset. \n");
 	}
 
-	printf("get NAT type: %d\n",g_NATtype);
-*/
+//	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_STUNSERVER,&MainSock))
+//	{
+//		if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
+//		{
+//			printf("No way to get NAT type :( \n");
+//			goto exit;
+//		}
+//	}
+
+	g_NATtype = NAT_T_FULL_CONE;
+	printf("NAT type: %d\n",g_NATtype);
+
 
 	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_BRIDGEPEER,&MainSock))
 	{
 		if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
 		{
 			printf("no avalible Bridge peer :( \n");
-			goto go_on;
+			goto only_server;
 		}
 	}
 
 	GetAddrText(&g_BdgPeerAddr,BdgPeerAddrStr);
 	printf("using Bridge peer: %s\n",BdgPeerAddrStr);
 
-	BridgeMakeClientProc(&BdgClientProc,&MainSock,&g_BdgPeerAddr,MyName,NAT_T_FULL_CONE,pTaName);//TaName can be NULL
+	BridgeMakeClientProc(&BdgClientProc,&MainSock,&g_BdgPeerAddr,g_MyName,g_NATtype,pTargetName);
+	//TaName can be NULL
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 	ifBdgClientProcMade = 1;
 
-go_on:
+only_server:
 
 	BkgdArgs.pPeerDataRoot = &PeerDataRoot;
 	BkgdArgs.pInfoCache = &KeyInfoCache;
@@ -135,7 +133,7 @@ exit:
 
 	PeerDataDestroy(&PeerDataRoot);
 	KeyInfoUpdate( &KeyInfoCache );
-	KeyInfoWriteFile(&KeyInfoCache,"baba.info");
+	KeyInfoWriteFile(&KeyInfoCache,"tknet.updateinfo");
 	KeyInfoFree(&KeyInfoCache);
 	MutexDelete(&g_BkgdMutex);
 	tkNetUninit();

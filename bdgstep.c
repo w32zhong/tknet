@@ -125,17 +125,37 @@ STEP( BdgConnectRequireReply )
 	return PS_CALLBK_RET_GO_ON;
 }
 
+uint sta_AccRelayID = 1;
+
 STEP( BdgConnectDecision )
 {
 	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(pa_pProc,struct BridgeProc,proc);
 	uchar aType = pBdgProc->a.NATType;
 	uchar bType = pBdgProc->b.NATType;
+	struct PeerData *pSeedPD;
 
 	if(CONNECT_DECISION_FLAG_BEGIN == pBdgProc->DecisionFlag)
 	{
 		if(IF_NEAD_RELAY(aType,bType))
 		{
-			//...
+			pSeedPD = SeedPeerSelectOne(pBdgProc->pSeedPeerCache);
+
+			if(pSeedPD == NULL)
+			{
+				pBdgProc->ErrCode = BRIDGE_MSG_ERR_NO_SEED_TO_RELAY;
+				return FlagName(pa_pProc,"BdgErrReturnServer");
+			}
+			else
+			{
+				SetPeerByPeerData(&pBdgProc->s,pSeedPD);
+
+				pBdgProc->DecisionPunAddr = pBdgProc->s.addr;
+				pBdgProc->DecisionConAddr = pBdgProc->a.addr;
+
+				pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_A_SIDE_RELAY;
+				pBdgProc->DecisionRelayID = sta_AccRelayID;
+				sta_AccRelayID ++;
+			}
 		}
 		else
 		{
@@ -153,6 +173,30 @@ STEP( BdgConnectDecision )
 			pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_DIRECT;
 			pBdgProc->DecisionRelayID = 0;
 		}
+	}
+	else if(CONNECT_DECISION_FLAG_DIRECT == pBdgProc->DecisionFlag)
+	{
+		printf("successful direct connection bridged.\n");
+		return FlagName(pa_pProc,"BdgConnectRequireServer");
+	}
+	else if(CONNECT_DECISION_FLAG_A_SIDE_RELAY == pBdgProc->DecisionFlag)
+	{
+		pBdgProc->DecisionPunAddr = pBdgProc->s.addr;
+		pBdgProc->DecisionConAddr = pBdgProc->b.addr;
+				
+		pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_B_SIDE_RELAY;
+	}
+	else if(CONNECT_DECISION_FLAG_B_SIDE_RELAY == pBdgProc->DecisionFlag)
+	{
+		printf("successful relay connection bridged.\n");
+		return FlagName(pa_pProc,"BdgConnectRequireServer");
+	}
+	else if(CONNECT_DECISION_FLAG_ERR == pBdgProc->DecisionFlag)
+	{
+		printf("One bridge task failed.\n");
+		
+		pBdgProc->ErrCode = BRIDGE_MSG_ERR_ERROR;
+		return FlagName(pa_pProc,"BdgErrReturnServer");
 	}
 	else
 	{
@@ -189,7 +233,7 @@ STEP( BdgPunchingServer )
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
 	{
-		pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_ERROR;
+		pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_ERR;
 		return FlagName(pa_pProc,"BdgConnectDecision");
 	}
 
@@ -208,7 +252,8 @@ STEP( BdgConnectAddrServer )
 	{
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_ESTABLISHED)
 		{
-			pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_ESTABLISHED;
+			//we don't set DecisionFlag, because we just keep the 
+			//flag what it was if no error occur.
 			return FlagName(pa_pProc,"BdgConnectDecision");
 		}
 	}
@@ -224,8 +269,38 @@ STEP( BdgConnectAddrServer )
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
 	{
-		pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_ERROR;
+		pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_ERR;
 		return FlagName(pa_pProc,"BdgConnectDecision");
+	}
+
+	return PS_CALLBK_RET_GO_ON;
+}
+
+STEP( BdgErrReturnServer )
+{
+	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(pa_pProc,struct BridgeProc,proc);
+	struct BridgeMsg  SendingMsg;
+	struct BridgeMsg  *pBdgMsg;
+
+	pBdgMsg = BdgMsgRead(pa_pProc,BDG_READ_OPT_ADDR_FILTER,0,BDG_ADDR(a,pBdgProc));
+
+	if(pBdgMsg)
+	{
+		if(pBdgMsg->info == BRIDGE_MSG_INFO_ACKNOWLEDGE )
+		{
+			return FlagName(pa_pProc,"BdgConnectRequireServer");
+		}
+	}
+
+	if(pa_state == PS_STATE_FIRST_TIME || 
+			pa_state == PS_STATE_OVERTIME )
+	{
+		SendingMsg.info = pBdgProc->ErrCode;
+		BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(a,pBdgProc));
+	}
+	else if(pa_state == PS_STATE_LAST_TIME)
+	{
+		return PS_CALLBK_RET_ABORT;
 	}
 
 	return PS_CALLBK_RET_GO_ON;
@@ -419,6 +494,20 @@ STEP( BdgClientWait )
 			pBdgProc->MultiSendTo = FromAddr;
 			pBdgProc->MultiSendInfo = BRIDGE_MSG_INFO_HELLO;
 			return FlagName(pa_pProc,"BdgClientMultiSendNotify");
+		}
+		else if(pBdgMsg->info == BRIDGE_MSG_ERR_NO_SEED_TO_RELAY )
+		{
+			SendingMsg.info = BRIDGE_MSG_INFO_ACKNOWLEDGE;
+			BdgMsgWrite(pa_pProc,&SendingMsg,&pBdgMsg->addr);
+
+			printf("There is no seed to relay on the server side.\n");
+		}
+		else if(pBdgMsg->info == BRIDGE_MSG_ERR_ERROR )
+		{
+			SendingMsg.info = BRIDGE_MSG_INFO_ACKNOWLEDGE;
+			BdgMsgWrite(pa_pProc,&SendingMsg,&pBdgMsg->addr);
+
+			printf("Server side failed to make connection. Try again.\n");
 		}
 	}
 
