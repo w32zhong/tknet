@@ -10,6 +10,7 @@ then
 	cp run ./testbin/bin0
 	cp run ./testbin/bin1
 	cp run ./testbin/bin2
+	cp run ./testbin/bin3
 	ctags -R
 elif [ $1 == 'c' ]
 then

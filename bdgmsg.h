@@ -101,6 +101,8 @@ struct TkNetMsg
 	}msg;
 };
 
+extern uint g_BdgRelaysNow;
+
 DECLARATION_STRUCT_CONSTRUCTOR( BridgeProc )
 DECLARATION_STRUCT_CONSTRUCTOR( Peer )
 

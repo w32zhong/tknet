@@ -200,6 +200,7 @@ TK_THREAD( BackGround )
 	BOOL SmtpSockOpened = 0;
 	char *pCmd,*pArg0,*pArg1;
 	struct KeyInfo *pKeyInfo;
+	struct BridgeClientProcPa *pBCPPa;
 
 	BackGroundPOP3ProcMake( &Pop3Proc ,"IP" ,0,0,"username","password");
 	Pop3Proc.proc.NotifyCallbk = &BkgdProcEndCallbk;
@@ -238,16 +239,42 @@ TK_THREAD( BackGround )
 			if( strcmp(pCmd ,"help") == 0 )
 			{
 				printf("valid cmd:\n"
-						"  pop3 arg\n"
+						"  pop3 [pop3 key]\n"
 						"  exit\n"
-						"  nat arg\n"
-						"  smtp arg0 arg1\n"
+						"  nat [stun key]\n"
+						"  smtp [smtp key] [content key]\n"
+						"  connect [peer name]\n"
 						"  key\n"
+						"  cproc\n"
 						"  peers\n");
 			}
 			else if( strcmp(pCmd ,"key") == 0 )
 			{
 				KeyInfoTrace(pBkgdArgs->pInfoCache);
+			}
+			else if( strcmp(pCmd ,"cproc") == 0 )
+			{
+				if(pBkgdArgs->pBdgClientProc)
+				{
+					ProcessTraceSteps(&(pBkgdArgs->pBdgClientProc->proc));
+				}
+				else
+				{
+					printf("client proc not started.\n");
+				}
+			}
+			else if( strcmp(pCmd ,"connect") == 0 )
+			{
+				if(pBkgdArgs->pBdgClientProc)
+				{
+					strcpy(g_TargetName,pArg0);
+					pBCPPa = (struct BridgeClientProcPa*)(pBkgdArgs->pBdgClientProc->Else);
+					pBCPPa->pTargetNameID = g_TargetName;
+				}
+				else
+				{
+					printf("not able to connect without client proc started.\n");
+				}
 			}
 			else if( strcmp(pCmd ,"pop3") == 0 )
 			{

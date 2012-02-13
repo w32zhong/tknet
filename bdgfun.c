@@ -12,12 +12,15 @@ DEF_STRUCT_CONSTRUCTOR( BridgeProc ,
 		ProcessCons(&out_cons->proc);
 		out_cons->pSock = NULL;
 		out_cons->pProcList = NULL;
+		out_cons->Else = NULL;
 
 		PeerCons(&out_cons->s);
 		PeerCons(&out_cons->a);
 		PeerCons(&out_cons->b);
 		PeerCons(&out_cons->sx);
 		)
+
+uint g_BdgRelaysNow = 0;
 
 static struct BridgeProc sta_BdgSubServerProc;
 
@@ -90,8 +93,8 @@ BdgMsgRead(struct Process *in_proc , uchar pa_option , uchar pa_msg , struct Net
 	DEF_AND_CAST(pBdgMsg,struct BridgeMsg,&(pMsg->msg.BdgMsg));
 
 	//---------
-	char AddrText[32];
-	GetAddrText(&FromAddr,AddrText);
+	//char AddrText[32];
+	//GetAddrText(&FromAddr,AddrText);
 	//--------
 
 	if( pMsg->flag != TK_NET_BDG_MSG_FLAG ||
@@ -101,19 +104,19 @@ BdgMsgRead(struct Process *in_proc , uchar pa_option , uchar pa_msg , struct Net
 	}
 	else if( pa_option == BDG_READ_OPT_ANY )
 	{
-		printf("Bdg Recved any %s\n",AddrText);
+	//	printf("Bdg Recved any %s\n",AddrText);
 		return pBdgMsg;
 	}
 	else if( pa_option == BDG_READ_OPT_ADDR_FILTER && 
 			ifNetAddrEqual(&FromAddr,pa_pAddr) )
 	{
-		printf("Bdg Recved addr %s\n",AddrText);
+	//	printf("Bdg Recved addr %s\n",AddrText);
 		return pBdgMsg;
 	}
 	else if( pa_option == BDG_READ_OPT_MSG_FILTER && 
 			pBdgMsg->info == pa_msg )
 	{
-		printf("Bdg Recved msg %s\n",AddrText);
+	//	printf("Bdg Recved msg %s\n",AddrText);
 		return pBdgMsg;
 	}
 	else
@@ -127,13 +130,13 @@ BdgMsgWrite(struct Process *in_proc ,struct BridgeMsg *in_msg , struct NetAddr *
 {
 	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(in_proc,struct BridgeProc,proc);
 	struct TkNetMsg   SendingMsg;
-	char AddrText[32];
+	//char AddrText[32];
 	
 	SendingMsg.flag = TK_NET_BDG_MSG_FLAG;
 	SendingMsg.msg.BdgMsg = *in_msg;
 
-	GetAddrText(pa_pAddr,AddrText);
-	printf("Bdg Write to %s\n",AddrText);
+	//GetAddrText(pa_pAddr,AddrText);
+	//printf("Bdg Write to %s\n",AddrText);
 	
 	SockLocateTa(pBdgProc->pSock,htonl(pa_pAddr->IPv4),pa_pAddr->port);
 	SockWrite(pBdgProc->pSock,BYS(SendingMsg));
@@ -203,5 +206,5 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientWait , 4000 , 3);
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientConnectRequire , 2000 , 2);
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientDoConnectAddr , 2000 , 2);
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientMultiSendNotify , 800 , 3);
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientMultiSendNotify , 800 , 2);
 }

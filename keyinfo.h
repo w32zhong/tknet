@@ -26,7 +26,7 @@ struct KeyInfo
 	struct ListNode ln;
 };
 
-void 
+uchar
 KeyInfoReadFile( struct KeyInfoCache * , const char * );
 
 void 

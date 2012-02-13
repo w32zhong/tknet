@@ -76,7 +76,7 @@ STEP( BdgConnectRequireServer )
 
 	if( pa_state == PS_STATE_OVERTIME)
 	{
-		printf("I am free.\n");
+		//printf("I am free.\n");
 	}
 	if(pa_state == PS_STATE_LAST_TIME)
 	{
@@ -98,8 +98,15 @@ STEP( BdgConnectRequireReply )
 	{
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_WAITING )
 		{
-			pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_BEGIN;
-			return PS_CALLBK_RET_DONE;
+			if( pBdgProc->b.addr.port == 0 )
+			{
+				return FlagName(pa_pProc,"BdgConnectRequireServer");
+			}
+			else
+			{
+				pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_BEGIN;
+				return PS_CALLBK_RET_DONE;
+			}
 		}
 	}
 
@@ -458,8 +465,6 @@ STEP( BdgClientWait )
 	{
 		FromAddr = GetAddrFromSockAddr(&pBdgProc->pSock->AddrRecvfrom);
 
-		printf("client recv a BdgMsg when waiting\n");
-
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_ECHO)
 		{
 			return PS_CALLBK_RET_REDO;
@@ -486,6 +491,7 @@ STEP( BdgClientWait )
 			printf("Recieved a Connect Address ...\n");
 			pBdgProc->sx.addr = FromAddr;
 			pBdgProc->b.addr = pBdgMsg->addr;
+			
 			return FlagName(pa_pProc,"BdgClientDoConnectAddr");
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_INFO_HELLO)
@@ -493,19 +499,20 @@ STEP( BdgClientWait )
 			printf("Nice To Meet you\n");
 			pBdgProc->MultiSendTo = FromAddr;
 			pBdgProc->MultiSendInfo = BRIDGE_MSG_INFO_HELLO;
+			
 			return FlagName(pa_pProc,"BdgClientMultiSendNotify");
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_ERR_NO_SEED_TO_RELAY )
 		{
 			SendingMsg.info = BRIDGE_MSG_INFO_ACKNOWLEDGE;
-			BdgMsgWrite(pa_pProc,&SendingMsg,&pBdgMsg->addr);
+			BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 
 			printf("There is no seed to relay on the server side.\n");
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_ERR_ERROR )
 		{
 			SendingMsg.info = BRIDGE_MSG_INFO_ACKNOWLEDGE;
-			BdgMsgWrite(pa_pProc,&SendingMsg,&pBdgMsg->addr);
+			BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 
 			printf("Server side failed to make connection. Try again.\n");
 		}
@@ -518,7 +525,7 @@ STEP( BdgClientWait )
 	else if(pa_state == PS_STATE_OVERTIME)
 	{
 		SendingMsg.info = BRIDGE_MSG_INFO_WAITING;
-		SendingMsg.Relays = 5;
+		SendingMsg.Relays = g_BdgRelaysNow;
 
 		BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 	}
@@ -590,6 +597,10 @@ STEP( BdgClientDoConnectAddr )
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_HELLO)
 		{
 			printf("^_^3 I find my friend!\n");
+
+			pBdgProc->MultiSendTo = pBdgProc->sx.addr;
+			pBdgProc->MultiSendInfo = BRIDGE_MSG_INFO_ESTABLISHED;
+
 			return PS_CALLBK_RET_DONE;
 		}
 	}

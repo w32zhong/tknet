@@ -33,9 +33,11 @@ int main(int pa_argn,char **in_args)
 	struct Sock           MainSock;
 	struct BridgeProc     BdgServerProc;
 	struct BridgeProc     BdgClientProc;
+	struct BridgeProc     *pBdgClientProc = NULL;
 	BOOL                  ifBdgClientProcMade = 0;
 	char                  BdgPeerAddrStr[32];
 	char                  *pTargetName = NULL;
+	int                   TestPurposeNatType;
 
 	tkNetInit();
 	MutexInit(&g_BkgdMutex);
@@ -50,7 +52,11 @@ int main(int pa_argn,char **in_args)
 	ProcessingListCons( &ProcList );
 
 	KeyInfoCacheCons(&KeyInfoCache);
-	KeyInfoReadFile(&KeyInfoCache,"tknet.info");
+	if(!KeyInfoReadFile(&KeyInfoCache,"tknet.info"))
+	{
+		printf("config file lost.\n");
+		goto exit;
+	}
 
 	if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_CONFIG,&MainSock))
 	{
@@ -60,12 +66,16 @@ int main(int pa_argn,char **in_args)
 
 	if(pa_argn == 2)
 	{
-		strcpy(g_TargetName,in_args[1]);
+		//strcpy(g_TargetName,in_args[1]);
+		{
+			sscanf(in_args[1],"%d",&TestPurposeNatType);
+			g_NATtype = (uchar)TestPurposeNatType;
+		}
 	}
 	
 	if( g_TargetName[0] != '\0' )
 	{
-		printf("Target Name: %s \n",g_TargetName);
+		printf("Target Name: %s \n", g_TargetName);
 		pTargetName = g_TargetName; 
 	}
 	else
@@ -82,9 +92,7 @@ int main(int pa_argn,char **in_args)
 //		}
 //	}
 
-	g_NATtype = NAT_T_FULL_CONE;
 	printf("NAT type: %d\n",g_NATtype);
-
 
 	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_BRIDGEPEER,&MainSock))
 	{
@@ -102,12 +110,14 @@ int main(int pa_argn,char **in_args)
 	//TaName can be NULL
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 	ifBdgClientProcMade = 1;
+	pBdgClientProc = &BdgClientProc;
 
 only_server:
 
 	BkgdArgs.pPeerDataRoot = &PeerDataRoot;
 	BkgdArgs.pInfoCache = &KeyInfoCache;
 	BkgdArgs.pProcList = &ProcList;
+	BkgdArgs.pBdgClientProc = pBdgClientProc;
 	tkBeginThread( &BackGround , &BkgdArgs );
 
 	ConsAndStartBridgeServer(&BdgServerProc,&PeerDataRoot,&ProcList,&MainSock,&ISeedPeer);

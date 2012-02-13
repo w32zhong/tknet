@@ -114,10 +114,13 @@ NewKeyInfoFromStrLine(char *io_pStr)
 	return pNewKeyInfo;
 }
 
-void 
+uchar 
 KeyInfoReadFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )
 {
 	FILE *pf = fopen( pa_pFileName , "r+" );
+
+	VCK( pf == NULL , return 0 );
+
 	char buff[KEY_INFO_MAX_LEN];
 	struct KeyInfo *pKeyInfo;
 
@@ -134,6 +137,8 @@ KeyInfoReadFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )
 	}
 
 	fclose(pf);
+
+	return 1;
 }
 
 static BOOL
