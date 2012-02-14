@@ -1,13 +1,16 @@
 #include "headers.h"
 
-BOOL g_MainLoopFlag = 1;
-uchar g_NATtype = NAT_T_UNKNOWN;
-struct NetAddr g_BdgPeerAddr;
-char g_TargetName[PEER_NAME_ID_LEN];
-char g_MyName[PEER_NAME_ID_LEN];
+BOOL             g_MainLoopFlag = 1;
+uchar            g_NATtype = NAT_T_UNKNOWN;
+struct NetAddr   g_BdgPeerAddr;
+char             g_TargetName[PEER_NAME_ID_LEN];
+char             g_MyName[PEER_NAME_ID_LEN];
+
+extern void ON_CONNECT();//demo
 
 void tkNetInit()
 {
+	g_ConnectionNotify = &OnConnect;//demo
 	tkInitRandom();
 	tkLogInit();
 	SockInit();

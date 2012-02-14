@@ -506,6 +506,12 @@ STEP( BdgClientWait )
 			if(pBdgMsg->RelayID == 0)
 			{
 				printf("Nice To Meet you too.\n");
+
+				if(g_ConnectionNotify)
+				{
+					g_ConnectionNotify(FromAddr,pBdgProc->pSock,
+							pBdgProc->pProcList,pa_pINow,pa_pIForward);
+				}
 			}
 			else
 			{
@@ -600,7 +606,7 @@ STEP( BdgClientConnectRequire )
 		SendingMsg.info = BRIDGE_MSG_INFO_CONNECT;
 		strcpy(SendingMsg.NameID,pBCPPa->pTargetNameID);
 
-		printf("Connect to %s \n",pBCPPa->pTargetNameID);
+		printf("Connecting %s ...\n",pBCPPa->pTargetNameID);
 		BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
@@ -623,7 +629,13 @@ STEP( BdgClientDoConnectAddr )
 	{
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_HELLO)
 		{
-			printf("^_^3 I find my friend!\n");
+			printf("Nice To Meet U!\n");
+
+			if(g_ConnectionNotify)
+			{
+				g_ConnectionNotify(pBdgProc->b.addr,pBdgProc->pSock,
+					pBdgProc->pProcList,pa_pINow,pa_pIForward);
+			}
 
 			pBdgProc->MultiSendTo = pBdgProc->sx.addr;
 			pBdgProc->MultiSendInfo = BRIDGE_MSG_INFO_ESTABLISHED;

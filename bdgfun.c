@@ -22,6 +22,8 @@ DEF_STRUCT_CONSTRUCTOR( BridgeProc ,
 
 static struct BridgeProc sta_BdgSubServerProc;
 
+CONNECT_CALLBK g_ConnectionNotify = NULL;
+
 void
 BdgClientProcNotify(struct Process *pa_)
 {

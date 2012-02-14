@@ -51,11 +51,13 @@ STEP( Relay )
 {
 	struct RelayProc *pRelayProc = GET_STRUCT_ADDR(pa_pProc,struct RelayProc,proc);
 	struct NetAddr   FromAddr = GetAddrFromSockAddr(&pRelayProc->pSock->AddrRecvfrom);
-	DEF_AND_CAST(pMsg,struct TkNetMsg,pRelayProc->pSock->RecvBuff);
 	struct NetAddr   *pAddr;
 	struct TkNetMsg   SendingMsg;
+	struct TkNetMsg  *pMsg;
 
-	if(pMsg->flag != TK_NET_BDG_MSG_FLAG)
+	pMsg = ifReadTkMsg(pRelayProc->pSock);
+
+	if(pMsg && pMsg->flag != TK_NET_BDG_MSG_FLAG)
 	{
 		if(pRelayProc->peer1.addr.port != 0)
 		{

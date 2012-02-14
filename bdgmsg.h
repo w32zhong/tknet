@@ -1,6 +1,6 @@
-#define PEER_NAME_ID_LEN 16
+#define PEER_NAME_ID_LEN  16
 
-#define TK_NET_DATA_LEN 64
+#define TK_NET_DATA_LEN   128
 
 #define TK_NET_BDG_MSG_FLAG     0
 
@@ -155,3 +155,10 @@ EXTERN_STEP( BdgClientWait )
 EXTERN_STEP( BdgClientConnectRequire )
 EXTERN_STEP( BdgClientDoConnectAddr )
 EXTERN_STEP( BdgClientMultiSendNotify )
+
+typedef void (*CONNECT_CALLBK)(struct NetAddr,struct Sock*,struct ProcessingList*,struct Iterator*,struct Iterator*);
+
+extern CONNECT_CALLBK g_ConnectionNotify;
+
+#define ON_CONNECT() \
+	OnConnect(struct NetAddr pa_addr,struct Sock *pa_pSock,struct ProcessingList *pa_pProcList,struct Iterator* pa_pINow,struct Iterator *pa_pIForward)

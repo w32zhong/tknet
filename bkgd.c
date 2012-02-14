@@ -1,5 +1,5 @@
 #include "headers.h"
-#define BKGD_CMD_MAX_LEN 32
+#define BKGD_CMD_MAX_LEN 128
 
 tkMutex g_BkgdMutex;
 
@@ -7,6 +7,32 @@ char    sta_BkgdCmd[BKGD_CMD_MAX_LEN];
 BOOL    sta_ifBkgdCmdComing;
 BOOL    sta_ifBkgdSubProcess = 0;
 extern  BOOL g_MainLoopFlag;
+
+char*
+BkgdGetBackGroundMsg()
+{
+	if(sta_ifBkgdCmdComing)
+	{
+		sta_ifBkgdCmdComing = 0;
+		return sta_BkgdCmd;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+void
+BkgdEnterSubProcess()
+{
+	sta_ifBkgdSubProcess = 1;
+}
+
+void
+BkgdLeaveSubProcess()
+{
+	sta_ifBkgdSubProcess = 0;
+}
 
 static void 
 BkgdProcEndCallbk(struct Process *pa_)

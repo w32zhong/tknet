@@ -9,3 +9,12 @@ struct BackGroundArgs
 	struct PeerData        *pPeerDataRoot;
 	struct BridgeProc      *pBdgClientProc;
 };
+
+void
+BkgdEnterSubProcess();
+
+void
+BkgdLeaveSubProcess();
+
+char*
+BkgdGetBackGroundMsg();
