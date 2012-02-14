@@ -1,5 +1,9 @@
 #include "headers.h"
 
+uint g_Relays = 0;
+static struct Iterator   sta_IRelayProc;
+static struct RelayProc  sta_RelayProcess;
+
 struct FindRelayProcByRelayIDPa
 {
 	uint RelayID;
@@ -7,15 +11,13 @@ struct FindRelayProcByRelayIDPa
 };
 
 DEF_STRUCT_CONSTRUCTOR( RelayProc ,
+		out_cons->RelayID = 0;
 		PeerCons(&out_cons->peer0);
 		PeerCons(&out_cons->peer1);
+		ProcessConsAndSetSteps(&out_cons->proc,&sta_RelayProcess.proc);
 		out_cons->pSock = NULL;
-		ProcessCons(&out_cons->proc);
+		ListNodeCons(&out_cons->ln);
 		)
-
-uint g_BdgRelaysNow = 0;
-static struct Iterator sta_IRelayProc;
-static struct Process  sta_RelayProcessTemplate;
 
 static __inline void
 RelayTo(struct RelayProc *pa_pRelayProc,struct NetAddr *pa_pToAddr)
@@ -34,15 +36,15 @@ RelayModuleInit()
 {
 	sta_IRelayProc = GetIterator(NULL);
 	
-	ProcessCons(&sta_RelayProcessTemplate);
-	PROCESS_ADD_STEP( &sta_RelayProcessTemplate , Relay , 7000 , 0 );
+	ProcessCons(&sta_RelayProcess.proc);
+	PROCESS_ADD_STEP( &sta_RelayProcess.proc , Relay , 30000 , 0 );
 }
 
 void 
 RelayMuduleDestruction()
 {
 	ForEach(&sta_IRelayProc,&FreeRelayProc,NULL);
-	ProcessFree(&sta_RelayProcessTemplate);
+	ProcessFree(&sta_RelayProcess.proc);
 }
 
 STEP( Relay )
@@ -50,19 +52,38 @@ STEP( Relay )
 	struct RelayProc *pRelayProc = GET_STRUCT_ADDR(pa_pProc,struct RelayProc,proc);
 	struct NetAddr   FromAddr = GetAddrFromSockAddr(&pRelayProc->pSock->AddrRecvfrom);
 	DEF_AND_CAST(pMsg,struct TkNetMsg,pRelayProc->pSock->RecvBuff);
+	struct NetAddr   *pAddr;
+	struct TkNetMsg   SendingMsg;
 
-	if(pMsg->flag != TK_NET_BDG_MSG_FLAG &&
-			pRelayProc->peer1.addr.port != 0)
+	if(pMsg->flag != TK_NET_BDG_MSG_FLAG)
 	{
-		if(ifNetAddrEqual(&FromAddr,&(pRelayProc->peer0.addr)))
+		if(pRelayProc->peer1.addr.port != 0)
 		{
-			RelayTo(pRelayProc,&(pRelayProc->peer1.addr));
-			return PS_CALLBK_RET_REDO;
+			if(ifNetAddrEqual(&FromAddr,&(pRelayProc->peer0.addr)))
+			{
+				RelayTo(pRelayProc,&(pRelayProc->peer1.addr));
+				return PS_CALLBK_RET_REDO;
+			}
+			else if(ifNetAddrEqual(&FromAddr,&(pRelayProc->peer1.addr)))
+			{
+				RelayTo(pRelayProc,&(pRelayProc->peer0.addr));
+				return PS_CALLBK_RET_REDO;
+			}
 		}
-		else if(ifNetAddrEqual(&FromAddr,&(pRelayProc->peer1.addr)))
+		else
 		{
-			RelayTo(pRelayProc,&(pRelayProc->peer0.addr));
-			return PS_CALLBK_RET_REDO;
+			if(ifNetAddrEqual(&FromAddr,&(pRelayProc->peer0.addr)))
+			{
+
+				SendingMsg.flag = TK_NET_BDG_MSG_FLAG;
+				SendingMsg.msg.BdgMsg.info = BRIDGE_MSG_INFO_WAIT_RELAY;
+				
+				pAddr = &(pRelayProc->peer0.addr);
+				SockLocateTa(pRelayProc->pSock,htonl(pAddr->IPv4),pAddr->port);
+				SockWrite(pRelayProc->pSock,BYS(SendingMsg)); 
+				
+				return PS_CALLBK_RET_REDO;
+			}
 		}
 	}
 
@@ -101,10 +122,8 @@ RelayProcNotify(struct Process *pa_)
 	INow = GetIterator(&pRelayProc->ln);
 	IForward = GetIterator(INow.now->next);
 	FreeRelayProc(&sta_IRelayProc,&INow,&IForward,NULL);
-
-	tkfree(pRelayProc);
 		
-	g_BdgRelaysNow --;
+	g_Relays --;
 	printf("relay proc end\n");
 }
 
@@ -115,6 +134,7 @@ RelayProcMerge(uint pa_RelayID,struct NetAddr pa_addr,struct ProcessingList *pa_
 	struct FindRelayProcByRelayIDPa FRPBRIPa;
 	
 	FRPBRIPa.pFound = NULL;
+	FRPBRIPa.RelayID = pa_RelayID;
 	ForEach(&sta_IRelayProc,&FindRelayProcByRelayID,&FRPBRIPa);
 
 	if(FRPBRIPa.pFound == NULL)
@@ -130,17 +150,17 @@ RelayProcMerge(uint pa_RelayID,struct NetAddr pa_addr,struct ProcessingList *pa_
 		AddOneToListTail(&sta_IRelayProc,&pRelayProc->ln);
 		ProcessSafeStart(&pRelayProc->proc,pa_pProcList,pa_pINow,pa_pIForward);
 
-		return 0;
+		return RELAY_MERGE_RES_NEW_RELAY;
 	}
 	else if(FRPBRIPa.pFound->peer1.addr.port == 0)
 	{
 		FRPBRIPa.pFound->peer1.addr = pa_addr;
-		g_BdgRelaysNow ++;
+		g_Relays ++;
 
-		return 1;
+		return RELAY_MERGE_RES_MERGED;
 	}
 
-	return 0;
+	return RELAY_MERGE_RES_WAITING;
 }
 
 BOOL
@@ -162,7 +182,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceRelayProc)
 		GetAddrText(&(pRelayProc->peer1.addr),AddrText1);
 	}
 	
-	printf("RelayID = %d ,(%s,%s)\n",pRelayProc->RelayID,AddrText0,AddrText1);
+	printf("RelayID=%d,between %s & %s \n",pRelayProc->RelayID,AddrText0,AddrText1);
 
 	return pa_pINow->now == pa_pIHead->last;
 }
@@ -170,6 +190,6 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceRelayProc)
 void 
 RelayProcTrace()
 {
-	printf("relays(total = %d): \n",g_BdgRelaysNow);
-	ForEach(&sta_IRelayProc,&FindRelayProcByRelayID,NULL);
+	printf("relays(total = %d): \n",g_Relays);
+	ForEach(&sta_IRelayProc,&TraceRelayProc,NULL);
 }

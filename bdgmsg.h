@@ -37,6 +37,7 @@
 #define BRIDGE_MSG_ERR_ERROR              18
 #define BRIDGE_MSG_INFO_ACKNOWLEDGE       19
 
+#define BRIDGE_MSG_INFO_WAIT_RELAY        20
 
 #define CONNECT_DECISION_FLAG_BEGIN          1
 #define CONNECT_DECISION_FLAG_DIRECT         2
@@ -113,7 +114,7 @@ void
 BridgeClientTryBdgServerProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock *);
 
 void 
-BridgeMakeClientProc(struct BridgeProc *, struct Sock * ,struct NetAddr *, char * ,uchar , char*);
+BridgeMakeClientProc(struct BridgeProc *, struct Sock *,struct ProcessingList *,struct NetAddr *, char * ,uchar , char*);
 
 void 
 FreeBdgClientProc(struct BridgeProc *);

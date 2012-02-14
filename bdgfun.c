@@ -185,13 +185,14 @@ BdgSubServerProcInit()
 }
 
 void 
-BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char *pa_pTargetNameID)
+BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct ProcessingList *pa_pProcList,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char *pa_pTargetNameID)
 {
 	struct BridgeClientProcPa *pBCPPa = tkmalloc(struct BridgeClientProcPa);
 
 	BridgeProcCons(pa_pBdgProc);
 
 	pa_pBdgProc->pSock = pa_pMainSock;
+	pa_pBdgProc->pProcList = pa_pProcList;
 	pa_pBdgProc->s.addr = *pa_pAddr;
 	pa_pBdgProc->a.NATType = pa_MyNatType;
 	pa_pBdgProc->Else = pBCPPa;

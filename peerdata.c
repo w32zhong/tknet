@@ -137,15 +137,6 @@ PeerDataTrace(struct PeerData *pa_pRoot)
 	Traversal(&(pa_pRoot->tpnd.btnd.tnd),&PreorderDFS,&TracePeerData,NULL);
 }
 
-static
-DEF_FREE_TREE_ELEMENT_CALLBACK_FUNCTION( FreePeerData , struct PeerData , tpnd.btnd.tnd ,;)
-
-void 
-PeerDataDestroy(struct PeerData *pa_pRoot)
-{
-	Traversal(&(pa_pRoot->tpnd.btnd.tnd),&PostorderDFS,&FreePeerData,NULL);
-}
-
 void 
 PeerDataSelectAsSeed(struct PeerData* pa_pPD , struct Iterator *pa_pISeedList)
 {
@@ -159,6 +150,9 @@ PeerDataSelectAsSeed(struct PeerData* pa_pPD , struct Iterator *pa_pISeedList)
 
 	pa_pPD->pSeedPeer = pSP;
 }
+
+static
+DEF_FREE_TREE_ELEMENT_CALLBACK_FUNCTION( FreePeerData , struct PeerData , tpnd.btnd.tnd ,;)
 
 static 
 DEF_FREE_LIST_ELEMENT_SAFE_FUNCTION(FreeSeedPeer,struct SeedPeer,ln,;)
@@ -183,6 +177,17 @@ PeerDataDele(struct PeerData *pa_pPD, struct Iterator *pa_pISeedList)
 free_PD:
 	
 	tkfree(pa_pPD);
+}
+
+void 
+PeerDataDestroy(struct PeerData *pa_pRoot,struct Iterator *pa_pISeedList)
+{
+	Traversal(&(pa_pRoot->tpnd.btnd.tnd),&PostorderDFS,&FreePeerData,NULL);
+
+	ForEach(pa_pISeedList,&FreeSeedPeer,NULL);
+	//some sub server processes is not end, when the program went to exit,
+	//however , the Traversal function will NOT free the Seed of each peer 
+	//data item, so go through the Seed list and free them all.
 }
 
 void 

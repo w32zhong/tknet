@@ -161,7 +161,12 @@ STEP( BdgConnectDecision )
 
 				pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_A_SIDE_RELAY;
 				pBdgProc->DecisionRelayID = sta_AccRelayID;
+
 				sta_AccRelayID ++;
+				if(sta_AccRelayID == 0)
+				{//over-flow
+					sta_AccRelayID = 1;
+				}
 			}
 		}
 		else
@@ -445,7 +450,8 @@ STEP( BdgClientWait )
 	struct BridgeMsg  SendingMsg;
 	struct BridgeMsg  *pBdgMsg;
 	DEF_AND_CAST(pBCPPa,struct BridgeClientProcPa,pBdgProc->Else);
-	struct NetAddr FromAddr; 
+	struct NetAddr    FromAddr; 
+	uchar             MergeRes;
 
 	pBdgMsg = BdgMsgRead(pa_pProc,BDG_READ_OPT_ADDR_FILTER,0,BDG_ADDR(s,pBdgProc));
 	
@@ -491,12 +497,33 @@ STEP( BdgClientWait )
 			printf("Recieved a Connect Address ...\n");
 			pBdgProc->sx.addr = FromAddr;
 			pBdgProc->b.addr = pBdgMsg->addr;
+			pBdgProc->DecisionRelayID = pBdgMsg->RelayID;
 			
 			return FlagName(pa_pProc,"BdgClientDoConnectAddr");
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_INFO_HELLO)
 		{
-			printf("Nice To Meet you\n");
+			if(pBdgMsg->RelayID == 0)
+			{
+				printf("Nice To Meet you too.\n");
+			}
+			else
+			{
+				MergeRes = RelayProcMerge(pBdgMsg->RelayID,FromAddr,
+						pBdgProc->pProcList,pa_pINow,pa_pIForward,pBdgProc->pSock);
+
+				if(MergeRes == RELAY_MERGE_RES_NEW_RELAY)
+				{
+					printf("Start relaying...\n");
+					RelayProcTrace();
+				}
+				else if(MergeRes == RELAY_MERGE_RES_MERGED)
+				{
+					printf("relay merged.\n");
+					RelayProcTrace();
+				}
+			}
+
 			pBdgProc->MultiSendTo = FromAddr;
 			pBdgProc->MultiSendInfo = BRIDGE_MSG_INFO_HELLO;
 			
@@ -525,7 +552,7 @@ STEP( BdgClientWait )
 	else if(pa_state == PS_STATE_OVERTIME)
 	{
 		SendingMsg.info = BRIDGE_MSG_INFO_WAITING;
-		SendingMsg.Relays = g_BdgRelaysNow;
+		SendingMsg.Relays = g_Relays;
 
 		BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 	}
@@ -610,13 +637,15 @@ STEP( BdgClientDoConnectAddr )
 	{
 		printf("Sending Hello..\n");
 		SendingMsg.info = BRIDGE_MSG_INFO_HELLO;
+		SendingMsg.RelayID = pBdgProc->DecisionRelayID;
+
 		BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(b,pBdgProc));
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
 	{
 		pBdgProc->MultiSendTo = pBdgProc->sx.addr;
-
 		pBdgProc->MultiSendInfo = BRIDGE_MSG_ERR_CONNECT_ADDR;
+
 		return FlagName(pa_pProc,"BdgClientMultiSendNotify");
 	}
 

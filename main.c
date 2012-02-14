@@ -51,6 +51,8 @@ int main(int pa_argn,char **in_args)
 
 	ProcessingListCons( &ProcList );
 
+	RelayModuleInit();
+
 	KeyInfoCacheCons(&KeyInfoCache);
 	if(!KeyInfoReadFile(&KeyInfoCache,"tknet.info"))
 	{
@@ -106,7 +108,7 @@ int main(int pa_argn,char **in_args)
 	GetAddrText(&g_BdgPeerAddr,BdgPeerAddrStr);
 	printf("using Bridge peer: %s\n",BdgPeerAddrStr);
 
-	BridgeMakeClientProc(&BdgClientProc,&MainSock,&g_BdgPeerAddr,g_MyName,g_NATtype,pTargetName);
+	BridgeMakeClientProc(&BdgClientProc,&MainSock,&ProcList,&g_BdgPeerAddr,g_MyName,g_NATtype,pTargetName);
 	//TaName can be NULL
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 	ifBdgClientProcMade = 1;
@@ -141,10 +143,11 @@ only_server:
 
 exit:
 
-	PeerDataDestroy(&PeerDataRoot);
+	PeerDataDestroy(&PeerDataRoot,&ISeedPeer);
 	KeyInfoUpdate( &KeyInfoCache );
 	KeyInfoWriteFile(&KeyInfoCache,"tknet.updateinfo");
 	KeyInfoFree(&KeyInfoCache);
+	RelayMuduleDestruction();
 	MutexDelete(&g_BkgdMutex);
 	tkNetUninit();
 

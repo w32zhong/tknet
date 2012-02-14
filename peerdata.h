@@ -32,7 +32,7 @@ void
 PeerDataTrace(struct PeerData *);
 
 void 
-PeerDataDestroy(struct PeerData *);
+PeerDataDestroy(struct PeerData *,struct Iterator *);
 
 void 
 PeerDataSelectAsSeed(struct PeerData*  , struct Iterator *);

@@ -1,3 +1,7 @@
+#define RELAY_MERGE_RES_WAITING     0
+#define RELAY_MERGE_RES_NEW_RELAY   1
+#define RELAY_MERGE_RES_MERGED      2
+
 struct RelayProc
 {
 	uint            RelayID;
@@ -9,7 +13,7 @@ struct RelayProc
 
 DECLARATION_STRUCT_CONSTRUCTOR( RelayProc )
 
-extern uint g_BdgRelaysNow;
+extern uint g_Relays;
 
 void
 RelayModuleInit();

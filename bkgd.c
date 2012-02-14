@@ -246,7 +246,12 @@ TK_THREAD( BackGround )
 						"  connect [peer name]\n"
 						"  key\n"
 						"  cproc\n"
+						"  relays\n"
 						"  peers\n");
+			}
+			else if( strcmp(pCmd ,"relays") == 0 )
+			{
+				RelayProcTrace();
 			}
 			else if( strcmp(pCmd ,"key") == 0 )
 			{
