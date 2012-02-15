@@ -118,11 +118,11 @@ uchar
 KeyInfoReadFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )
 {
 	FILE *pf = fopen( pa_pFileName , "r+" );
-
-	VCK( pf == NULL , return 0 );
-
 	char buff[KEY_INFO_MAX_LEN];
 	struct KeyInfo *pKeyInfo;
+	
+	VCK( pf == NULL , return 0 );
+
 
 	while(fgets( buff , KEY_INFO_MAX_LEN , pf ))
 	{
