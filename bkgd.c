@@ -1,4 +1,4 @@
-#include "headers.h"
+#include "tknet.h"
 #define BKGD_CMD_MAX_LEN 128
 
 tkMutex g_BkgdMutex;
@@ -227,6 +227,7 @@ TK_THREAD( BackGround )
 	char *pCmd,*pArg0,*pArg1;
 	struct KeyInfo *pKeyInfo;
 	struct BridgeClientProcPa *pBCPPa;
+	struct PeerData           *pFoundPD;
 
 	BackGroundPOP3ProcMake( &Pop3Proc ,"IP" ,0,0,"username","password");
 	Pop3Proc.proc.NotifyCallbk = &BkgdProcEndCallbk;
@@ -270,6 +271,8 @@ TK_THREAD( BackGround )
 						"  nat [stun key]\n"
 						"  smtp [smtp key] [content key]\n"
 						"  connect [peer name]\n"
+						"  direct [peer name]\n"
+						"  direct \n"
 						"  key\n"
 						"  cproc\n"
 						"  relays\n"
@@ -285,26 +288,36 @@ TK_THREAD( BackGround )
 			}
 			else if( strcmp(pCmd ,"cproc") == 0 )
 			{
-				if(pBkgdArgs->pBdgClientProc)
-				{
-					ProcessTraceSteps(&(pBkgdArgs->pBdgClientProc->proc));
-				}
-				else
-				{
-					printf("client proc not started.\n");
-				}
+				ProcessTraceSteps(&(pBkgdArgs->pBdgClientProc->proc));
 			}
 			else if( strcmp(pCmd ,"connect") == 0 )
 			{
-				if(pBkgdArgs->pBdgClientProc)
+				strcpy(g_TargetName,pArg0);
+				pBCPPa = (struct BridgeClientProcPa*)(pBkgdArgs->pBdgClientProc->Else);
+				pBCPPa->pTargetNameID = g_TargetName;
+			}
+			else if( strcmp(pCmd ,"direct") == 0 )
+			{
+				pBCPPa = (struct BridgeClientProcPa*)(pBkgdArgs->pBdgClientProc->Else);
+				
+				if(*pArg0 == '\0')
 				{
-					strcpy(g_TargetName,pArg0);
-					pBCPPa = (struct BridgeClientProcPa*)(pBkgdArgs->pBdgClientProc->Else);
-					pBCPPa->pTargetNameID = g_TargetName;
+					printf("direct connect to BDG server...\n");
+					pBCPPa->DirectConnectAddr = g_BdgPeerAddr;
 				}
 				else
 				{
-					printf("not able to connect without client proc started.\n");
+					pFoundPD = PeerDataFind(pBkgdArgs->pPeerDataRoot,pArg0);
+					
+					if(pFoundPD)
+					{
+						printf("direct connect to peer from BDG server.\n");
+						pBCPPa->DirectConnectAddr = pFoundPD->addr;
+					}
+					else
+					{
+						printf("unable to find the name in peer data.\n");
+					}
 				}
 			}
 			else if( strcmp(pCmd ,"pop3") == 0 )

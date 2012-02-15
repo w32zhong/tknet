@@ -53,8 +53,10 @@ struct BridgeHelloStepPa
 
 struct BridgeClientProcPa
 {
-	char *pMyNameID;
-	char *pTargetNameID;
+	char            *pMyNameID;
+	char            *pTargetNameID;
+	struct NetAddr  DirectConnectAddr;
+	BOOL            ifSkipRegister;
 };
 
 struct Peer
@@ -114,7 +116,7 @@ void
 BridgeClientTryBdgServerProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock *);
 
 void 
-BridgeMakeClientProc(struct BridgeProc *, struct Sock *,struct ProcessingList *,struct NetAddr *, char * ,uchar , char*);
+BridgeMakeClientProc(struct BridgeProc *, struct Sock *,struct ProcessingList *,struct NetAddr *, char * ,uchar , char* ,BOOL);
 
 void 
 FreeBdgClientProc(struct BridgeProc *);

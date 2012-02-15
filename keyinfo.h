@@ -96,3 +96,4 @@ LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByAddr);
 
 extern char g_TargetName[];
 extern char g_MyName[];
+extern BOOL g_ifConfigAsFullCone;

@@ -6,7 +6,8 @@ function get_window_id()
 
 if [ ! $1 ]
 then
-	scons && echo ----run---- && ./run
+	scons && echo ----run----
+ 	./run
 	cp run ./testbin/bin0
 	cp run ./testbin/bin1
 	cp run ./testbin/bin2

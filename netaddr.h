@@ -6,6 +6,16 @@ struct NetAddr
 	ushort  port; 
 };
 
+static __inline struct NetAddr
+NetAddr(const char *pa_pIPText,ushort pa_port)
+{
+	struct NetAddr res;
+	res.IPv4 = ntohl(GetIPVal(pa_pIPText));
+	res.port = pa_port;
+
+	return res;
+}
+
 static __inline void
 GetIPText( struct NetAddr *pa_pAddr , char *out_str)
 {

@@ -1,4 +1,4 @@
-#include "headers.h"
+#include "tknet.h"
 
 static BOOL sta_LoopFlag;
 static BOOL sta_ProcRes;
@@ -520,7 +520,7 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 	}
 	else if( pa_pInfo->type == KEY_INFO_TYPE_CONFIG )
 	{
-		for( i = 0 ; i < 4 ; i++ )
+		for( i = 0 ; i < 5 ; i++ )
 		{
 			pNextWord = GetNextSeparateStr(&pText);
 			VCK( pNextWord == NULL , return 0; );
@@ -531,6 +531,23 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 			}
 
 			if(i == 3)
+			{
+				if(strcmp(pNextWord,"WAN") == 0)
+				{
+					g_ifConfigAsFullCone = 0;
+				}
+				else if(strcmp(pNextWord,"LAN") == 0)
+				{
+					g_ifConfigAsFullCone = 1;
+				}
+				else
+				{
+					printf("please config net type."
+							"(WAN/LAN)\n");
+					return 0;
+				}
+			}
+			else if(i == 4)
 			{
 				strcpy(g_MyName,pNextWord);
 			}

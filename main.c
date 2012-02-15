@@ -1,6 +1,7 @@
-#include "headers.h"
+#include "tknet.h"
 
 BOOL             g_MainLoopFlag = 1;
+BOOL             g_ifConfigAsFullCone = 0;
 uchar            g_NATtype = NAT_T_UNKNOWN;
 struct NetAddr   g_BdgPeerAddr;
 char             g_TargetName[PEER_NAME_ID_LEN];
@@ -36,10 +37,9 @@ int main(int pa_argn,char **in_args)
 	struct Sock           MainSock;
 	struct BridgeProc     BdgServerProc;
 	struct BridgeProc     BdgClientProc;
-	struct BridgeProc     *pBdgClientProc = NULL;
-	BOOL                  ifBdgClientProcMade = 0;
 	char                  BdgPeerAddrStr[32];
 	char                  *pTargetName = NULL;
+	BOOL                  ifClientSkipRegister = 1;
 	int                   TestPurposeNatType;
 
 	tkNetInit();
@@ -65,17 +65,8 @@ int main(int pa_argn,char **in_args)
 
 	if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_CONFIG,&MainSock))
 	{
-		printf("please config port & name\n");
+		printf("bad config format.\n");
 		goto exit;
-	}
-
-	if(pa_argn == 2)
-	{
-		//strcpy(g_TargetName,in_args[1]);
-		{
-			sscanf(in_args[1],"%d",&TestPurposeNatType);
-			g_NATtype = (uchar)TestPurposeNatType;
-		}
 	}
 	
 	if( g_TargetName[0] != '\0' )
@@ -88,41 +79,55 @@ int main(int pa_argn,char **in_args)
 		printf("Target Name unset. \n");
 	}
 
-//	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_STUNSERVER,&MainSock))
-//	{
-//		if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
-//		{
-//			printf("No way to get NAT type :( \n");
-//			goto exit;
-//		}
-//	}
+	if(g_ifConfigAsFullCone)
+	{
+		g_NATtype = NAT_T_FULL_CONE;
+		printf("config NAT type as fullcone.\n");
+	}
+	else
+	{
+		while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_STUNSERVER,&MainSock))
+		{
+			if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
+			{
+				printf("No way to get NAT type.\n");
+				goto exit;
+			}
+		}
+		
+		printf("NAT type got from STUN: %d\n",g_NATtype);
+	}
 
-	printf("NAT type: %d\n",g_NATtype);
+	if(pa_argn == 2)
+	{
+		sscanf(in_args[1],"%d",&TestPurposeNatType);
+		g_NATtype = (uchar)TestPurposeNatType;
+	}
+		
+	printf("final NAT type: %d\n",g_NATtype);
 
 	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_BRIDGEPEER,&MainSock))
 	{
 		if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
 		{
-			printf("no avalible Bridge peer :( \n");
-			goto only_server;
+			printf("no avalible Bridge peer.\n");
+			goto no_bdg_peer;
 		}
 	}
 
 	GetAddrText(&g_BdgPeerAddr,BdgPeerAddrStr);
 	printf("using Bridge peer: %s\n",BdgPeerAddrStr);
+	ifClientSkipRegister = 0;
 
-	BridgeMakeClientProc(&BdgClientProc,&MainSock,&ProcList,&g_BdgPeerAddr,g_MyName,g_NATtype,pTargetName);
-	//TaName can be NULL
+no_bdg_peer:
+
+	BridgeMakeClientProc(&BdgClientProc,&MainSock,&ProcList,&g_BdgPeerAddr,g_MyName,g_NATtype,pTargetName,ifClientSkipRegister);
 	ProcessStart(&BdgClientProc.proc,&ProcList);
-	ifBdgClientProcMade = 1;
-	pBdgClientProc = &BdgClientProc;
-
-only_server:
 
 	BkgdArgs.pPeerDataRoot = &PeerDataRoot;
 	BkgdArgs.pInfoCache = &KeyInfoCache;
 	BkgdArgs.pProcList = &ProcList;
-	BkgdArgs.pBdgClientProc = pBdgClientProc;
+	BkgdArgs.pBdgClientProc = &BdgClientProc;
 	tkBeginThread( &BackGround , &BkgdArgs );
 
 	ConsAndStartBridgeServer(&BdgServerProc,&PeerDataRoot,&ProcList,&MainSock,&ISeedPeer);
@@ -140,8 +145,7 @@ only_server:
 
 	SockClose(&MainSock);
 
-	if(ifBdgClientProcMade)
-		FreeBdgClientProc(&BdgClientProc);
+	FreeBdgClientProc(&BdgClientProc);
 	FreeBridgeServer(&BdgServerProc);
 
 exit:

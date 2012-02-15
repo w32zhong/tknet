@@ -1,4 +1,4 @@
-#include "headers.h"
+#include "tknet.h"
 
 DEF_STRUCT_CONSTRUCTOR( Peer ,
 		out_cons->addr.IPv4 = 0;
@@ -178,7 +178,7 @@ BdgSubServerProcInit()
 {
 	ProcessCons(&sta_BdgSubServerProc.proc);
 	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgBeginSubServer , 2000 , 2 );
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectRequireServer , 4000 , 3 );
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectRequireServer , 10000 , 3 );
 	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectRequireReply , 2000 , 2 );
 	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectDecision , 2000 , 2 );
 	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgPunchingServer , 2000 , 2 );
@@ -187,7 +187,8 @@ BdgSubServerProcInit()
 }
 
 void 
-BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct ProcessingList *pa_pProcList,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char *pa_pTargetNameID)
+BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct ProcessingList *pa_pProcList,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char *pa_pTargetNameID , BOOL pa_ifSkipRegister)
+//TaName can be NULL
 {
 	struct BridgeClientProcPa *pBCPPa = tkmalloc(struct BridgeClientProcPa);
 
@@ -202,8 +203,14 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 
 	pBCPPa->pMyNameID = pa_pMyNameID;
 	pBCPPa->pTargetNameID = pa_pTargetNameID;
+	pBCPPa->DirectConnectAddr.IPv4 = 0;
+	pBCPPa->DirectConnectAddr.port = 0;
+	pBCPPa->ifSkipRegister = pa_ifSkipRegister;
 
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientRegister , 2000 , 2);
+	if(!pa_ifSkipRegister)
+	{
+		PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientRegister , 2000 , 2);
+	}
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientWait , 4000 , 3);
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientConnectRequire , 2000 , 2);
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientDoConnectAddr , 2000 , 2);

@@ -1,4 +1,4 @@
-#include "headers.h"
+#include "tknet.h"
 
 STEP( BdgBeginSubServer )
 {
@@ -553,7 +553,22 @@ STEP( BdgClientWait )
 
 	if(pBCPPa->pTargetNameID)
 	{
+		//connection begin
 		return PS_CALLBK_RET_DONE;
+	}
+	else if(pBCPPa->DirectConnectAddr.port != 0)
+	{
+		//direct connection begin
+
+		pBdgProc->sx.addr = NetAddr("127.0.0.1",0);
+		pBdgProc->b.addr = pBCPPa->DirectConnectAddr;
+		pBdgProc->DecisionRelayID = 0;
+
+		return FlagName(pa_pProc,"BdgClientDoConnectAddr");
+	}
+	else if(pBCPPa->ifSkipRegister)
+	{
+		return PS_CALLBK_RET_REDO;
 	}
 	else if(pa_state == PS_STATE_OVERTIME)
 	{
@@ -622,6 +637,7 @@ STEP( BdgClientDoConnectAddr )
 	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(pa_pProc,struct BridgeProc,proc);
 	struct BridgeMsg  SendingMsg;
 	struct BridgeMsg  *pBdgMsg;
+	DEF_AND_CAST(pBCPPa,struct BridgeClientProcPa,pBdgProc->Else);
 
 	pBdgMsg = BdgMsgRead(pa_pProc,BDG_READ_OPT_ADDR_FILTER,0,BDG_ADDR(b,pBdgProc));
 
@@ -640,6 +656,7 @@ STEP( BdgClientDoConnectAddr )
 			pBdgProc->MultiSendTo = pBdgProc->sx.addr;
 			pBdgProc->MultiSendInfo = BRIDGE_MSG_INFO_ESTABLISHED;
 
+			pBCPPa->DirectConnectAddr = NetAddr("0.0.0.0",0);
 			return PS_CALLBK_RET_DONE;
 		}
 	}
@@ -658,6 +675,8 @@ STEP( BdgClientDoConnectAddr )
 		pBdgProc->MultiSendTo = pBdgProc->sx.addr;
 		pBdgProc->MultiSendInfo = BRIDGE_MSG_ERR_CONNECT_ADDR;
 
+			
+		pBCPPa->DirectConnectAddr = NetAddr("0.0.0.0",0);
 		return FlagName(pa_pProc,"BdgClientMultiSendNotify");
 	}
 

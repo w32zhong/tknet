@@ -1,7 +1,4 @@
-#ifdef _MSC_VER
-#pragma warning(disable:4996)
-#endif
-
+#include "head.h"
 #include "sysi.h"
 
 #include "comdef.h"
@@ -23,7 +20,6 @@
 #include "stun.h"
 #include "nattype.h"
 
-struct PeerData;
 #include "bdgmsg.h"
 #include "relay.h"
 #include "peerdata.h"
