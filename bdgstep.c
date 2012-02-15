@@ -325,6 +325,9 @@ STEP( BridgeMain )
 	struct BridgeMsg  *pBdgMsg;
 	struct BridgeMsg  SendingMsg;
 	struct PeerData   *pPD;
+	
+	struct NetAddr    SessionMaintainAddr = NetAddr("220.181.111.85",80);
+	//Baidu.com :)
 
 	pBdgMsg = BdgMsgRead(pa_pProc,BDG_READ_OPT_ANY,0,NULL);
 
@@ -367,7 +370,15 @@ STEP( BridgeMain )
 		}
 	}
 
-	return PS_CALLBK_RET_REDO;
+	if(pa_state == PS_STATE_LAST_TIME)
+	{
+		printf("session maintain...\n");
+		BdgMsgWrite(pa_pProc,&SendingMsg,&SessionMaintainAddr);
+	
+		return PS_CALLBK_RET_REDO;
+	}
+
+	return PS_CALLBK_RET_GO_ON;
 }
 
 STEP( BdgClientTryBdgServer )

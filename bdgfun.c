@@ -152,7 +152,7 @@ ConsAndStartBridgeServer(struct BridgeProc *pa_pBdgProc , struct PeerData *pa_pP
 	pa_pBdgProc->pSock = pa_pMainSock;
 	pa_pBdgProc->pProcList = pa_pProcList;	
 
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BridgeMain , 1000 , 0);
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BridgeMain , 12000 , 0);
 	ProcessStart( &pa_pBdgProc->proc , pa_pProcList );
 }
 
