@@ -1,4 +1,4 @@
 MailServer 220.181.12.101 110   0 li28jhyxy76223 g131517 
 STUNServer 12.34.56.78    910
 BridgePeer 127.0.0.1      8912  
-Config     127.0.0.1      8921  Joey
+Config     127.0.0.1      8921  LAN Joey

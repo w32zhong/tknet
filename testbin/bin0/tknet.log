@@ -1,3 +1,0 @@
-sock.c: sendto(pa_sock->socket,pa_bys.pBytes,pa_bys.len,0, (struct sockaddr*)&pa_sock->AddrTa, sizeof( struct sockaddr_in ) ) < 0 exception at line 138.
-sock.c: sendto(pa_sock->socket,pa_bys.pBytes,pa_bys.len,0, (struct sockaddr*)&pa_sock->AddrTa, sizeof( struct sockaddr_in ) ) < 0 exception at line 138.
-sock.c: sendto(pa_sock->socket,pa_bys.pBytes,pa_bys.len,0, (struct sockaddr*)&pa_sock->AddrTa, sizeof( struct sockaddr_in ) ) < 0 exception at line 138.
