@@ -6,12 +6,12 @@ function get_window_id()
 
 if [ ! $1 ]
 then
-	scons && echo ----run----
- 	./run
+	scons
 	cp run ./testbin/bin0
 	cp run ./testbin/bin1
 	cp run ./testbin/bin2
 	cp run ./testbin/bin3
+ 	mv run ./bin/
 	ctags -R
 elif [ $1 == 'c' ]
 then
@@ -19,8 +19,9 @@ then
 	ctags -R
 elif [ $1 == 'arm' ]
 then
+	libfiles=' -lpthread'
 	codefiles=`ls | grep '\.c$'`
-	arm-linux-gcc $codefiles
+	arm-linux-gcc $codefiles $libfiles
 elif [ $1 == 'g++' ]
 then
 	libfiles=' -lssl -lcrypto -ldl -lpthread'
@@ -32,7 +33,6 @@ then
 	scons -c
 	rm -f a.out
 	rm -f tags
-	rm -f '*.log'
 elif [ $1 == 'bkup' ]
 then
 	date --rfc-3339=seconds | grep -o '.*+' > name.tmp
@@ -109,6 +109,29 @@ then
 	done
 	rm -r -f ../Shared\ Folder/Dos\ format
 	mv Dos\ format ../Shared\ Folder/
+elif [ $1 == 'GPL' ]
+then
+	echo '
+/*
+*      This file is part of the tknet project. 
+*    which be used under the terms of the GNU General Public 
+*    License version 3.0 as published by the Free Software
+*    Foundation and appearing in the file LICENSE.GPL included 
+*    in the packaging of this file.  Please review the following 
+*    information to ensure the GNU General Public License 
+*    version 3.0 requirements will be met: 
+*    http://www.gnu.org/copyleft/gpl.html
+*
+*    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
+*/ 
+
+' > GPL.head
+	for srcfile in *.c *.h
+	do
+		cat GPL.head $srcfile > ${srcfile}.temp
+		mv ${srcfile}.temp $srcfile
+	done
+	rm GPL.head
 else
 	echo 'input unexpected.'
 fi

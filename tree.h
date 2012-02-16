@@ -1,3 +1,18 @@
+
+/*
+*      This file is part of the tknet project. 
+*    which be used under the terms of the GNU General Public 
+*    License version 3.0 as published by the Free Software
+*    Foundation and appearing in the file LICENSE.GPL included 
+*    in the packaging of this file.  Please review the following 
+*    information to ensure the GNU General Public License 
+*    version 3.0 requirements will be met: 
+*    http://www.gnu.org/copyleft/gpl.html
+*
+*    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
+*/ 
+
+
 #define DEF_FREE_TREE_ELEMENT_CALLBACK_FUNCTION( _name , _type_tag , _member_name , _other_statments ) \
 			DEF_FREE_LIST_ELEMENT_CALLBACK_FUNCTION( _name , struct Branch , ln , \
 			_type_tag * pTreeNow = GET_STRUCT_ADDR( pNow->pChild , _type_tag , _member_name ); \

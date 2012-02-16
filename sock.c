@@ -1,3 +1,18 @@
+
+/*
+*      This file is part of the tknet project. 
+*    which be used under the terms of the GNU General Public 
+*    License version 3.0 as published by the Free Software
+*    Foundation and appearing in the file LICENSE.GPL included 
+*    in the packaging of this file.  Please review the following 
+*    information to ensure the GNU General Public License 
+*    version 3.0 requirements will be met: 
+*    http://www.gnu.org/copyleft/gpl.html
+*
+*    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
+*/ 
+
+
 #include "tknet.h"
 
 void
@@ -12,10 +27,10 @@ SockDestory()
 	WSACLEAN;
 }
 
-#ifdef TK_CONFIG_SOCK_SSL_ENABLE
 void
 SockSSLConnect( struct Sock* out_sock )
 {
+#ifdef TK_CONFIG_SOCK_SSL_ENABLE
 	SSL_CTX*     ctx;
 	SSL*         ssl;
 
@@ -37,8 +52,8 @@ SockSSLConnect( struct Sock* out_sock )
 
 	out_sock->ctx = ctx;
 	out_sock->ssl = ssl;
-}
 #endif
+}
 
 // 'pa_port' is discarded when use TCP
 int

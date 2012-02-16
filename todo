@@ -1,0 +1,3 @@
+this file describe what module/functions the author want to add into project in the future.
+1.use unblocked socket in TCP connection and set overtime to avoid long time block when net is unreachable.
+2.use a self made function to replace printf and apply log and exception systems.

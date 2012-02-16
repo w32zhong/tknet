@@ -1,3 +1,18 @@
+
+/*
+*      This file is part of the tknet project. 
+*    which be used under the terms of the GNU General Public 
+*    License version 3.0 as published by the Free Software
+*    Foundation and appearing in the file LICENSE.GPL included 
+*    in the packaging of this file.  Please review the following 
+*    information to ensure the GNU General Public License 
+*    version 3.0 requirements will be met: 
+*    http://www.gnu.org/copyleft/gpl.html
+*
+*    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
+*/ 
+
+
 #define PS_STATE_FIRST_TIME  0x00
 #define PS_STATE_NORMAL      0x01
 #define PS_STATE_OVERTIME    0x02
