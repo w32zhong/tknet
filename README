@@ -7,7 +7,7 @@ INTRO:
 
 BUILD:
 
-  STEP 1: tknet is built using Scons (see http://www.scons.org/) , please download tools related before first build the project. OpenSSL dev library are also required, but if you don't want to enable the SSL feature , uncomment the '#define TK_CONFIG_SOCK_SSL_ENABLE' in tknet.h and only link pthread when building the project (the easy way is edit the tknet.sh and delete other libraries designated to C compiler).
+  STEP 1: tknet is built using Scons (see http://www.scons.org/) , please download tools related before first build the project. OpenSSL dev library are also required, but if you don't want to enable the SSL feature , uncomment the '#define TK_CONFIG_SOCK_SSL_ENABLE' in tknet.h and only link pthread when building the project (the easy way is editing the tknet.sh and delete other libraries designated to C compiler).
   STEP 2: simply execute the tknet.sh ,and executable file are created under ./bin folder. Also, some test bins are put in the ./testbin folders.
 
 TEST:
