@@ -38,20 +38,16 @@ STEP( ProtoPOP3FirstRecv )
 {
 	struct POP3Proc *pProc = GET_STRUCT_ADDR( pa_pProc , struct POP3Proc , proc );
 
-	printf("e\n");
 	if( SockRead( pProc->pSock ) )
 	{
-	printf("f\n");
 		printf("%s\n",pProc->pSock->RecvBuff);
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME )
 	{
-	printf("g\n");
 		return PS_CALLBK_RET_ABORT;
 	}
 
-	printf("h\n");
 	return PS_CALLBK_RET_GO_ON;
 }
 

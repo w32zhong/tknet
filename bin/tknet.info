@@ -1,3 +1,2 @@
-MailServer 220.181.12.101    110    0    li28jhyxy76223 g131517 
-BridgePeer 182.245.177.218   30462
-Config     127.0.0.1         8912   WAN  happyPeer
+Config     127.0.0.1         8912   WAN  Joey
+MailServer 220.181.12.101    110    0    li28jhyxy76223 g131517

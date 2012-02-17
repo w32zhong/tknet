@@ -23,6 +23,12 @@ BOOL    sta_ifBkgdCmdComing;
 BOOL    sta_ifBkgdSubProcess = 0;
 extern  BOOL g_MainLoopFlag;
 
+BOOL
+ifBkgdSubProcess()
+{
+	return sta_ifBkgdSubProcess;
+}
+
 char*
 BkgdGetBackGroundMsg()
 {
@@ -248,7 +254,7 @@ TK_THREAD( BackGround )
 	Pop3Proc.proc.NotifyCallbk = &BkgdProcEndCallbk;
 	Pop3Proc.pSock = &sock;
 
-	MakeProtoStunProc(&StunProc ,&sock , "IP",STUN_DEFAULT_PORT);
+	MakeProtoStunProc(&StunProc ,pBkgdArgs->pMainSock , "IP",STUN_DEFAULT_PORT);
 	StunProc.proc.NotifyCallbk = &BkgdNatTypeNotify;
 
 	SMTPProcMake(&SmtpProc ,"IP" , 0,0,"username","password","adress","content");
@@ -289,6 +295,7 @@ TK_THREAD( BackGround )
 						"  direct [peer name]\n"
 						"  direct \n"
 						"  key\n"
+						"  readkey\n"
 						"  cproc\n"
 						"  relays\n"
 						"  peers\n");
@@ -364,15 +371,6 @@ TK_THREAD( BackGround )
 			}
 			else if( strcmp(sta_BkgdCmd ,"nat") == 0 )
 			{
-				if(SockOpened)
-				{
-					SockClose( &sock );
-				}
-
-				SockOpen( &sock , UDP , 8821);
-				SockSetNonblock( &sock );
-				SockOpened = 1;
-
 				pKeyInfo = FindKeyInfoByStrArg(pBkgdArgs->pInfoCache,pArg0);
 
 				if(pKeyInfo)
@@ -422,6 +420,17 @@ TK_THREAD( BackGround )
 			else if( strcmp(sta_BkgdCmd ,"peers") == 0 )
 			{
 				PeerDataTrace(pBkgdArgs->pPeerDataRoot);
+			}
+			else if( strcmp(sta_BkgdCmd ,"readkey") == 0 )
+			{
+				if(!KeyInfoReadFile(pBkgdArgs->pInfoCache,"tknet.info"))
+				{
+					printf("config file lost.\n");
+				}
+				else
+				{
+					KeyInfoTrace(pBkgdArgs->pInfoCache);
+				}
 			}
 			else
 			{

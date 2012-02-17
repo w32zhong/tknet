@@ -24,6 +24,7 @@ struct BackGroundArgs
 	struct ProcessingList  *pProcList;
 	struct PeerData        *pPeerDataRoot;
 	struct BridgeProc      *pBdgClientProc;
+	struct Sock            *pMainSock;
 };
 
 void
@@ -34,3 +35,6 @@ BkgdLeaveSubProcess();
 
 char*
 BkgdGetBackGroundMsg();
+
+BOOL
+ifBkgdSubProcess();

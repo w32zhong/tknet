@@ -135,6 +135,7 @@ KeyInfoReadFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )
 	FILE *pf = fopen( pa_pFileName , "r+" );
 	char buff[KEY_INFO_MAX_LEN];
 	struct KeyInfo *pKeyInfo;
+	struct FindKeyInfoByAddrPa fkipa;
 	
 	VCK( pf == NULL , return 0 );
 
@@ -145,9 +146,20 @@ KeyInfoReadFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )
 
 		if( NULL != pKeyInfo )
 		{
-			AddOneToListTail(&pa_pCache->IKeyInfo,&pKeyInfo->ln);
-			pKeyInfo->num = pa_pCache->KeyInfoNumbers;
-			pa_pCache->KeyInfoNumbers ++;
+			fkipa.found = NULL;
+			fkipa.addr = pKeyInfo->addr;
+			ForEach( &pa_pCache->IKeyInfo , &FindKeyInfoByAddr , &fkipa );
+
+			if( fkipa.found )
+			{
+				tkfree(pKeyInfo);
+			}
+			else
+			{
+				AddOneToListTail(&pa_pCache->IKeyInfo,&pKeyInfo->ln);
+				pKeyInfo->num = pa_pCache->KeyInfoNumbers;
+				pa_pCache->KeyInfoNumbers ++;
+			}
 		}
 	}
 

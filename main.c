@@ -57,6 +57,7 @@ int main(int pa_argn,char **in_args)
 	BOOL                  ifClientSkipRegister = 1;
 	int                   TestPurposeNatType;
 
+	printf("v 12.2.17\n");
 	tkNetInit();
 	MutexInit(&g_BkgdMutex);
 
@@ -143,6 +144,7 @@ no_bdg_peer:
 	BkgdArgs.pInfoCache = &KeyInfoCache;
 	BkgdArgs.pProcList = &ProcList;
 	BkgdArgs.pBdgClientProc = &BdgClientProc;
+	BkgdArgs.pMainSock = &MainSock;
 	tkBeginThread( &BackGround , &BkgdArgs );
 
 	ConsAndStartBridgeServer(&BdgServerProc,&PeerDataRoot,&ProcList,&MainSock,&ISeedPeer);
@@ -150,9 +152,11 @@ no_bdg_peer:
 	while( g_MainLoopFlag )
 	{
 		MutexLock(&g_BkgdMutex);
-		SockRead(&MainSock);
+		if(!ifBkgdSubProcess())
+			SockRead(&MainSock);
 		DoProcessing( &ProcList );
-		MainSock.RecvLen = 0;
+		if(!ifBkgdSubProcess())
+			MainSock.RecvLen = 0;
 		MutexUnlock(&g_BkgdMutex);
 
 		tkMsSleep(100);
