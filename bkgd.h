@@ -36,5 +36,5 @@ BkgdLeaveSubProcess();
 char*
 BkgdGetBackGroundMsg();
 
-BOOL
-ifBkgdSubProcess();
+BOOL 
+ifBkgdStunProc();

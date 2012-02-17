@@ -21,12 +21,13 @@ tkMutex g_BkgdMutex;
 char    sta_BkgdCmd[BKGD_CMD_MAX_LEN];
 BOOL    sta_ifBkgdCmdComing;
 BOOL    sta_ifBkgdSubProcess = 0;
+BOOL    sta_ifBkgdStunProc = 0;
 extern  BOOL g_MainLoopFlag;
 
-BOOL
-ifBkgdSubProcess()
+BOOL 
+ifBkgdStunProc()
 {
-	return sta_ifBkgdSubProcess;
+	return sta_ifBkgdStunProc;
 }
 
 char*
@@ -136,24 +137,27 @@ BkgdNatTypeNotify(struct Process *pa_)
 {
 	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_ , struct STUNProc , proc);
 
+	printf("NAT type: %d ",pProc->NatTypeRes);
+
 	switch( pProc->NatTypeRes )
 	{
 		case NAT_T_FULL_CONE:
-			printf("NAT type: full cone. \n");
+			printf("(full cone)\n");
 			break;
 		case NAT_T_RESTRICTED:
-			printf("NAT type: restricted cone. \n");
+			printf("(restricted cone)\n");
 			break;
 		case NAT_T_PORT_RESTRICTED:
-			printf("NAT type: port restricted cone. \n");
+			printf("(port restricted cone)\n");
 			break;
 		case NAT_T_SYMMETRIC:
-			printf("NAT type: symmetric \n");
+			printf("(symmetric)\n");
 			break;
 		default:
-			printf("NAT type: unknown. \n");
+			printf("(unknown)\n");
 	}
 	
+	sta_ifBkgdStunProc =0;
 	BkgdProcEndCallbk( pa_ );
 }
 
@@ -377,7 +381,9 @@ TK_THREAD( BackGround )
 				{
 					SetStunProcByKeyInfo(&StunProc,pKeyInfo);
 					ProcessStart( &StunProc.proc , pBkgdArgs->pProcList );
+
 					sta_ifBkgdSubProcess = 1;
+					sta_ifBkgdStunProc =1;
 				}
 				else
 				{

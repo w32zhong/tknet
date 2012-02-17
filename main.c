@@ -152,10 +152,10 @@ no_bdg_peer:
 	while( g_MainLoopFlag )
 	{
 		MutexLock(&g_BkgdMutex);
-		if(!ifBkgdSubProcess())
+		if(!ifBkgdStunProc())
 			SockRead(&MainSock);
 		DoProcessing( &ProcList );
-		if(!ifBkgdSubProcess())
+		if(!ifBkgdStunProc())
 			MainSock.RecvLen = 0;
 		MutexUnlock(&g_BkgdMutex);
 

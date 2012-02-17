@@ -92,7 +92,7 @@ ON_CONNECT()
 		pNewProc->addr = pa_addr;
 		pNewProc->proc.NotifyCallbk = &ConnectionOvertimeNotify;
 
-		PROCESS_ADD_STEP( &pNewProc->proc , chat , 60000 , 0 );
+		PROCESS_ADD_STEP( &pNewProc->proc , chat , 180000 , 0 );
 		ProcessSafeStart(&pNewProc->proc,pa_pProcList,pa_pINow,pa_pIForward);
 
 		sta_ifConnected = 1;
