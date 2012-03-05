@@ -26,8 +26,8 @@ struct STUNProc
 	int            HostIPVal;
 	ushort         HostPort;
 	uint           MagicCookieTemp;
-	struct NetAddr MapAddrTemp;
-	struct NetAddr ServerAddrTemp;
+	struct NetAddr MapAddr;
+	struct NetAddr ChangeAddr;
 	uchar          NatTypeRes;
 };
 

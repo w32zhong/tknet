@@ -15,7 +15,11 @@
 
 #include "tknet.h"
 
-struct NetAddr sta_addr;
+#define OPT_MAPADDR_RES     0
+#define OPT_CHANGEADDR_RES  1
+
+struct NetAddr sta_MapAddrRes;
+struct NetAddr sta_ChangeAddrRes;
 
 int 
 StunFormulateRequest(struct StunHead* out_head)
@@ -63,17 +67,41 @@ StunFormulateChangeRequest(struct ChangeRequest* out_head , uchar pa_opt)
 }
 
 static void 
-SetPortRes( ushort pa_port )
+SetPortRes( uchar pa_ResTypeOpt , ushort pa_port )
 {
-	VCK( sta_addr.port != 0 && sta_addr.port != pa_port ,;);
-	sta_addr.port = pa_port;
+	if(pa_ResTypeOpt == OPT_MAPADDR_RES)
+	{
+		VCK( sta_MapAddrRes.port != 0 && sta_MapAddrRes.port != pa_port ,;);
+		sta_MapAddrRes.port = pa_port;
+	}
+	else if(pa_ResTypeOpt == OPT_CHANGEADDR_RES)
+	{
+		VCK( sta_ChangeAddrRes.port != 0 && sta_ChangeAddrRes.port != pa_port ,;);
+		sta_ChangeAddrRes.port = pa_port;
+	}
+	else
+	{
+		TK_EXCEPTION("ResTypeOpt");
+	}
 }
 
 static void 
-SetIPRes( uint pa_IPVal )
+SetIPRes( uchar pa_ResTypeOpt , uint pa_IPVal )
 {
-	VCK( sta_addr.IPv4 != 0 && sta_addr.IPv4 != pa_IPVal ,;);
-	sta_addr.IPv4 = pa_IPVal;
+	if(pa_ResTypeOpt == OPT_MAPADDR_RES)
+	{
+		VCK( sta_MapAddrRes.IPv4 != 0 && sta_MapAddrRes.IPv4 != pa_IPVal ,;);
+		sta_MapAddrRes.IPv4 = pa_IPVal;
+	}
+	else if(pa_ResTypeOpt == OPT_CHANGEADDR_RES)
+	{
+		VCK( sta_ChangeAddrRes.IPv4 != 0 && sta_ChangeAddrRes.IPv4 != pa_IPVal ,;);
+		sta_ChangeAddrRes.IPv4 = pa_IPVal;
+	}
+	else
+	{
+		TK_EXCEPTION("ResTypeOpt");
+	}
 }
 
 static void 
@@ -86,10 +114,10 @@ StunGetValue(ushort pa_attr, uint pa_i , int pa_val , uint pa_MagicCookie)
 		{
 		case 0:
 			VCK( pa_val>>16 != 0x1 , break; );//not IPv4
-			SetPortRes((ushort)(pa_val & 0xffff));
+			SetPortRes(OPT_MAPADDR_RES,(ushort)(pa_val & 0xffff));
 			break;
 		case 1:
-			SetIPRes(pa_val);
+			SetIPRes(OPT_MAPADDR_RES,pa_val);
 			break;
 
 		default:
@@ -104,16 +132,35 @@ StunGetValue(ushort pa_attr, uint pa_i , int pa_val , uint pa_MagicCookie)
 		case 0:
 			VCK( pa_val>>16 != 0x1 , break; );//not IPv4
 			pa_val ^= pa_MagicCookie >> 16;
-			SetPortRes((ushort)(pa_val & 0xffff));
+			SetPortRes(OPT_MAPADDR_RES,(ushort)(pa_val & 0xffff));
 			break;
 		case 1:
 			pa_val ^= pa_MagicCookie;
-			SetIPRes(pa_val);
+			SetIPRes(OPT_MAPADDR_RES,pa_val);
 			break;
 
 		default:
 			break;
 		}
+	}
+	else if( pa_attr == 0x0005 )
+	{
+		//CHANGED-ADDRESS
+		switch( pa_i )
+		{
+		case 0:
+			VCK( pa_val>>16 != 0x1 , break; );//not IPv4
+			SetPortRes(OPT_CHANGEADDR_RES,(ushort)(pa_val & 0xffff));
+			break;
+		case 1:
+			SetIPRes(OPT_CHANGEADDR_RES,pa_val);
+			break;
+
+		default:
+			break;
+		}
+		
+		printf("CHANGED-ADDRESS attribute recved\n");
 	}
 	else if( pa_attr == 0x0009 )
 	{
@@ -155,14 +202,17 @@ StunGetAttrLenFromHead( void *in_data , uint pa_MagicCookie )
 	return ntohs( pHead->length );
 }
 
-struct NetAddr
-StunGetPublicNetAddr(void *in_data, uint pa_len , uint pa_MagicCookie)
+BOOL
+StunGetResult(void *in_data, uint pa_len , uint pa_MagicCookie , 
+		struct NetAddr *out_MapAddrRes , struct NetAddr *out_ChangeAddrRes)
 {
 	uint now; //offset from head (in bytes)
 	uint AttrLen = StunGetAttrLenFromHead(in_data , pa_MagicCookie);
-	memset(&sta_addr , 0 , sizeof(sta_addr));
 	
-	VCK(AttrLen != pa_len - sizeof(struct StunHead) , goto ret; );
+	memset(&sta_MapAddrRes , 0 , sizeof(sta_MapAddrRes));
+	memset(&sta_ChangeAddrRes , 0 , sizeof(sta_ChangeAddrRes));
+	
+	VCK(AttrLen != pa_len - sizeof(struct StunHead) , return 0; );
 
 	now = sizeof(struct StunHead);
 	while( now < pa_len )
@@ -170,9 +220,15 @@ StunGetPublicNetAddr(void *in_data, uint pa_len , uint pa_MagicCookie)
 		StunGetAttributes((char*)in_data + now,  &now , pa_MagicCookie);
 	}
 
-	VCK( sta_addr.IPv4 == 0 ||
-		sta_addr.port == 0 ,;);
+	VCK( sta_MapAddrRes.IPv4 == 0 ||
+		sta_MapAddrRes.port == 0 ,;);
+	
+	*out_MapAddrRes = sta_MapAddrRes;
 
-ret:
-	return sta_addr;
+	VCK( sta_ChangeAddrRes.IPv4 == 0 ||
+		sta_ChangeAddrRes.port == 0 ,;);
+	
+	*out_ChangeAddrRes = sta_ChangeAddrRes;
+
+	return 1;
 }

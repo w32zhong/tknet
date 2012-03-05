@@ -24,17 +24,18 @@ STEP( BindingRequest )
 
 	if( SockRead( pProc->pSock ) )
 	{
-		AddrTemp = StunGetPublicNetAddr(pProc->pSock->RecvBuff,pProc->pSock->RecvLen,pProc->MagicCookieTemp);
-		VCK( ifGetPublicAddrSucc(&AddrTemp) == 0 , return PS_CALLBK_RET_GO_ON; );
-		pProc->MapAddrTemp = AddrTemp; 
+		VCK( 0 == StunGetResult(pProc->pSock->RecvBuff,
+				pProc->pSock->RecvLen,pProc->MagicCookieTemp,
+				&pProc->MapAddr,&pProc->ChangeAddr) ,return PS_CALLBK_RET_GO_ON; );
 
+		//print details 
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
-		pProc->ServerAddrTemp = AddrTemp;
-		
-		GetAddrText(&pProc->ServerAddrTemp,AddrStr);
+		GetAddrText(&AddrTemp,AddrStr);
 		printf("recv STUN from %s ,",AddrStr);
-		GetAddrText(&pProc->MapAddrTemp,AddrStr);
-		printf("saying that my public address is %s\n",AddrStr);
+		GetAddrText(&pProc->MapAddr,AddrStr);
+		printf("saying that my public address is %s",AddrStr);
+		GetAddrText(&pProc->ChangeAddr,AddrStr);
+		printf(" and 'change address' is %s\n",AddrStr);
 
 		return PS_CALLBK_RET_DONE;
 	}
@@ -43,7 +44,10 @@ STEP( BindingRequest )
 		pProc->MagicCookieTemp = StunFormulateRequest( &stun );
 		SockLocateTa( pProc->pSock , pProc->HostIPVal , pProc->HostPort );
 		SockWrite( pProc->pSock , BYS(stun) );
-		printf("Binding request..\n");
+		
+		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
+		GetAddrText(&AddrTemp,AddrStr);
+		printf("Binding request to %s..\n",AddrStr);
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
@@ -53,45 +57,7 @@ STEP( BindingRequest )
 	return PS_CALLBK_RET_GO_ON;
 }
 
-STEP( ChangeIP )
-{
-	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_pProc , struct STUNProc , proc);
-	struct ChangeRequest cr_stun;
-	char   AddrStr[32];
-	struct NetAddr AddrTemp;
-
-	if( SockRead( pProc->pSock ) )
-	{
-		AddrTemp = StunGetPublicNetAddr(pProc->pSock->RecvBuff,pProc->pSock->RecvLen,pProc->MagicCookieTemp);
-		VCK( ifGetPublicAddrSucc(&AddrTemp) == 0 , return PS_CALLBK_RET_GO_ON; );
-		pProc->MapAddrTemp = AddrTemp; 
-
-		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
-		VCK( AddrTemp.IPv4 == pProc->ServerAddrTemp.IPv4 , return PS_CALLBK_RET_ABORT; );//check if IP has been changed. 
-		pProc->ServerAddrTemp = AddrTemp;
-		
-		GetAddrText(&pProc->ServerAddrTemp,AddrStr);
-		printf("recv STUN from %s ,",AddrStr);
-		GetAddrText(&pProc->MapAddrTemp,AddrStr);
-		printf("saying that my public address is %s\n",AddrStr);
-
-		return PS_CALLBK_RET_DONE;
-	}
-	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
-	{
-		pProc->MagicCookieTemp = StunFormulateChangeRequest( &cr_stun , STUN_CHANGE_IP );
-		SockLocateTa( pProc->pSock , pProc->HostIPVal , pProc->HostPort );
-		SockWrite( pProc->pSock , BYS(cr_stun) );
-	}
-	else if( pa_state == PS_STATE_LAST_TIME )
-	{
-		return FlagNum(3);
-	}
-
-	return PS_CALLBK_RET_GO_ON;
-}
-
-STEP( BindingRequestToAnotherIP )
+STEP( BindingRequestToAnotherServer )
 {
 	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_pProc , struct STUNProc , proc);
 	struct StunHead stun;
@@ -100,36 +66,46 @@ STEP( BindingRequestToAnotherIP )
 
 	if( SockRead( pProc->pSock ) )
 	{
-		AddrTemp = StunGetPublicNetAddr(pProc->pSock->RecvBuff,pProc->pSock->RecvLen,pProc->MagicCookieTemp);
-		VCK( ifGetPublicAddrSucc(&AddrTemp) == 0 , return PS_CALLBK_RET_GO_ON; );
-		pProc->MapAddrTemp = AddrTemp; 
-
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
-		VCK( AddrTemp.IPv4 != pProc->ServerAddrTemp.IPv4 , return PS_CALLBK_RET_ABORT; );
+		VCK( AddrTemp.IPv4 != pProc->ChangeAddr.IPv4 , return PS_CALLBK_RET_GO_ON; );
+
+		VCK( 0 == StunGetResult(pProc->pSock->RecvBuff,
+				pProc->pSock->RecvLen,pProc->MagicCookieTemp,
+				&AddrTemp,&pProc->ChangeAddr) ,return PS_CALLBK_RET_GO_ON; );
 		
-		if( AddrTemp.port == pProc->ServerAddrTemp.port )
-		{
-			pProc->NatTypeRes = NAT_T_FULL_CONE;
-		}
-		else
+		if( AddrTemp.port != pProc->MapAddr.port )
 		{
 			pProc->NatTypeRes = NAT_T_SYMMETRIC;
 		}
-
-		pProc->ServerAddrTemp = AddrTemp;
 		
-		GetAddrText(&pProc->ServerAddrTemp,AddrStr);
+		pProc->MapAddr = AddrTemp;
+
+		//print details 
+		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
+		GetAddrText(&AddrTemp,AddrStr);
 		printf("recv STUN from %s ,",AddrStr);
-		GetAddrText(&pProc->MapAddrTemp,AddrStr);
+		GetAddrText(&pProc->MapAddr,AddrStr);
 		printf("saying that my public address is %s\n",AddrStr);
 
-		return PS_CALLBK_RET_ABORT;
+		if( pProc->NatTypeRes == NAT_T_SYMMETRIC )
+		{
+			return PS_CALLBK_RET_ABORT;
+		}
+		else
+		{
+			return PS_CALLBK_RET_DONE;
+		}
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
 		pProc->MagicCookieTemp = StunFormulateRequest( &stun );
-		SockLocateTa( pProc->pSock , htonl(pProc->ServerAddrTemp.IPv4) , pProc->ServerAddrTemp.port );
+		SockLocateTa( pProc->pSock , htonl(pProc->ChangeAddr.IPv4) , STUN_DEFAULT_PORT );
+		//use STUN_DEFAULT_PORT instead of the port returned by CHANGE_ADDRESS
 		SockWrite( pProc->pSock , BYS(stun) );
+		
+		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
+		GetAddrText(&AddrTemp,AddrStr);
+		printf("Binding request to server #2(%s)..\n",AddrStr);
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
@@ -148,32 +124,82 @@ STEP( ChangePort )
 
 	if( SockRead( pProc->pSock ) )
 	{
-		AddrTemp = StunGetPublicNetAddr(pProc->pSock->RecvBuff,pProc->pSock->RecvLen,pProc->MagicCookieTemp);
-		VCK( ifGetPublicAddrSucc(&AddrTemp) == 0 , return PS_CALLBK_RET_GO_ON; );
-		pProc->MapAddrTemp = AddrTemp; 
+		VCK( 0 == StunGetResult(pProc->pSock->RecvBuff,
+				pProc->pSock->RecvLen,pProc->MagicCookieTemp,
+				&AddrTemp,&AddrTemp) ,return PS_CALLBK_RET_GO_ON; );
+		//just to check whether it is a valid STUN datagram
 
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
-		pProc->ServerAddrTemp = AddrTemp;
-		
-		GetAddrText(&pProc->ServerAddrTemp,AddrStr);
-		printf("recv STUN from %s ,",AddrStr);
-		GetAddrText(&pProc->MapAddrTemp,AddrStr);
-		printf("saying that my public address is %s\n",AddrStr);
 
-		pProc->NatTypeRes = NAT_T_RESTRICTED;
+		VCK( AddrTemp.IPv4 != ntohl(pProc->HostIPVal) , return PS_CALLBK_RET_GO_ON; );
+		VCK( AddrTemp.port == pProc->HostPort , return PS_CALLBK_RET_GO_ON; );
+		//check if port has changed while IP stays the same.
 
-		return PS_CALLBK_RET_ABORT;
+		GetAddrText(&AddrTemp,AddrStr);
+		printf("recv STUN from %s \n",AddrStr);
+		//print details 
+
+		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
 		pProc->MagicCookieTemp = StunFormulateChangeRequest( &cr_stun , STUN_CHANGE_PORT );
 		SockLocateTa( pProc->pSock , pProc->HostIPVal , pProc->HostPort );
 		SockWrite( pProc->pSock , BYS(cr_stun) );
+		
+		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
+		GetAddrText(&AddrTemp,AddrStr);
+		printf("Sending ChangePort request to %s ..\n",AddrStr);
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
 		pProc->NatTypeRes = NAT_T_PORT_RESTRICTED;
+		return PS_CALLBK_RET_ABORT;
+	}
 
+	return PS_CALLBK_RET_GO_ON;
+}
+
+STEP( ChangeIP )
+{
+	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_pProc , struct STUNProc , proc);
+	struct ChangeRequest cr_stun;
+	char            AddrStr[32];
+	struct NetAddr  AddrTemp;
+
+	if( SockRead( pProc->pSock ) )
+	{
+		VCK( 0 == StunGetResult(pProc->pSock->RecvBuff,
+				pProc->pSock->RecvLen,pProc->MagicCookieTemp,
+				&AddrTemp,&AddrTemp) ,return PS_CALLBK_RET_GO_ON; );
+		//just to check whether it is a valid STUN datagram
+
+		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
+
+		VCK( AddrTemp.IPv4 == ntohl(pProc->HostIPVal) , return PS_CALLBK_RET_GO_ON; );
+		VCK( AddrTemp.port != pProc->HostPort , return PS_CALLBK_RET_GO_ON; );
+		//check if IP has changed while port stays the same.
+
+		GetAddrText(&AddrTemp,AddrStr);
+		printf("recv STUN from %s \n",AddrStr);
+		//print details 
+
+		pProc->NatTypeRes = NAT_T_FULL_CONE;
+		return PS_CALLBK_RET_DONE;
+	}
+	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
+	{
+		pProc->MagicCookieTemp = StunFormulateChangeRequest( &cr_stun , STUN_CHANGE_IP );
+		SockLocateTa( pProc->pSock , pProc->HostIPVal , pProc->HostPort );
+		SockWrite( pProc->pSock , BYS(cr_stun) );
+		
+		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
+		GetAddrText(&AddrTemp,AddrStr);
+		printf("Sending ChangeIP request to %s ..\n",AddrStr);
+	}
+	else if( pa_state == PS_STATE_LAST_TIME )
+	{
+		pProc->NatTypeRes = NAT_T_RESTRICTED;
 		return PS_CALLBK_RET_ABORT;
 	}
 
@@ -185,9 +211,9 @@ MakeProtoStunProc( struct STUNProc *pa_pStunProc ,struct Sock *pa_pSock , const 
 {
 	ProcessCons( &pa_pStunProc->proc );
 	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequest , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangeIP , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequestToAnotherIP , 2000 , 2 );
+	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequestToAnotherServer , 2000 , 2 );
 	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangePort , 2000 , 2 );
+	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangeIP , 2000 , 2 );
 
 	pa_pStunProc->HostIPVal = GetIPVal( pa_pHostIP );
 	pa_pStunProc->HostPort = pa_HostPort;

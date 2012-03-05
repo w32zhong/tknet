@@ -51,19 +51,5 @@ StunFormulateRequest(struct StunHead*);
 int 
 StunFormulateChangeRequest(struct ChangeRequest* , uchar);
 
-struct NetAddr
-StunGetPublicNetAddr(void*, uint , uint );
-
-static __inline BOOL
-ifGetPublicAddrSucc(struct NetAddr *pa_pNetAddr)
-{
-	if(pa_pNetAddr->IPv4 == 0 ||
-		pa_pNetAddr->port == 0)
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
-}
+BOOL
+StunGetResult(void *, uint , uint , struct NetAddr* , struct NetAddr *);
