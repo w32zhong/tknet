@@ -57,7 +57,7 @@ int main(int pa_argn,char **in_args)
 	BOOL                  ifClientSkipRegister = 1;
 	int                   TestPurposeNatType;
 
-	printf("v 12.2.17\n");
+	printf("v 12.3.8\n");
 	tkNetInit();
 	MutexInit(&g_BkgdMutex);
 

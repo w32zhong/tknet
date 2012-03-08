@@ -57,6 +57,51 @@ STEP( BindingRequest )
 	return PS_CALLBK_RET_GO_ON;
 }
 
+STEP( ChangeIPAndPort )
+{
+	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_pProc , struct STUNProc , proc);
+	struct ChangeRequest cr_stun;
+	char            AddrStr[32];
+	struct NetAddr  AddrTemp;
+
+	if( SockRead( pProc->pSock ) )
+	{
+		VCK( 0 == StunGetResult(pProc->pSock->RecvBuff,
+				pProc->pSock->RecvLen,pProc->MagicCookieTemp,
+				&AddrTemp,&AddrTemp) ,return PS_CALLBK_RET_GO_ON; );
+		//just to check whether it is a valid STUN datagram
+
+		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
+
+		VCK( AddrTemp.IPv4 == ntohl(pProc->HostIPVal) , return PS_CALLBK_RET_GO_ON; );
+		VCK( AddrTemp.port == pProc->HostPort , return PS_CALLBK_RET_GO_ON; );
+		//check if IP and port both has changed.
+
+		GetAddrText(&AddrTemp,AddrStr);
+		printf("recv STUN from %s \n",AddrStr);
+		//print details 
+
+		pProc->NatTypeRes = NAT_T_FULL_CONE;
+		return PS_CALLBK_RET_ABORT;
+	}
+	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
+	{
+		pProc->MagicCookieTemp = StunFormulateChangeRequest( &cr_stun , STUN_CHANGE_BOTH_IP_PORT );
+		SockLocateTa( pProc->pSock , pProc->HostIPVal , pProc->HostPort );
+		SockWrite( pProc->pSock , BYS(cr_stun) );
+		
+		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
+		GetAddrText(&AddrTemp,AddrStr);
+		printf("Sending ChangeIPAndPort request to %s ..\n",AddrStr);
+	}
+	else if( pa_state == PS_STATE_LAST_TIME )
+	{
+		return PS_CALLBK_RET_DONE;
+	}
+
+	return PS_CALLBK_RET_GO_ON;
+}
+
 STEP( BindingRequestToAnotherServer )
 {
 	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_pProc , struct STUNProc , proc);
@@ -139,7 +184,8 @@ STEP( ChangePort )
 		printf("recv STUN from %s \n",AddrStr);
 		//print details 
 
-		return PS_CALLBK_RET_DONE;
+		pProc->NatTypeRes = NAT_T_RESTRICTED;
+		return PS_CALLBK_RET_ABORT;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
@@ -160,60 +206,20 @@ STEP( ChangePort )
 	return PS_CALLBK_RET_GO_ON;
 }
 
-STEP( ChangeIP )
-{
-	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_pProc , struct STUNProc , proc);
-	struct ChangeRequest cr_stun;
-	char            AddrStr[32];
-	struct NetAddr  AddrTemp;
-
-	if( SockRead( pProc->pSock ) )
-	{
-		VCK( 0 == StunGetResult(pProc->pSock->RecvBuff,
-				pProc->pSock->RecvLen,pProc->MagicCookieTemp,
-				&AddrTemp,&AddrTemp) ,return PS_CALLBK_RET_GO_ON; );
-		//just to check whether it is a valid STUN datagram
-
-		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
-
-		VCK( AddrTemp.IPv4 == ntohl(pProc->HostIPVal) , return PS_CALLBK_RET_GO_ON; );
-		VCK( AddrTemp.port != pProc->HostPort , return PS_CALLBK_RET_GO_ON; );
-		//check if IP has changed while port stays the same.
-
-		GetAddrText(&AddrTemp,AddrStr);
-		printf("recv STUN from %s \n",AddrStr);
-		//print details 
-
-		pProc->NatTypeRes = NAT_T_FULL_CONE;
-		return PS_CALLBK_RET_DONE;
-	}
-	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
-	{
-		pProc->MagicCookieTemp = StunFormulateChangeRequest( &cr_stun , STUN_CHANGE_IP );
-		SockLocateTa( pProc->pSock , pProc->HostIPVal , pProc->HostPort );
-		SockWrite( pProc->pSock , BYS(cr_stun) );
-		
-		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
-		GetAddrText(&AddrTemp,AddrStr);
-		printf("Sending ChangeIP request to %s ..\n",AddrStr);
-	}
-	else if( pa_state == PS_STATE_LAST_TIME )
-	{
-		pProc->NatTypeRes = NAT_T_RESTRICTED;
-		return PS_CALLBK_RET_ABORT;
-	}
-
-	return PS_CALLBK_RET_GO_ON;
-}
-
 void 
 MakeProtoStunProc( struct STUNProc *pa_pStunProc ,struct Sock *pa_pSock , const char *pa_pHostIP , ushort pa_HostPort )
 {
 	ProcessCons( &pa_pStunProc->proc );
 	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequest , 2000 , 2 );
+	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangeIPAndPort , 2000 , 2 );
+	//put ChangeIPAndPort to test whether it's under a Full-cone NAT *Before* BindingRequestToAnotherServer
+	//because BindingRequestToAnotherServer will punch a hole which will lead a false judgement later.
 	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequestToAnotherServer , 2000 , 2 );
 	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangePort , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangeIP , 2000 , 2 );
+	//we can assert that we were under a Port-restricted cone NAT if nothing recved from ChangePort step
+	//without further test, because Port-restricted cone NAT actually is the most stricted NAT of all types of
+	//cone NATs and we have already confirmed our NAT is a kind of cone NAT in the BindingRequestToAnotherServer
+	//step.
 
 	pa_pStunProc->HostIPVal = GetIPVal( pa_pHostIP );
 	pa_pStunProc->HostPort = pa_HostPort;
