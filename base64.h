@@ -1,4 +1,3 @@
-
 /*
 *      This file is part of the tknet project. 
 *    which be used under the terms of the GNU General Public 
@@ -11,7 +10,6 @@
 *
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
 */ 
-
 
 void 
 Base64Encode(char *src, int src_len, char *dst);

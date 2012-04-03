@@ -1,4 +1,3 @@
-
 /*
 *      This file is part of the tknet project. 
 *    which be used under the terms of the GNU General Public 
@@ -11,7 +10,6 @@
 *
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
 */ 
-
 
 #include "tknet.h"
 
@@ -82,6 +80,12 @@ STEP( ChangeIPAndPort )
 		//print details 
 
 		pProc->NatTypeRes = NAT_T_FULL_CONE;
+		//we are not sure if it is a 'cone NAT' actually, because cone NAT test
+		//occurs in the next step. However , it doesn't matter because a absolute
+		//Full cone NAT is only used in main bridge server , which is maintained 
+		//by tknet maintainers ,who are supposed to be capable of using background 
+		//command ('nat' cmd) to test further.
+
 		return PS_CALLBK_RET_ABORT;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )

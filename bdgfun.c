@@ -1,4 +1,3 @@
-
 /*
 *      This file is part of the tknet project. 
 *    which be used under the terms of the GNU General Public 
@@ -11,7 +10,6 @@
 *
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
 */ 
-
 
 #include "tknet.h"
 
@@ -201,7 +199,8 @@ BdgSubServerProcInit()
 	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgErrReturnServer , 2000 , 2 );
 }
 
-void 
+
+struct BridgeClientProcPa*
 BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct ProcessingList *pa_pProcList,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char *pa_pTargetNameID , BOOL pa_ifSkipRegister)
 //TaName can be NULL
 {
@@ -230,4 +229,6 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientConnectRequire , 2000 , 2);
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientDoConnectAddr , 2000 , 2);
 	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientMultiSendNotify , 800 , 2);
+
+	return pBCPPa;
 }

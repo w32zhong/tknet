@@ -1,4 +1,3 @@
-
 /*
 *      This file is part of the tknet project. 
 *    which be used under the terms of the GNU General Public 
@@ -11,7 +10,6 @@
 *
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
 */ 
-
 
 #define PEER_NAME_ID_LEN  16
 
@@ -130,7 +128,7 @@ FreeBridgeServer(struct BridgeProc *);
 void 
 BridgeClientTryBdgServerProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock *);
 
-void 
+struct BridgeClientProcPa*
 BridgeMakeClientProc(struct BridgeProc *, struct Sock *,struct ProcessingList *,struct NetAddr *, char * ,uchar , char* ,BOOL);
 
 void 

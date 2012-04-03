@@ -1,4 +1,3 @@
-
 /*
 *      This file is part of the tknet project. 
 *    which be used under the terms of the GNU General Public 
@@ -12,7 +11,6 @@
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
 */ 
 
-
 #include "tknet.h"
 
 BOOL             g_MainLoopFlag = 1;
@@ -22,11 +20,14 @@ struct NetAddr   g_BdgPeerAddr;
 char             g_TargetName[PEER_NAME_ID_LEN];
 char             g_MyName[PEER_NAME_ID_LEN];
 
-extern void ON_CONNECT();//demo
+static BOOL      sta_ifBeginNewConnection = 0;
 
-void tkNetInit()
+extern void ON_CONNECT();
+
+static void 
+tkNetInit()
 {
-	g_ConnectionNotify = &OnConnect;//demo
+	g_ConnectionNotify = &OnConnect;
 	tkInitRandom();
 	tkLogInit();
 	SockInit();
@@ -35,27 +36,40 @@ void tkNetInit()
 	g_MyName[0]='\0';
 }
 
-void tkNetUninit()
+static void 
+tkNetUninit()
 {
 	SockDestory();
 	tkLogClose();
 	printf("unfree memory:%d \n",g_allocs);
 }
 
-int main(int pa_argn,char **in_args)
+void tkNetConnect(char *pa_pName)
 {
-	struct KeyInfoCache   KeyInfoCache;
-	struct ProcessingList ProcList;
-	struct BackGroundArgs BkgdArgs;
-	struct PeerData       PeerDataRoot;
-	struct Iterator       ISeedPeer;
-	struct Sock           MainSock;
-	struct BridgeProc     BdgServerProc;
-	struct BridgeProc     BdgClientProc;
-	char                  BdgPeerAddrStr[32];
-	char                  *pTargetName = NULL;
-	BOOL                  ifClientSkipRegister = 1;
-	int                   TestPurposeNatType;
+	MutexLock(&g_BkgdMutex);
+
+	if( pa_pName != NULL )
+		strcpy( g_TargetName , pa_pName );
+
+	MutexUnlock(&g_BkgdMutex);
+	sta_ifBeginNewConnection = 1;
+}
+
+int TknetMain(int pa_argn,char **in_args)
+{
+	struct KeyInfoCache        KeyInfoCache;
+	struct ProcessingList      ProcList;
+	struct BackGroundArgs      BkgdArgs;
+	struct PeerData            PeerDataRoot;
+	struct Iterator            ISeedPeer;
+	struct Sock                MainSock;
+	struct BridgeProc          BdgServerProc;
+	struct BridgeProc          BdgClientProc;
+	char                       BdgPeerAddrStr[32];
+	char                       *pTargetName = NULL;
+	BOOL                       ifClientSkipRegister = 1;
+	int                        TestPurposeNatType;
+	struct BridgeClientProcPa  *pBCPPa = NULL;
 
 	printf("v 12.3.8\n");
 	tkNetInit();
@@ -137,7 +151,7 @@ int main(int pa_argn,char **in_args)
 
 no_bdg_peer:
 
-	BridgeMakeClientProc(&BdgClientProc,&MainSock,&ProcList,&g_BdgPeerAddr,g_MyName,g_NATtype,pTargetName,ifClientSkipRegister);
+	pBCPPa = BridgeMakeClientProc(&BdgClientProc,&MainSock,&ProcList,&g_BdgPeerAddr,g_MyName,g_NATtype,pTargetName,ifClientSkipRegister);
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 
 	BkgdArgs.pPeerDataRoot = &PeerDataRoot;
@@ -158,6 +172,12 @@ no_bdg_peer:
 		if(!ifBkgdStunProc())
 			MainSock.RecvLen = 0;
 		MutexUnlock(&g_BkgdMutex);
+
+		if(sta_ifBeginNewConnection && pBCPPa)
+		{
+			pBCPPa->pTargetNameID = g_TargetName;
+			sta_ifBeginNewConnection = 0;
+		}
 
 		tkMsSleep(100);
 	}

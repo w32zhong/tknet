@@ -2,21 +2,18 @@ INTRO:
 
   tknet (originally named twnet) is a simple-oriented cross-platform P2P library especially aimed at low cost embedded systems.
 
-  tknet uses traditional centralized server-based service model ,However, distinguished from other P2P applications,the main feature of tknet enable tknet maintainers to use e-mail servers to track new tknet center P2P servers(we call it bridge peer or BDG peer) when others are closed down.
-  tknet is still under construction , at least it is not implementable as any binary libraries for developers, but the latest version (v12.2.16 ,a beta version) contains a chat demo implementation (demo.c) to illustrate the basic uses and test its working.
+  tknet uses traditional centralized server-based service model. However, differing from other P2P applications, the main feature of tknet enables tknet maintainers to use e-mail servers to track new tknet center P2P servers(namely bridge peer or BDG peer) when others are closed down.
+  The aim of tknet is to provide binary libraries available for developers to achieve funcions mentioned above, implementation codes(demo.c) can be found under the ./test folder.
 
 BUILD:
 
-  STEP 1: tknet is built using Scons (see http://www.scons.org/) , please download tools related before first build the project. OpenSSL dev library are also required, but if you don't want to enable the SSL feature , uncomment the '#define TK_CONFIG_SOCK_SSL_ENABLE' in tknet.h and only link pthread when building the project (the easy way is to edit the tknet.sh and delete other libraries designated to C compiler).
-  STEP 2: simply execute the tknet.sh ,and executable file are created under ./bin folder. Also, some test bins are put in the ./testbin folders.
+  STEP 1: tknet is built using Scons (see http://www.scons.org/) , please download tools related before first build the project. OpenSSL dev library are also required if you want to enable the SSL feature.
+  STEP 2: run the './tknet.sh buildall' command in tknet directory , executable file are created under ./bin folder.
 
 TEST:
 
-  The testbin folders contain already configured config-files for tests in Loopback , to start a test, execute the 'run' binary in bin0 to bin3 in order.
-  After you see 'client register ok' in console , you can go to focus the console opened from bin0 (represents the BDG peer) and input 'peers' , now you can see the registered peers and their name which is configured by tknet.info file of each folder.
-  The most easy way to establish a connection between peers is to focus one console opened form bin1 bin2 or bin3 , and type connect command ,for instance ,focus the console opened from bin2 and input 'connect Noel' (Noel is the name ID of peer from bin3 which is configured by its own tknet.info config-file) , after the connecting process end , the two consoles (bin2 and bin3) can 'chat' with each other.
-  You can type 'help' command in tknet console before connection to see other implemented commands ,or contact the author for more information.
-  It's hard to explain the theory of detailed ways of using tknet in this README, but if you have any idea or want to participate in tknet project. Please send a email to clock126@126.com.
+  run the './tknet.sh test' command to start a local test environment . type 'help' command in console before connection to see other implemented commands .
+  Detailed ways of using tknet please send me an email: clock126@126.com .
 
 LICENSE:
 
