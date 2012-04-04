@@ -58,8 +58,9 @@ static void
 ConnectionOvertimeNotify(struct Process *pa_)
 {
 	struct ChatProcess *pChatProc = GET_STRUCT_ADDR(pa_,struct ChatProcess,proc);
-	tkfree(pChatProc);
+	ProcessTraceSteps(pa_);
 	ProcessFree(pa_);
+	tkfree(pChatProc);
 	sta_ifConnected = 0;
 	BkgdLeaveSubProcess();
 	printf("Connection overtime.\n");
@@ -78,7 +79,7 @@ ON_CONNECT()
 		pNewProc->addr = pa_addr;
 		pNewProc->proc.NotifyCallbk = &ConnectionOvertimeNotify;
 
-		PROCESS_ADD_STEP( &pNewProc->proc , chat , 180000 , 0 );
+		PROCESS_ADD_STEP( &pNewProc->proc , chat , 32000 , 0 );
 		ProcessSafeStart(&pNewProc->proc,pa_pProcList,pa_pINow,pa_pIForward);
 
 		sta_ifConnected = 1;
