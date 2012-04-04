@@ -22,8 +22,6 @@ char             g_MyName[PEER_NAME_ID_LEN];
 
 static BOOL      sta_ifBeginNewConnection = 0;
 
-extern void ON_CONNECT();
-
 static void 
 tkNetInit()
 {
@@ -44,7 +42,8 @@ tkNetUninit()
 	printf("unfree memory:%d \n",g_allocs);
 }
 
-void tkNetConnect(char *pa_pName)
+void 
+tkNetConnect(const char *pa_pName)
 {
 	MutexLock(&g_BkgdMutex);
 
@@ -55,7 +54,8 @@ void tkNetConnect(char *pa_pName)
 	sta_ifBeginNewConnection = 1;
 }
 
-int TknetMain(int pa_argn,char **in_args)
+int 
+tkNetMain(int pa_argn,char **in_args)
 {
 	struct KeyInfoCache        KeyInfoCache;
 	struct ProcessingList      ProcList;
@@ -71,7 +71,8 @@ int TknetMain(int pa_argn,char **in_args)
 	int                        TestPurposeNatType;
 	struct BridgeClientProcPa  *pBCPPa = NULL;
 
-	printf("v 12.3.8\n");
+	printf("tknet \n build: " TKNET_VER "\n");
+
 	tkNetInit();
 	MutexInit(&g_BkgdMutex);
 
@@ -101,12 +102,12 @@ int TknetMain(int pa_argn,char **in_args)
 	
 	if( g_TargetName[0] != '\0' )
 	{
-		printf("Target Name: %s \n", g_TargetName);
-		pTargetName = g_TargetName; 
+		printf("target name: %s \n", g_TargetName);
+		tkNetConnect(NULL);
 	}
 	else
 	{
-		printf("Target Name unset. \n");
+		printf("target name unset. \n");
 	}
 
 	if(g_ifConfigAsFullCone)
@@ -151,7 +152,8 @@ int TknetMain(int pa_argn,char **in_args)
 
 no_bdg_peer:
 
-	pBCPPa = BridgeMakeClientProc(&BdgClientProc,&MainSock,&ProcList,&g_BdgPeerAddr,g_MyName,g_NATtype,pTargetName,ifClientSkipRegister);
+	pBCPPa = BridgeMakeClientProc(&BdgClientProc,&MainSock,&ProcList,&g_BdgPeerAddr,
+			g_MyName,g_NATtype,pTargetName,ifClientSkipRegister);
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 
 	BkgdArgs.pPeerDataRoot = &PeerDataRoot;

@@ -1,1 +1,1 @@
-Library('libtknet',Glob('*.c'),LIBS=['mcheck','ssl','crypto','dl','pthread'],CCFLAGS = '-Wall -Werror=return-type');
+Library('libtknet',Glob('./*.c'),LIBS=['mcheck','ssl','crypto','dl','pthread'],CCFLAGS = '-Wall -Werror=return-type');

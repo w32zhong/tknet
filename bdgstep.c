@@ -89,7 +89,7 @@ STEP( BdgConnectRequireServer )
 
 	if( pa_state == PS_STATE_OVERTIME)
 	{
-		//printf("I am free.\n");
+		//printf("I am idle.\n");
 	}
 	if(pa_state == PS_STATE_LAST_TIME)
 	{
@@ -139,7 +139,12 @@ STEP( BdgConnectRequireReply )
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
 	{
-		return PS_CALLBK_RET_ABORT;
+		return FlagName(pa_pProc,"BdgConnectRequireServer");
+		//do not return PS_CALLBK_RET_ABORT , because under some
+		//situations , over-time can be a result of the other side
+		//peer's trying to response another peer in his 'wait' step.
+		//we need to return BdgConnectRequireServer to confirm whether
+		//it is alive.
 	}
 
 	return PS_CALLBK_RET_GO_ON;

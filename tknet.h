@@ -11,6 +11,10 @@
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
 */ 
 
+#ifdef _MSC_VER
+#pragma warning(disable:4996)
+#endif
+
 #include "head.h"
 #include "sysi.h"
 
@@ -33,6 +37,7 @@
 #include "stun.h"
 #include "nattype.h"
 
+struct PeerData;
 #include "bdgmsg.h"
 #include "relay.h"
 #include "peerdata.h"
@@ -41,7 +46,10 @@
 #include "bkgd.h"
 
 void 
-tkNetConnect(char *);
+ON_CONNECT();
+
+void 
+tkNetConnect(const char *);
 
 int 
-TknetMain(int ,char **);
+tkNetMain(int ,char **);

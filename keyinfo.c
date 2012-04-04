@@ -585,7 +585,7 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 			strcpy(g_TargetName,pNextWord);
 		}
 
-		printf("use config: port %d,named %s.\n",pa_pInfo->addr.port,g_MyName);
+		printf("using config: port %d,named %s.\n",pa_pInfo->addr.port,g_MyName);
 		
 		i = 0;//to count times of trys.
 		while(!SockOpen(pa_pMainSock,UDP,pa_pInfo->addr.port))

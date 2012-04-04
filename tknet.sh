@@ -1,7 +1,12 @@
 #!/bin/bash
 function get_window_id() 
 {
-    window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
+	window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
+}
+
+function set_build_time()
+{
+	echo "#define TKNET_VER \"$(date --rfc-3339=seconds)\"" > head.h
 }
 
 #dependlibs='-lssl -lcrypto -ldl -lpthread'
@@ -19,6 +24,7 @@ then
 
 elif [ $1 == 'buildarm' ]
 then
+	set_build_time
 	codefiles=`ls | grep '\.c$'`
         arm-linux-gcc -c $codefiles
         objfiles=`ls | grep '\.o$'`
@@ -35,6 +41,7 @@ then
 elif [ $1 == 'build' ]
 then
 	scons -c
+	set_build_time
 	scons
 	gcc -c './test/demo.c' -o ./demo.o
 	gcc demo.o $dependlibs -L ./ -ltknet -o ./demo
@@ -52,9 +59,16 @@ then
 	rm -rf ./bin/arm
 	rm -rf ./bin/x86
 	rm -rf ./dosformat
+	
+	rm -f ./test/bin/dir0/demo
+	rm -f ./test/bin/dir1/demo
+	rm -f ./test/bin/dir2/demo
+	rm -f ./test/bin/dir3/demo
 
 elif [ $1 == 'history' ]
 then
+	./tknet.sh clean
+
 	date --rfc-3339=seconds | grep -o '.*+' > name.tmp
 	sed -i -e 's/^/tknet /' name.tmp
 	sed -i -e 's/:/-/g' name.tmp
@@ -146,7 +160,7 @@ elif [ $1 == 'rmhead' ]
 then
 	for srcfile in *.c *.h
 	do
-		sed -i '1,15d' $srcfile
+		sed -i '1,9d' $srcfile
 	done
 
 else

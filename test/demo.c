@@ -57,8 +57,9 @@ STEP( chat )
 static void
 ConnectionOvertimeNotify(struct Process *pa_)
 {
-	struct ChatProcess *pProc = GET_STRUCT_ADDR(pa_,struct ChatProcess,proc);
-	tkfree(pProc);
+	struct ChatProcess *pChatProc = GET_STRUCT_ADDR(pa_,struct ChatProcess,proc);
+	tkfree(pChatProc);
+	ProcessFree(pa_);
 	sta_ifConnected = 0;
 	BkgdLeaveSubProcess();
 	printf("Connection overtime.\n");
@@ -92,5 +93,5 @@ ON_CONNECT()
 
 int main(int n,char **args)
 {
-	return TknetMain(n,args);
+	return tkNetMain(n,args);
 }
