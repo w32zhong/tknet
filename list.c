@@ -18,7 +18,7 @@ DEF_STRUCT_CONSTRUCTOR( ListNode ,
 		out_cons->last = out_cons;
 		)
 
-__inline struct Iterator
+struct Iterator
 GetIterator(struct ListNode* in_node)
 {
 	struct Iterator i;
@@ -36,7 +36,7 @@ GetIterator(struct ListNode* in_node)
 	return i;
 }
 
-__inline void
+void
 tk(struct Iterator* i0 ,struct Iterator* i1)
 {
 	if(i0->now == NULL)

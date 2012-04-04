@@ -1,2 +1,2 @@
-Config      127.0.0.1  8922   LAN  dir2
+Config      127.0.0.1  8922   LAN  dir2 EnableBkgd
 BridgePeer  127.0.0.1  8912 
