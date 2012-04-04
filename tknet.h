@@ -9,10 +9,17 @@
 *    http://www.gnu.org/copyleft/gpl.html
 *
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
-*/ 
+*/
+
+#ifndef __TK_NET
+#define __TK_NET 
 
 #ifdef _MSC_VER
 #pragma warning(disable:4996)
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 #include "head.h"
@@ -53,3 +60,9 @@ tkNetConnect(const char *);
 
 int 
 tkNetMain(int ,char **);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
