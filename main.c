@@ -156,6 +156,11 @@ no_bdg_peer:
 			g_MyName,g_NATtype,pTargetName,ifClientSkipRegister);
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 
+	if(g_ifBkgdEnable)
+		printf("back ground enabled.\n");
+	else
+		printf("back ground disabled.\n");
+
 	BkgdArgs.pPeerDataRoot = &PeerDataRoot;
 	BkgdArgs.pInfoCache = &KeyInfoCache;
 	BkgdArgs.pProcList = &ProcList;

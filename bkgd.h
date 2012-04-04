@@ -11,10 +11,11 @@
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
 */ 
 
-extern tkMutex g_BkgdMutex;
-extern TK_THREAD( BackGround );
-extern char g_TargetName[];
-extern struct NetAddr g_BdgPeerAddr;
+extern BOOL            g_ifBkgdEnable;
+extern tkMutex         g_BkgdMutex;
+extern                 TK_THREAD( BackGround );
+extern char            g_TargetName[];
+extern struct NetAddr  g_BdgPeerAddr;
 
 struct BackGroundArgs
 {

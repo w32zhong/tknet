@@ -16,6 +16,7 @@
 
 tkMutex g_BkgdMutex;
 
+BOOL    g_ifBkgdEnable = 0;
 char    sta_BkgdCmd[BKGD_CMD_MAX_LEN];
 BOOL    sta_ifBkgdCmdComing;
 BOOL    sta_ifBkgdSubProcess = 0;
@@ -251,6 +252,11 @@ TK_THREAD( BackGround )
 	struct KeyInfo *pKeyInfo;
 	struct BridgeClientProcPa *pBCPPa;
 	struct PeerData           *pFoundPD;
+
+	if(!g_ifBkgdEnable)
+	{
+		return NULL;
+	}
 
 	BackGroundPOP3ProcMake( &Pop3Proc ,"IP" ,0,0,"username","password");
 	Pop3Proc.proc.NotifyCallbk = &BkgdProcEndCallbk;

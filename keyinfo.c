@@ -577,14 +577,30 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 				strcpy(g_MyName,pNextWord);
 			}
 		}
-			
-		pNextWord = GetNextSeparateStr(&pText);
-		//Target Name is an optional config item.
-		if(pNextWord)
-		{
-			strcpy(g_TargetName,pNextWord);
-		}
 
+		//optional config item.
+		while(1)
+		{
+			pNextWord = GetNextSeparateStr(&pText);
+
+			if(pNextWord == NULL || (*pNextWord) == '\0')
+			{
+				break;
+			}
+			else if(0 == strcmp(pNextWord,"EnableBkgd"))
+			{
+				//treat string as bkgd thread enable/disable config
+				g_ifBkgdEnable = 1;
+			}
+			else
+			{
+				//treat string as Target Name 
+				strcpy(g_TargetName,pNextWord);
+			}
+
+			printf("he is %s\n",pNextWord);
+		}
+			
 		printf("using config: port %d,named %s.\n",pa_pInfo->addr.port,g_MyName);
 		
 		i = 0;//to count times of trys.
