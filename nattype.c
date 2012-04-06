@@ -80,13 +80,11 @@ STEP( ChangeIPAndPort )
 		//print details 
 
 		pProc->NatTypeRes = NAT_T_FULL_CONE;
-		//we are not sure if it is a 'cone NAT' actually, because cone NAT test
-		//occurs in the next step. However , it doesn't matter because a absolute
-		//Full cone NAT is only used in main bridge server , which is maintained 
-		//by tknet maintainers ,who are supposed to be capable of using background 
-		//command ('nat' cmd) to test further.
+		//we are not sure if it is a 'cone NAT' actually , but we mark it as full-cone NAT
+		//in advance . we make confirm in next step by testing whether it map the same port
+		//session when sending to a different IP.
 
-		return PS_CALLBK_RET_ABORT;
+		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
@@ -138,6 +136,11 @@ STEP( BindingRequestToAnotherServer )
 
 		if( pProc->NatTypeRes == NAT_T_SYMMETRIC )
 		{
+			return PS_CALLBK_RET_ABORT;
+		}
+		else if( pProc->NatTypeRes == NAT_T_FULL_CONE )
+		{
+			//now we assure that it is full-cone.
 			return PS_CALLBK_RET_ABORT;
 		}
 		else
