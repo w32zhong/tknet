@@ -2,18 +2,24 @@ INTRO:
 
   tknet (originally named twnet) is a simple-oriented cross-platform P2P library especially aimed at low cost embedded systems.
 
-  tknet uses traditional centralized server-based service model. However, differing from other P2P applications, the main feature of tknet enables tknet maintainers to use e-mail servers to track new tknet center P2P servers(namely bridge peer or BDG peer) when others are closed down.
-  The aim of tknet is to provide binary libraries available for developers to achieve funcions mentioned above, implementation codes(demo.c) can be found under the ./test folder.
+  tknet uses traditional centralized server-based model. However, differing from other P2P applications, the main feature of tknet enables tknet maintainers to use e-mail servers to track new tknet center P2P servers (namely bridge peer or BDG peer) lest others are broken down.
 
 BUILD:
 
-  STEP 1: tknet is built using Scons (see http://www.scons.org/) , please download tools related before first build the project. OpenSSL dev library are also required if you want to enable the SSL feature.
-  STEP 2: run the './tknet.sh buildall' command in tknet directory , executable file are created under ./bin folder.
+  STEP 1: Scons(see http://www.scons.org/) is required for building , please download related tools before first building the project. OpenSSL-dev library are also required if you want to enable the SSL feature.
+  STEP 2: Run the './tknet.sh build' command in the tknet directory , executable files are created under ./bin folder.
 
 TEST:
 
-  run the './tknet.sh test' command to start a local test environment . type 'help' command in console before connection to see other implemented commands .
-  Detailed ways of using tknet please send me an email: clock126@126.com .
+  STEP 1: Run the './tknet.sh test' command to start a local test environment in console. 
+  STEP 2: Run the 'demo' program in each console from dir0 to dir3, you will eventually see 'Connection started' prompts in dir1 and dir3 consoles.
+  STEP 3: Now, you can type words in one of the two consoles to send the words to another.
+  
+NOTE: 
+  
+  1: If your target operating system is Windows, you can run the './tknet.sh win' to generate the DOS format source codes.
+  2: Use 'help' command in 'demo' console before connection to see more implemented commands. 
+  3: Implementation code (demo.c) can be found under the ./test folder.
 
 LICENSE:
 
@@ -24,3 +30,7 @@ LICENSE:
 WHY NO DOCUMENT:
   
   I am still a student now , I WANT to write a fully documented project, but I don't have time to in this holiday. 
+
+CONTACT:
+
+  Any question please send a E-mail to clock126@126.com.
