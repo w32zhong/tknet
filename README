@@ -7,18 +7,23 @@ INTRO:
 BUILD:
 
   STEP 1: Scons(see http://www.scons.org/) is required for building , please download tools related before first building the project. OpenSSL-dev library are also required if you want to enable the SSL feature.
+
   STEP 2: Run the './tknet.sh build' command in the tknet directory , executable files and tknet binary library are created under ./bin folder.
 
 TEST:
 
-  STEP 1: Run the './tknet.sh test' command to start a local test environment in console. (A Gnome enviornment is required to test using the following steps, otherwise, you need to 'cd' to the ./test/bin directory and open each directory with a new console instead of doing STEP 1)
+  STEP 1: Run the './tknet.sh test' command to start a local test environment in console. (A Gnome enviornment is required, otherwise, you need to 'cd' to the ./test/bin directory and open each directory with a new console instead of doing this STEP)
+
   STEP 2: Run the 'demo' program in each console from dir0 to dir3, you will eventually see 'Connection started' prompts in dir1 and dir3 consoles.
+
   STEP 3: Now, you can type words in one of the two consoles to send the words to another.
   
 NOTE: 
   
   1: Run the './tknet.sh win' to generate the DOS format source codes.
+
   2: Use 'help' command in 'demo' to see more implemented commands.(you need to do this before connection)
+
   3: An implementation code demo.c is provided under the ./test folder, to illustrate a simple chatting implementation.
 
 LICENSE:
