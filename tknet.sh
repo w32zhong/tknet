@@ -92,7 +92,7 @@ then
 	cp ./bin/x86/demo ./test/bin/dir2
 	cp ./bin/x86/demo ./test/bin/dir3
 
-	dir="/home/think/Desktop/lib/"
+	dir=$(pwd)
 	rm -f ~/windows.tmp
 
 	wmctrl -o 0,0
