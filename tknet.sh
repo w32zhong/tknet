@@ -14,8 +14,7 @@ dependlibs='-lpthread'
 
 if [ ! $1 ]
 then
-	scons
-	ctags -R
+	./tknet.sh build
 
 elif [ $1 == 'buildall' ]
 then
@@ -40,6 +39,7 @@ then
 
 elif [ $1 == 'build' ]
 then
+	ctags -R *
 	scons -c
 	set_build_time
 	scons
@@ -50,6 +50,17 @@ then
 	mv libtknet.a ./bin/x86/
 	mv demo ./bin/x86/
 	cp ./bin/tknet.info ./bin/x86/
+
+	cp ./bin/x86/demo ./test/bin/dir0
+	cp ./bin/x86/demo ./test/bin/dir1
+	cp ./bin/x86/demo ./test/bin/dir2
+	cp ./bin/x86/demo ./test/bin/dir3
+
+elif [ $1 == 'experiment' ]
+then
+	./tknet.sh build
+	gcc ./test/experiment.c -I . -L ./bin/x86 -lpthread -ltknet
+	mv ./a.out ./test/experiment.out
 
 elif [ $1 == 'clean' ]
 then
@@ -87,11 +98,6 @@ then
 
 elif [ $1 == 'test' ]
 then	
-	cp ./bin/x86/demo ./test/bin/dir0
-	cp ./bin/x86/demo ./test/bin/dir1
-	cp ./bin/x86/demo ./test/bin/dir2
-	cp ./bin/x86/demo ./test/bin/dir3
-
 	dir=$(pwd)
 	rm -f ~/windows.tmp
 

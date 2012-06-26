@@ -70,6 +70,10 @@ struct BridgeClientProcPa
 	char            *pTargetNameID;
 	struct NetAddr  DirectConnectAddr;
 	BOOL            ifSkipRegister;
+	uchar           ifFastSendWait;//everytime client go to send "waiting" 
+			//message letting server begain the connection decision,
+			//it is too slow. We use this flag to let client send immediately
+			//after he returns to the wait step.
 };
 
 struct Peer

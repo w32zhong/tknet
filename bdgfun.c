@@ -220,6 +220,7 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 	pBCPPa->DirectConnectAddr.IPv4 = 0;
 	pBCPPa->DirectConnectAddr.port = 0;
 	pBCPPa->ifSkipRegister = pa_ifSkipRegister;
+	pBCPPa->ifFastSendWait = 0;
 
 	if(!pa_ifSkipRegister)
 	{

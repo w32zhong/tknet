@@ -502,6 +502,9 @@ STEP( BdgClientWait )
 
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_ECHO)
 		{
+			printf(".");//indicating "I am waiting"
+			fflush(stdout);
+
 			return PS_CALLBK_RET_REDO;
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_INFO_PUNCHING)
@@ -599,8 +602,10 @@ STEP( BdgClientWait )
 	{
 		return PS_CALLBK_RET_REDO;
 	}
-	else if(pa_state == PS_STATE_OVERTIME)
+	else if(pa_state == PS_STATE_OVERTIME || pBCPPa->ifFastSendWait )
 	{
+		pBCPPa->ifFastSendWait = 0;
+
 		SendingMsg.info = BRIDGE_MSG_INFO_WAITING;
 		SendingMsg.Relays = g_Relays;
 
@@ -635,6 +640,7 @@ STEP( BdgClientConnectRequire )
 			}
 			else
 			{
+				pBCPPa->ifFastSendWait = 1;
 				printf("go to wait\n");
 			}
 			

@@ -257,7 +257,7 @@ nextmail:
 	{
 		sprintf( StrBuff , "RETR %d\r\n" , pMail->num );
 		SockWrite( pProc->pSock , StrBys(StrBuff) );
-		printf("write: %s \n", StrBuff );
+		printf("write: %s", StrBuff ); //No need to plus '\n', StrBuff already has.
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
@@ -297,7 +297,7 @@ MakeProtoPOP3Proc( struct POP3Proc *pa_pPop3Proc , const char *pa_pHostIP , usho
 	strcpy( pa_pPop3Proc->PassWord , pa_pPassWord );
 	pa_pPop3Proc->IMailsHead = GetIterator(NULL);
 	pa_pPop3Proc->IRetrieveNow = GetIterator(NULL);
-	pa_pPop3Proc->Retrieves = 5;
+	pa_pPop3Proc->Retrieves = 5; // maximum allowed retrieves
 	pa_pPop3Proc->ifEnterSucc = 0;
 }
 

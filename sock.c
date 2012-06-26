@@ -110,7 +110,7 @@ uint GetIPVal(const char* in_text)
 	return inet_addr(in_text);
 }
 
-//when select UDP , we can call this function repeatedly.
+//when choosing UDP , we can call this function repeatedly.
 //However , TCP socket must do connect function only once.
 int
 SockLocateTa( struct Sock* pa_sock , uint in_IPVal , ushort pa_port )

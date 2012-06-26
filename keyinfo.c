@@ -597,8 +597,6 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 				//treat string as Target Name 
 				strcpy(g_TargetName,pNextWord);
 			}
-
-			printf("he is %s\n",pNextWord);
 		}
 			
 		printf("using config: port %d,named %s.\n",pa_pInfo->addr.port,g_MyName);
