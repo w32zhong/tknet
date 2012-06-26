@@ -106,4 +106,15 @@ void
 ProcessFree( struct Process* );
 
 void
-ProcessTraceSteps(struct Process* );
+ProcessTraceSteps( struct Process* );
+
+BOOL
+ProcessDisattach( struct Process* pa_pProc , struct ProcessingList *pa_pProcList );
+//if you don't want to free the process
+//after abortion, call this function to stop
+//this process from executing. When disattached,
+//the process will start from begining next time
+//it is started by ProcessStart().
+
+void
+ProcessingListTrace(struct ProcessingList *);

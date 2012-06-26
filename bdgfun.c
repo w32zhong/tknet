@@ -41,13 +41,16 @@ void
 BdgClientProcNotify(struct Process *pa_)
 {
 	struct BridgeProc *pProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
-	if(pProc->Else)
-		tkfree(pProc->Else);
+	DEF_AND_CAST(pBCPPa,struct BridgeClientProcPa,pProc->Else);
 	
+	printf("Client proc end:\n");
 	ProcessTraceSteps(pa_);
-	ProcessFree(pa_);
+	printf("\n");
 
-	printf("client proc end\n");
+	//NEVER free the client Proc in the main loop
+	//we free it by calling the FreeBdgClientProc() after main loop.
+	//instead, we set the ifConnected flag.
+	pBCPPa->ifConnected = 0;
 }
 
 void
@@ -56,10 +59,10 @@ BdgSubServerProcNotify(struct Process *pa_)
 	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
 	struct PeerData *pPD = GET_STRUCT_ADDR(pBdgProc,struct PeerData,BdgProc);
 
+	printf("Sub Server proc end:\n");
 	ProcessTraceSteps(pa_);
+	printf("\n");
 	PeerDataDele(pPD,pBdgProc->pSeedPeerCache);
-
-	printf("sub server proc end\n");
 }
 
 struct PeerData*
@@ -212,7 +215,7 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 	pa_pBdgProc->pProcList = pa_pProcList;
 	pa_pBdgProc->s.addr = *pa_pAddr;
 	pa_pBdgProc->a.NATType = pa_MyNatType;
-	pa_pBdgProc->Else = pBCPPa;
+	pa_pBdgProc->Else = pBCPPa;//Give a extra struct to client process
 	pa_pBdgProc->proc.NotifyCallbk = &BdgClientProcNotify;
 
 	pBCPPa->pMyNameID = pa_pMyNameID;
@@ -221,6 +224,7 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 	pBCPPa->DirectConnectAddr.port = 0;
 	pBCPPa->ifSkipRegister = pa_ifSkipRegister;
 	pBCPPa->ifFastSendWait = 0;
+	pBCPPa->ifConnected = 0;
 
 	if(!pa_ifSkipRegister)
 	{

@@ -100,7 +100,8 @@ STEP( ProtoPOP3BackGround )
 		    strcmp(cmd , "list") && 
 		    strcmp(cmd , "retr") )
 		{
-			printf("unknown POP3 cmd.\n");
+			printf("unknown POP3 cmd. Available:\n"
+					"quit,dele,list,retr. \n");
 		}
 		else
 		{
@@ -136,25 +137,7 @@ BkgdNatTypeNotify(struct Process *pa_)
 {
 	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_ , struct STUNProc , proc);
 
-	printf("NAT type: %d ",pProc->NatTypeRes);
-
-	switch( pProc->NatTypeRes )
-	{
-		case NAT_T_FULL_CONE:
-			printf("(full cone)\n");
-			break;
-		case NAT_T_RESTRICTED:
-			printf("(restricted cone)\n");
-			break;
-		case NAT_T_PORT_RESTRICTED:
-			printf("(port restricted cone)\n");
-			break;
-		case NAT_T_SYMMETRIC:
-			printf("(symmetric)\n");
-			break;
-		default:
-			printf("(unknown)\n");
-	}
+	NatTypePrint(pProc->NatTypeRes);
 	
 	sta_ifBkgdStunProc =0;
 	BkgdProcEndCallbk( pa_ );
@@ -250,7 +233,7 @@ TK_THREAD( BackGround )
 	BOOL SmtpSockOpened = 0;
 	char *pCmd,*pArg0,*pArg1;
 	struct KeyInfo *pKeyInfo;
-	struct BridgeClientProcPa *pBCPPa;
+	DEF_AND_CAST(pBCPPa,struct BridgeClientProcPa,pBkgdArgs->pBdgClientProc->Else);
 	struct PeerData           *pFoundPD;
 
 	if(!g_ifBkgdEnable)
@@ -306,6 +289,7 @@ TK_THREAD( BackGround )
 						"  readkey\n"
 						"  cproc\n"
 						"  relays\n"
+						"  pltrace\n"
 						"  peers\n");
 			}
 			else if( strcmp(pCmd ,"relays") == 0 )
@@ -318,22 +302,43 @@ TK_THREAD( BackGround )
 			}
 			else if( strcmp(pCmd ,"cproc") == 0 )
 			{
+				printf("status: ");
+				if(pBCPPa->ifConnected)
+				{
+					printf("Connected.\n");
+				}
+				else
+				{
+					printf("Disconnected.\n");
+				}
+
 				ProcessTraceSteps(&(pBkgdArgs->pBdgClientProc->proc));
 			}
 			else if( strcmp(pCmd ,"connect") == 0 )
 			{
-				strcpy(g_TargetName,pArg0);
-				pBCPPa = (struct BridgeClientProcPa*)(pBkgdArgs->pBdgClientProc->Else);
-				pBCPPa->pTargetNameID = g_TargetName;
+				if(pBCPPa->ifConnected)
+				{
+					strcpy(g_TargetName,pArg0);
+					pBCPPa->pTargetNameID = g_TargetName;
+				}
+				else
+				{
+					printf("Failed: Client is disconnected to BDG server now.\n");
+				}
 			}
 			else if( strcmp(pCmd ,"direct") == 0 )
 			{
-				pBCPPa = (struct BridgeClientProcPa*)(pBkgdArgs->pBdgClientProc->Else);
-				
 				if(*pArg0 == '\0')
 				{
-					printf("direct connect to BDG server...\n");
-					pBCPPa->DirectConnectAddr = g_BdgPeerAddr;
+					if(pBCPPa->ifConnected)
+					{
+						printf("direct connect to BDG server...\n");
+						pBCPPa->DirectConnectAddr = g_BdgPeerAddr;
+					}
+					else
+					{
+						printf("Failed: Client is disconnected to BDG server now.\n");
+					}
 				}
 				else
 				{
@@ -376,6 +381,10 @@ TK_THREAD( BackGround )
 			else if( strcmp(sta_BkgdCmd ,"exit") == 0 )
 			{
 				break;
+			}
+			else if( strcmp(sta_BkgdCmd ,"pltrace") == 0 )
+			{
+				ProcessingListTrace(pBkgdArgs->pProcList);
 			}
 			else if( strcmp(sta_BkgdCmd ,"nat") == 0 )
 			{

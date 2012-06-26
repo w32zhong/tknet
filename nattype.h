@@ -31,3 +31,6 @@ struct STUNProc
 
 void 
 MakeProtoStunProc( struct STUNProc * ,struct Sock * , const char * , ushort );
+
+void
+NatTypePrint(uchar);

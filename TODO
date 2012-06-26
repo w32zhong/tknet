@@ -2,5 +2,6 @@ This file lists what functions and ideas worth adding into the project.
 .bridge peer checks the public IP, if it has changed, informs others by sending a new mail with new IP address.
 .enable the configurating all the time parameter in all steps instead of gaving a fixed number for each.
 .add re-send & circle-buffer utilities.
-.the ability to trace a process in a clear fashion.
 .the ability to update tknet program at remote.
+.printf replace
+.trace why when serverside bdg failed

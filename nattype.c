@@ -233,3 +233,27 @@ MakeProtoStunProc( struct STUNProc *pa_pStunProc ,struct Sock *pa_pSock , const 
 	pa_pStunProc->pSock = pa_pSock;
 	pa_pStunProc->NatTypeRes = NAT_T_UNKNOWN;
 }
+
+void
+NatTypePrint(uchar pa_type)
+{
+	printf("NAT type: %d ",pa_type);
+
+	switch( pa_type )
+	{
+		case NAT_T_FULL_CONE:
+			printf("(full cone)\n");
+			break;
+		case NAT_T_RESTRICTED:
+			printf("(restricted cone)\n");
+			break;
+		case NAT_T_PORT_RESTRICTED:
+			printf("(port restricted cone)\n");
+			break;
+		case NAT_T_SYMMETRIC:
+			printf("(symmetric)\n");
+			break;
+		default:
+			printf("(unknown)\n");
+	}
+}

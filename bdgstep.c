@@ -87,10 +87,6 @@ STEP( BdgConnectRequireServer )
 		}
 	}
 
-	if( pa_state == PS_STATE_OVERTIME)
-	{
-		//printf("I am idle.\n");
-	}
 	if(pa_state == PS_STATE_LAST_TIME)
 	{
 		return PS_CALLBK_RET_ABORT;
@@ -182,7 +178,7 @@ STEP( BdgConnectDecision )
 
 				sta_AccRelayID ++;
 				if(sta_AccRelayID == 0)
-				{//over-flow
+				{//overflow
 					sta_AccRelayID = 1;
 				}
 			}
@@ -390,7 +386,9 @@ STEP( BridgeMain )
 
 	if(pa_state == PS_STATE_LAST_TIME)
 	{
-		//printf("session maintain...\n");
+		printf("*");//indicating session maintaining
+		fflush(stdout);
+
 		BdgMsgWrite(pa_pProc,&SendingMsg,&SessionMaintainAddr);
 	
 		return PS_CALLBK_RET_REDO;
@@ -447,11 +445,15 @@ STEP( BdgClientRegister )
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_RGST_OK)
 		{
 			printf("client register ok\n");
+			pBCPPa->ifConnected = 1;//we say it is connected, we will clean this
+			                        //flag in the client proc end notification.
+
 			return PS_CALLBK_RET_DONE;
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_ERR_NAMEID_EXIST)
 		{
 			printf("client register recv name exist\n");
+
 			return PS_CALLBK_RET_ABORT;
 		}
 	}

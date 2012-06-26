@@ -101,6 +101,7 @@ LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )
 	struct Process *pProc = GET_STRUCT_ADDR_FROM_IT( pa_pINow , struct Process , UndergoLN );
 	struct ProcessStep *pStep = GET_STRUCT_ADDR_FROM_IT( &pProc->IProcessNow , struct ProcessStep , ProcStepLN );
 	struct FindStepWithFlagNumPa fswfpa;
+	DEF_AND_CAST(pProcList,struct ProcessingList,pa_else);
 
 	if( pProc->isCurrentStepFirstTime )
 	{
@@ -153,10 +154,10 @@ LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )
 	{
 		case PS_CALLBK_RET_ABORT:
 			
-			tk(pa_pINow,pa_pIForward);
 			if( pProc->NotifyCallbk != NULL )
 				pProc->NotifyCallbk( pProc );
-			LIST_SAFE_RETURN;
+
+			return ProcessDisattach(pProc,pProcList);
 		
 		case PS_CALLBK_RET_GO_ON:
 			
@@ -169,10 +170,10 @@ LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )
 
 			if( pProc->IProcessNow.now == pProc->IProcessHead.last )
 			{
-				tk(pa_pINow,pa_pIForward);
 				if( pProc->NotifyCallbk != NULL )
 					pProc->NotifyCallbk( pProc );
-				LIST_SAFE_RETURN;
+				
+				return ProcessDisattach(pProc,pProcList);
 			}
 			else
 			{
@@ -202,9 +203,22 @@ DoProcessing( struct ProcessingList *pa_pProcList )
 
 DEF_FREE_LIST_ELEMENT_CALLBACK_FUNCTION( FreeProcStep , struct ProcessStep , ProcStepLN , ; )
 
-void ProcessFree( struct Process *pa_pProc )
+void 
+ProcessFree( struct Process *pa_pProc )
 {
 	ForEach(&pa_pProc->IProcessHead,&FreeProcStep,NULL);
+}
+
+BOOL 
+ProcessDisattach( struct Process* pa_pProc , struct ProcessingList *pa_pProcList )
+{
+	struct Iterator INow = GetIterator(pa_pProc->UndergoLN.next->last);
+	struct Iterator IForward = GetIterator(pa_pProc->UndergoLN.next);
+	struct Iterator *pa_pIHead = &pa_pProcList->IUndergoProcess,
+					*pa_pINow = &INow, *pa_pIForward = &IForward;
+
+	tk(pa_pINow,pa_pIForward);
+	LIST_SAFE_RETURN;
 }
 
 static BOOL 
@@ -224,6 +238,10 @@ LIST_ITERATION_CALLBACK_FUNCTION( TraceProcStep )
 		strcpy(PrintStr , "(");
 	}
 
+	sprintf( BuffStr , "STEP%d" , pProcStep->FlagNum );
+	strcat( PrintStr , BuffStr );
+	strcat( PrintStr , ",");
+
 	if( pProcStep->pName != NULL )
 	{
 		sprintf( BuffStr , "%s" , pProcStep->pName );
@@ -233,11 +251,7 @@ LIST_ITERATION_CALLBACK_FUNCTION( TraceProcStep )
 	
 	sprintf( BuffStr , "%ld" , pProcStep->WaitClocks );
 	strcat( PrintStr , BuffStr );
-	strcat( PrintStr , ",");
-	
-	sprintf( BuffStr , "%d" , pProcStep->FlagNum );
-	strcat( PrintStr , BuffStr );
-	strcat( PrintStr , ",");
+	strcat( PrintStr , "*");
 	
 	sprintf( BuffStr , "%d" , pProcStep->MaxRetrys );
 	strcat( PrintStr , BuffStr );
@@ -295,4 +309,21 @@ FlagName(struct Process *pa_pProc ,const char *pa_pName)
 	{
 		return PS_CALLBK_RET_DONE;
 	}
+}
+
+static BOOL 
+LIST_ITERATION_CALLBACK_FUNCTION( ProcessingListTraceCallbk )
+{
+	DEF_AND_CAST(pCount,int,pa_else);
+	(*pCount) ++;
+		
+	return pa_pINow->now == pa_pIHead->last;
+}
+
+void
+ProcessingListTrace(struct ProcessingList *pa_pProcList)
+{
+	int count = 0;
+	ForEach( &pa_pProcList->IUndergoProcess , &ProcessingListTraceCallbk , &count );
+	printf("Processing %d processes. \n",count);
 }

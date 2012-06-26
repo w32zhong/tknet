@@ -126,16 +126,18 @@ tkNetMain(int pa_argn,char **in_args)
 			}
 		}
 		
-		printf("NAT type got from STUN: %d\n",g_NATtype);
+		printf("NAT type got from STUN.");
 	}
 
 	if(pa_argn == 2)
 	{
 		sscanf(in_args[1],"%d",&TestPurposeNatType);
 		g_NATtype = (uchar)TestPurposeNatType;
+		
+		printf("NAT type assigned by argument.");
 	}
 		
-	printf("final NAT type: %d\n",g_NATtype);
+	NatTypePrint(g_NATtype);
 
 	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_BRIDGEPEER,&MainSock))
 	{
@@ -173,11 +175,15 @@ no_bdg_peer:
 	while( g_MainLoopFlag )
 	{
 		MutexLock(&g_BkgdMutex);
+
 		if(!ifBkgdStunProc())
 			SockRead(&MainSock);
+
 		DoProcessing( &ProcList );
+
 		if(!ifBkgdStunProc())
 			MainSock.RecvLen = 0;
+
 		MutexUnlock(&g_BkgdMutex);
 
 		if(sta_ifBeginNewConnection && pBCPPa)
@@ -186,19 +192,19 @@ no_bdg_peer:
 			sta_ifBeginNewConnection = 0;
 		}
 
-		tkMsSleep(100);
+		tkMsSleep(50);
 	}
-
-	SockClose(&MainSock);
 
 	FreeBdgClientProc(&BdgClientProc);
 	FreeBridgeServer(&BdgServerProc);
+	
+	SockClose(&MainSock);
 
 exit:
 
 	PeerDataDestroy(&PeerDataRoot,&ISeedPeer);
 	KeyInfoUpdate( &KeyInfoCache );
-	KeyInfoWriteFile(&KeyInfoCache,"tknet.updateinfo");
+	KeyInfoWriteFile(&KeyInfoCache,"tknet.info");
 	KeyInfoFree(&KeyInfoCache);
 	RelayMuduleDestruction();
 	MutexDelete(&g_BkgdMutex);
