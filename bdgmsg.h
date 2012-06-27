@@ -81,6 +81,7 @@ struct BridgeClientProcPa
 
 struct Peer
 {
+	char           NameID[PEER_NAME_ID_LEN];
 	struct NetAddr addr;
 	uchar          NATType;
 };
@@ -96,6 +97,9 @@ struct BridgeProc
 	uint            DecisionRelayID;
 	uchar           DecisionFlag;
 	struct NetAddr  DecisionPunAddr,DecisionConAddr;
+	char            PunAddrNameID[PEER_NAME_ID_LEN];
+	char            ConAddrNameID[PEER_NAME_ID_LEN];
+	struct NetAddr addr;
 	struct NetAddr  MultiSendTo;
 	uchar           MultiSendInfo;
 	uchar           ErrCode;
@@ -184,3 +188,21 @@ extern CONNECT_CALLBK g_ConnectionNotify;
 
 #define ON_CONNECT() \
 	OnConnect(struct NetAddr pa_addr,struct Sock *pa_pSock,struct ProcessingList *pa_pProcList,struct Iterator* pa_pINow,struct Iterator *pa_pIForward)
+
+static __inline void 
+PeerTrace( struct Peer *pa_pPeer )
+{
+	char AddrText[16];
+	GetAddrText(&pa_pPeer->addr,AddrText);
+	printf("%s(%s)",pa_pPeer->NameID,AddrText);
+}
+
+static __inline void 
+BetweenMacro( struct Peer *pa_pPeer0, struct Peer *pa_pPeer1 )
+{
+	printf("between ");
+	PeerTrace( pa_pPeer0 );
+	printf(" and ");
+	PeerTrace( pa_pPeer1 );
+	printf(" . \n");
+}

@@ -17,6 +17,7 @@ DEF_STRUCT_CONSTRUCTOR( Peer ,
 		out_cons->addr.IPv4 = 0;
 		out_cons->addr.port = 0;
 		out_cons->NATType = NAT_T_UNKNOWN;
+		strcpy(out_cons->NameID,"NO Name");
 		)
 
 DEF_STRUCT_CONSTRUCTOR( BridgeProc ,
@@ -89,6 +90,7 @@ NewPeerDataWithBdgProc(struct NetAddr pa_addr,uchar pa_NATType,char *pa_pName,st
 void
 SetPeerByPeerData(struct Peer *pa_pPeer,struct PeerData *pa_pPD)
 {
+	strcpy(pa_pPeer->NameID,pa_pPD->NameID);
 	pa_pPeer->addr = pa_pPD->addr;
 	pa_pPeer->NATType = pa_pPD->NATType;
 }

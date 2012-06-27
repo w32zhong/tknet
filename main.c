@@ -126,7 +126,7 @@ tkNetMain(int pa_argn,char **in_args)
 			}
 		}
 		
-		printf("NAT type got from STUN.");
+		printf("NAT type got from STUN.\n");
 	}
 
 	if(pa_argn == 2)
@@ -134,7 +134,7 @@ tkNetMain(int pa_argn,char **in_args)
 		sscanf(in_args[1],"%d",&TestPurposeNatType);
 		g_NATtype = (uchar)TestPurposeNatType;
 		
-		printf("NAT type assigned by argument.");
+		printf("NAT type assigned by argument.\n");
 	}
 		
 	NatTypePrint(g_NATtype);

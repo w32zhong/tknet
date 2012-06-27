@@ -154,6 +154,7 @@ STEP( BdgConnectDecision )
 	uchar aType = pBdgProc->a.NATType;
 	uchar bType = pBdgProc->b.NATType;
 	struct PeerData *pSeedPD;
+	struct Peer     Peer0,Peer1;
 
 	if(CONNECT_DECISION_FLAG_BEGIN == pBdgProc->DecisionFlag)
 	{
@@ -172,6 +173,9 @@ STEP( BdgConnectDecision )
 
 				pBdgProc->DecisionPunAddr = pBdgProc->s.addr;
 				pBdgProc->DecisionConAddr = pBdgProc->a.addr;
+				
+				strcpy(pBdgProc->PunAddrNameID,pBdgProc->s.NameID);
+				strcpy(pBdgProc->ConAddrNameID,pBdgProc->a.NameID);
 
 				pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_A_SIDE_RELAY;
 				pBdgProc->DecisionRelayID = sta_AccRelayID;
@@ -189,11 +193,17 @@ STEP( BdgConnectDecision )
 			{
 				pBdgProc->DecisionPunAddr = pBdgProc->a.addr;
 				pBdgProc->DecisionConAddr = pBdgProc->b.addr;
+				
+				strcpy(pBdgProc->PunAddrNameID,pBdgProc->a.NameID);
+				strcpy(pBdgProc->ConAddrNameID,pBdgProc->b.NameID);
 			}
 			else
 			{
 				pBdgProc->DecisionPunAddr = pBdgProc->b.addr;
 				pBdgProc->DecisionConAddr = pBdgProc->a.addr;
+				
+				strcpy(pBdgProc->PunAddrNameID,pBdgProc->b.NameID);
+				strcpy(pBdgProc->ConAddrNameID,pBdgProc->a.NameID);
 			}
 
 			pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_DIRECT;
@@ -203,6 +213,8 @@ STEP( BdgConnectDecision )
 	else if(CONNECT_DECISION_FLAG_DIRECT == pBdgProc->DecisionFlag)
 	{
 		printf("successful direct connection bridged.\n");
+		BetweenMacro(&pBdgProc->a,&pBdgProc->b);
+
 		return FlagName(pa_pProc,"BdgConnectRequireServer");
 	}
 	else if(CONNECT_DECISION_FLAG_A_SIDE_RELAY == pBdgProc->DecisionFlag)
@@ -210,17 +222,30 @@ STEP( BdgConnectDecision )
 		pBdgProc->DecisionPunAddr = pBdgProc->s.addr;
 		pBdgProc->DecisionConAddr = pBdgProc->b.addr;
 				
+		strcpy(pBdgProc->PunAddrNameID,pBdgProc->s.NameID);
+		strcpy(pBdgProc->ConAddrNameID,pBdgProc->b.NameID);
+				
 		pBdgProc->DecisionFlag = CONNECT_DECISION_FLAG_B_SIDE_RELAY;
 	}
 	else if(CONNECT_DECISION_FLAG_B_SIDE_RELAY == pBdgProc->DecisionFlag)
 	{
 		printf("successful relay connection bridged.\n");
+		BetweenMacro(&pBdgProc->s,&pBdgProc->a);
+		BetweenMacro(&pBdgProc->s,&pBdgProc->b);
+		
 		return FlagName(pa_pProc,"BdgConnectRequireServer");
 	}
 	else if(CONNECT_DECISION_FLAG_ERR == pBdgProc->DecisionFlag)
 	{
 		printf("One bridge task failed.\n");
 		
+		//trace who and who
+		Peer0.addr = pBdgProc->DecisionPunAddr;
+		Peer1.addr = pBdgProc->DecisionConAddr;
+		strcpy(Peer0.NameID,pBdgProc->PunAddrNameID);
+		strcpy(Peer1.NameID,pBdgProc->ConAddrNameID);
+		BetweenMacro(&Peer0,&Peer1);
+
 		pBdgProc->ErrCode = BRIDGE_MSG_ERR_ERROR;
 		return FlagName(pa_pProc,"BdgErrReturnServer");
 	}
