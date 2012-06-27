@@ -45,4 +45,7 @@ WHY NO DOCUMENT:
 ********
 CONTACT:
 ********
-  Any problem please send an E-mail to clock126@126.com.
+  Any problem please send an E-mail to clock126@126.com; you can learn more about me from `my blog`_.
+
+.. _my blog: http://http://www.thoughts-of.me
+
