@@ -1,0 +1,48 @@
+******
+INTRO:
+******
+  tknet (originally named twnet) is a simple-oriented cross-platform P2P library especially aimed at low cost embedded systems.
+
+  tknet uses traditional centralized server-based model. However, differing from other P2P applications, the main feature of tknet enables tknet maintainers to use e-mail servers to track new tknet center P2P servers (namely bridge peer or BDG peer) lest others are broken down.
+
+******
+BUILD:
+******
+  STEP 1: Scons(see http://www.scons.org/) is required for building , please download tools related before first building the project. OpenSSL-dev library are also required if you want to enable the SSL feature.
+
+  STEP 2: Run the './tknet.sh build' command in the tknet directory , executable files and tknet binary library are created under ./bin folder.
+
+*****
+TEST:
+*****
+  STEP 1: Run the './tknet.sh test' command to start a local test environment in console. (A Gnome enviornment is required, otherwise, you need to 'cd' to the ./test/bin directory and open each directory with a new console instead of doing this STEP)
+
+  STEP 2: Run the 'demo' program in each console from dir0 to dir3, you will eventually see 'Connection started' prompts in dir1 and dir3 consoles.
+
+  STEP 3: Now, you can type words in one of the two consoles to send the words to another.
+
+*****  
+NOTE: 
+*****
+  1: Run the './tknet.sh win' to generate the DOS format source codes.
+
+  2: Use 'help' command in 'demo' to see more implemented commands.(you need to do this before connection)
+
+  3: An implementation code demo.c is provided under the ./test folder, to illustrate a simple chatting implementation.
+
+********
+LICENSE:
+********
+  tknet source code is used under the terms of the GNU General Public License version 3.0 as published by the Free Software Foundation and appearing in the file LICENSE.GPL included in the packaging of this file.  Please review the following information to ensure the GNU General Public License version 3.0 requirements will be met: 
+
+  http://www.gnu.org/copyleft/gpl.html
+
+****************
+WHY NO DOCUMENT:
+****************
+  I am still a student now , I WANT to write a fully documented project, but I don't have time. 
+
+********
+CONTACT:
+********
+  Any problem please send an E-mail to clock126@126.com.
