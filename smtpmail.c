@@ -283,18 +283,18 @@ void
 SMTPProcMake( struct SMTPProc *pa_pSMTPProc , const char *pa_pHostIPText , ushort pa_HostPort , BOOL pa_ifEnableSSL , const char *pa_pUsrName , const char *pa_pPassWord , const char *pa_pMailAddress , const char *pa_pSendBuff )
 {
 	ProcessCons( &pa_pSMTPProc->proc );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPConnect , 1000 , 0 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPFirstRecv , 1000 , 0 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPHello , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPStartAuth , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPUsrName , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPPassWord , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPMailFrom , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPRcptTo , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPData , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPTitle , 1000 , 0 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPContent , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPQuit , 2000 , 2 );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPConnect , g_WaitLevel[1] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPFirstRecv , g_WaitLevel[1] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPHello , g_WaitLevel[1] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPStartAuth , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPUsrName , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPPassWord , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPMailFrom , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPRcptTo , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPData , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPTitle , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPContent , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pSMTPProc->proc , SMTPQuit , g_WaitLevel[2] );
 
 	SockOpen( &pa_pSMTPProc->Sock , TCP , 0 );
 

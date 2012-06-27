@@ -50,14 +50,23 @@ typedef uchar (*StepCallbk)( struct Process* , uchar, struct Iterator*, struct I
 	extern const char ProcessStepName ## _step_name []; \
 	uchar ProcessStep ## _step_name (struct Process* , uchar , struct Iterator*, struct Iterator*);
 
-#define PROCESS_ADD_STEP( _pProc , _step , _WaitClocks , _MaxRetrys ) \
-	ProcessAddStep( _pProc , & ( ProcessStep ## _step ) , _WaitClocks , _MaxRetrys , ProcessStepName ## _step )
+#define PROCESS_ADD_STEP( _pProc , _step , _WaitLevel ) \
+	ProcessAddStep( _pProc , & ( ProcessStep ## _step ) , &( _WaitLevel .pInterval) , &( _WaitLevel .pRetrys) , ProcessStepName ## _step )
+
+#define TKNET_WAIT_LEVELS  5
+#define TKNET_CONDITIONS   3
+
+struct WatiLevel
+{
+	long   *pInterval;
+	uchar  *pRetrys;
+};
 
 struct ProcessStep
 {
 	uchar            FlagNum;
-	long             WaitClocks;
-	uchar            MaxRetrys;
+	long             **ppWaitClocks;
+	uchar            **ppMaxRetrys;
 	StepCallbk       StepDo;
 	struct ListNode  ProcStepLN;
 	const char       *pName;
@@ -88,7 +97,7 @@ uchar
 FlagName(struct Process * ,const char *);
 	
 void 
-ProcessAddStep( struct Process* , StepCallbk , uint , uchar , const char* );
+ProcessAddStep( struct Process* , StepCallbk , long** , uchar** , const char* );
 
 void 
 ProcessConsAndSetSteps( struct Process* , struct Process* );
@@ -118,3 +127,8 @@ ProcessDisattach( struct Process* pa_pProc , struct ProcessingList *pa_pProcList
 
 void
 ProcessingListTrace(struct ProcessingList *);
+
+extern struct WatiLevel g_WaitLevel[TKNET_WAIT_LEVELS];
+
+void
+ProcessSetCondition( uint );

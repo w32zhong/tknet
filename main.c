@@ -29,6 +29,7 @@ tkNetInit()
 	tkInitRandom();
 	tkLogInit();
 	SockInit();
+	ProcessSetCondition(1);
 
 	g_TargetName[0]='\0';
 	g_MyName[0]='\0';

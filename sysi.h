@@ -12,6 +12,7 @@
 */ 
 
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 extern unsigned int g_allocs;

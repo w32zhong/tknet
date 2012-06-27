@@ -217,12 +217,12 @@ void
 MakeProtoStunProc( struct STUNProc *pa_pStunProc ,struct Sock *pa_pSock , const char *pa_pHostIP , ushort pa_HostPort )
 {
 	ProcessCons( &pa_pStunProc->proc );
-	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequest , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangeIPAndPort , 2000 , 2 );
+	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequest , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangeIPAndPort , g_WaitLevel[2] );
 	//put ChangeIPAndPort to test whether it's under a Full-cone NAT *Before* BindingRequestToAnotherServer
 	//because BindingRequestToAnotherServer will punch a hole which will lead a false judgement later.
-	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequestToAnotherServer , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangePort , 2000 , 2 );
+	PROCESS_ADD_STEP( &pa_pStunProc->proc , BindingRequestToAnotherServer , g_WaitLevel[2]);
+	PROCESS_ADD_STEP( &pa_pStunProc->proc , ChangePort , g_WaitLevel[2] );
 	//we can assert that we were under a Port-restricted cone NAT if nothing recved from ChangePort step
 	//without further test, because Port-restricted cone NAT actually is the most stricted NAT of all types of
 	//cone NATs and we have already confirmed our NAT is a kind of cone NAT in the BindingRequestToAnotherServer

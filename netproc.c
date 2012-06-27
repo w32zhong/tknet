@@ -27,23 +27,76 @@ DEF_STRUCT_CONSTRUCTOR( ProcessingList ,
 		out_cons->IUndergoProcess = GetIterator(NULL);
 		)
 
+
+struct WatiLevel g_WaitLevel[TKNET_WAIT_LEVELS];
+
+
+long   sta_WaitValue[TKNET_CONDITIONS][TKNET_WAIT_LEVELS] = {
+		{600,1000,1500,9000,20000},  //under good net condition (condition0)
+		{600,1500,2000,9000,20000},  //under nomal net condition (condition1)
+		{600,2000,2000,9000,20000}}; //under bad net condition (condition2)
+//level:  0    1    2    3    4
+
+//NOTE: we currently use level 0 for result muti-sending, its wait value doesn't change.
+//we currently use level 3 and 4 for client "wait step" and main server loop step, 
+//its wait value doesn't change either.
+
+uchar  sta_RetryValue[TKNET_CONDITIONS][TKNET_WAIT_LEVELS] = {
+	{  2,   1,   1,   1,    1},
+	{  2,   2,   2,   2,    2},
+	{  3,   3,   3,   3,    3}};
+
+static void 
+ProcessTraceCondition(uint pa_condition)
+{
+	int i;
+	long   **ppl;
+	uchar  **ppc;
+
+	VCK( pa_condition >= TKNET_CONDITIONS ,return);
+	printf("tknet condition: %d \n",pa_condition);
+	
+	for(i=0 ; i < TKNET_WAIT_LEVELS ; i++ )
+	{
+		ppl=&g_WaitLevel[i].pInterval;
+		ppc=&g_WaitLevel[i].pRetrys;
+		printf("level%d: %ld*%d \n",i,**ppl,**ppc);
+	}
+}
+
+void
+ProcessSetCondition(uint pa_condition)
+{
+	int i;
+	VCK( pa_condition >= TKNET_CONDITIONS ,
+			printf("Setting condition failed, invalid num.\n");return);
+
+	for(i=0 ; i < TKNET_WAIT_LEVELS ; i++ )
+	{
+		g_WaitLevel[i].pInterval = &sta_WaitValue[pa_condition][i];
+		g_WaitLevel[i].pRetrys   = &sta_RetryValue[pa_condition][i];
+	}
+
+	printf("Set ");ProcessTraceCondition(pa_condition);
+}
+
 static void
 ProcessUpdateCurrentStep(struct Process *pa_pProc)
 {
 	struct ProcessStep *pStep = GET_STRUCT_ADDR_FROM_IT( &pa_pProc->IProcessNow , struct ProcessStep , ProcStepLN );
 	pa_pProc->CurrentStepStartTime = tkMilliseconds();
-	pa_pProc->CurrentStepRetrys = pStep->MaxRetrys;
+	pa_pProc->CurrentStepRetrys = **pStep->ppMaxRetrys;
 	pa_pProc->isCurrentStepFirstTime = 1;
 }
 
 void 
-ProcessAddStep( struct Process *pa_pProc , StepCallbk pa_StepDo , uint pa_WaitClocks , uchar pa_MaxRetrys , const char *pa_pName )
+ProcessAddStep( struct Process *pa_pProc , StepCallbk pa_StepDo , long **pa_ppWaitClocks , uchar **pa_ppMaxRetrys , const char *pa_pName )
 {
 	struct ProcessStep *pNewStep = tkmalloc( struct ProcessStep );
 
 	pNewStep->FlagNum = pa_pProc->steps;
-	pNewStep->WaitClocks = pa_WaitClocks;
-	pNewStep->MaxRetrys = pa_MaxRetrys;
+	pNewStep->ppWaitClocks = pa_ppWaitClocks;
+	pNewStep->ppMaxRetrys = pa_ppMaxRetrys;
 	pNewStep->StepDo = pa_StepDo;
 	ListNodeCons(&pNewStep->ProcStepLN);
 	pNewStep->pName = pa_pName;
@@ -115,7 +168,7 @@ LIST_ITERATION_CALLBACK_FUNCTION( DoProcess )
 	else
 	{
 		dt = tkMilliseconds() - pProc->CurrentStepStartTime;
-		if( dt > pStep->WaitClocks )
+		if( dt > **pStep->ppWaitClocks )
 		{
 			if( pProc->CurrentStepRetrys == 0 )
 			{
@@ -249,11 +302,11 @@ LIST_ITERATION_CALLBACK_FUNCTION( TraceProcStep )
 		strcat( PrintStr , ",");
 	}
 	
-	sprintf( BuffStr , "%ld" , pProcStep->WaitClocks );
+	sprintf( BuffStr , "%ld" , **pProcStep->ppWaitClocks );
 	strcat( PrintStr , BuffStr );
 	strcat( PrintStr , "*");
 	
-	sprintf( BuffStr , "%d" , pProcStep->MaxRetrys );
+	sprintf( BuffStr , "%d" , **pProcStep->ppMaxRetrys );
 	strcat( PrintStr , BuffStr );
 	strcat( PrintStr , ")");
 
@@ -323,6 +376,7 @@ LIST_ITERATION_CALLBACK_FUNCTION( ProcessingListTraceCallbk )
 void
 ProcessingListTrace(struct ProcessingList *pa_pProcList)
 {
+	//only implemented the counting function now.
 	int count = 0;
 	ForEach( &pa_pProcList->IUndergoProcess , &ProcessingListTraceCallbk , &count );
 	printf("Processing %d processes. \n",count);

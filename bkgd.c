@@ -119,11 +119,11 @@ static void
 BackGroundPOP3ProcMake( struct POP3Proc *pa_pPop3Proc , const char *pa_pHostIP , ushort pa_HostPort , BOOL pa_ifEnableSSL , const char *pa_pUsrName , const char *pa_pPassWord )
 {
 	ProcessCons( &pa_pPop3Proc->proc );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Connect , 1000 , 0 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3FirstRecv , 1000 , 0 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3User , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Password , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3BackGround , 9000 , 0 );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Connect , g_WaitLevel[1] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3FirstRecv , g_WaitLevel[1] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3User , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Password , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3BackGround , g_WaitLevel[4] );
 
 	pa_pPop3Proc->HostIPVal = GetIPVal( pa_pHostIP );
 	pa_pPop3Proc->HostPort = pa_HostPort;
@@ -278,19 +278,21 @@ TK_THREAD( BackGround )
 			if( strcmp(pCmd ,"help") == 0 )
 			{
 				printf("valid cmd:\n"
-						"  pop3 [pop3 key]\n"
-						"  exit\n"
-						"  nat [stun key]\n"
-						"  smtp [smtp key] [content key]\n"
-						"  connect [peer name]\n"
-						"  direct [peer name]\n"
-						"  direct \n"
-						"  key\n"
-						"  readkey\n"
-						"  cproc\n"
-						"  relays\n"
-						"  pltrace\n"
-						"  peers\n");
+						"  pop3 [pop3 key] (enter mail through POP3)\n"
+						"  exit (exit this program)\n"
+						"  nat [stun key] (get public NAT type through STUN)\n"
+						"  smtp [smtp key] [content key] (send tknet info by SMTP)\n"
+						"  connect [peer name] (connect a peer)\n"
+						"  direct [peer name] (directly connect a peer)\n"
+						"  direct (directly connect the BDG server)\n"
+						"  key (print tknet info keys)\n"
+						"  readkey (read in new keys from the tknet.info file)\n"
+						"  cproc (print client processes)\n"
+						"  relays (print current relay processes)\n"
+						"  pltrace (Process List trace)\n"
+						"  setc (set tknet condition, from 0 to %d)\n"
+						"  peers (print peers connected to BDG server)\n",
+						TKNET_CONDITIONS-1);
 			}
 			else if( strcmp(pCmd ,"relays") == 0 )
 			{
@@ -299,6 +301,10 @@ TK_THREAD( BackGround )
 			else if( strcmp(pCmd ,"key") == 0 )
 			{
 				KeyInfoTrace(pBkgdArgs->pInfoCache);
+			}
+			else if( strcmp(pCmd ,"setc") == 0 )
+			{
+				ProcessSetCondition(atoi(pArg0));
 			}
 			else if( strcmp(pCmd ,"cproc") == 0 )
 			{

@@ -170,7 +170,7 @@ ConsAndStartBridgeServer(struct BridgeProc *pa_pBdgProc , struct PeerData *pa_pP
 	pa_pBdgProc->pSock = pa_pMainSock;
 	pa_pBdgProc->pProcList = pa_pProcList;	
 
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BridgeMain , 12000 , 0);
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BridgeMain , g_WaitLevel[4] );
 	ProcessStart( &pa_pBdgProc->proc , pa_pProcList );
 }
 
@@ -180,7 +180,7 @@ BridgeClientTryBdgServerProc(struct BridgeProc *pa_pBdgProc,struct BridgeHelloSt
 	BridgeProcCons(pa_pBdgProc);
 	pa_pBdgProc->pSock = pa_pMainSock;
 	pa_pBdgProc->Else = pa_pProcPa;	
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientTryBdgServer , 2000 , 2);
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientTryBdgServer , g_WaitLevel[2] );
 }
 
 void 
@@ -195,13 +195,13 @@ void
 BdgSubServerProcInit()
 {
 	ProcessCons(&sta_BdgSubServerProc.proc);
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgBeginSubServer , 2000 , 2 );
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectRequireServer , 10000 , 3 );
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectRequireReply , 2000 , 2 );
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectDecision , 2000 , 2 );
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgPunchingServer , 2000 , 2 );
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectAddrServer , 2000 , 2 );
-	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgErrReturnServer , 2000 , 2 );
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgBeginSubServer , g_WaitLevel[2]);
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectRequireServer ,g_WaitLevel[3]);
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectRequireReply , g_WaitLevel[2]);
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectDecision , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgPunchingServer , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgConnectAddrServer , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &sta_BdgSubServerProc.proc , BdgErrReturnServer , g_WaitLevel[2] );
 }
 
 
@@ -230,12 +230,12 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 
 	if(!pa_ifSkipRegister)
 	{
-		PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientRegister , 2000 , 2);
+		PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientRegister , g_WaitLevel[2] );
 	}
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientWait , 4000 , 3);
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientConnectRequire , 2000 , 2);
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientDoConnectAddr , 2000 , 2);
-	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientMultiSendNotify , 800 , 2);
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientWait , g_WaitLevel[3] );
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientConnectRequire , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientDoConnectAddr , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pBdgProc->proc , BdgClientMultiSendNotify , g_WaitLevel[0] );
 
 	return pBCPPa;
 }

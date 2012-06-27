@@ -50,7 +50,7 @@ RelayModuleInit()
 	sta_IRelayProc = GetIterator(NULL);
 	
 	ProcessCons(&sta_RelayProcess.proc);
-	PROCESS_ADD_STEP( &sta_RelayProcess.proc , Relay , 30000 , 0 );
+	PROCESS_ADD_STEP( &sta_RelayProcess.proc , Relay , g_WaitLevel[4] );
 }
 
 void 

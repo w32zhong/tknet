@@ -282,13 +282,13 @@ void
 MakeProtoPOP3Proc( struct POP3Proc *pa_pPop3Proc , const char *pa_pHostIP , ushort pa_HostPort , BOOL pa_ifEnableSSL , const char *pa_pUsrName , const char *pa_pPassWord )
 {
 	ProcessCons( &pa_pPop3Proc->proc );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Connect , 1000 , 0 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3FirstRecv , 1000 , 0 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3User , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Password , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3List , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Retr , 2000 , 2 );
-	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Quit , 1000 , 0 );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Connect , g_WaitLevel[1] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3FirstRecv , g_WaitLevel[1] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3User , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Password , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3List , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Retr , g_WaitLevel[2] );
+	PROCESS_ADD_STEP( &pa_pPop3Proc->proc , ProtoPOP3Quit , g_WaitLevel[0] );
 
 	pa_pPop3Proc->HostIPVal = GetIPVal( pa_pHostIP );
 	pa_pPop3Proc->HostPort = pa_HostPort;

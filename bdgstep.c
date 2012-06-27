@@ -473,6 +473,9 @@ STEP( BdgClientRegister )
 			pBCPPa->ifConnected = 1;//we say it is connected, we will clean this
 			                        //flag in the client proc end notification.
 
+			pBCPPa->ifFastSendWait = 1;//send fast wait to finish the server-side
+			// "BdgConnectRequireReply" step.
+
 			return PS_CALLBK_RET_DONE;
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_ERR_NAMEID_EXIST)
