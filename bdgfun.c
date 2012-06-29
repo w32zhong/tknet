@@ -206,7 +206,7 @@ BdgSubServerProcInit()
 
 
 struct BridgeClientProcPa*
-BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct ProcessingList *pa_pProcList,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char *pa_pTargetNameID , BOOL pa_ifSkipRegister)
+BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct ProcessingList *pa_pProcList,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char **pa_ppTargetNameID , BOOL pa_ifSkipRegister)
 //TaName can be NULL
 {
 	struct BridgeClientProcPa *pBCPPa = tkmalloc(struct BridgeClientProcPa);
@@ -221,7 +221,7 @@ BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
 	pa_pBdgProc->proc.NotifyCallbk = &BdgClientProcNotify;
 
 	pBCPPa->pMyNameID = pa_pMyNameID;
-	pBCPPa->pTargetNameID = pa_pTargetNameID;
+	pBCPPa->ppTargetNameID = pa_ppTargetNameID;
 	pBCPPa->DirectConnectAddr.IPv4 = 0;
 	pBCPPa->DirectConnectAddr.port = 0;
 	pBCPPa->ifSkipRegister = pa_ifSkipRegister;

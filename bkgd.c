@@ -324,8 +324,7 @@ TK_THREAD( BackGround )
 			{
 				if(pBCPPa->ifConnected)
 				{
-					strcpy(g_TargetName,pArg0);
-					pBCPPa->pTargetNameID = g_TargetName;
+					tkNetConnect(pArg0);
 				}
 				else
 				{

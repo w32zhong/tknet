@@ -18,9 +18,8 @@ BOOL             g_ifConfigAsFullCone = 0;
 uchar            g_NATtype = NAT_T_UNKNOWN;
 struct NetAddr   g_BdgPeerAddr;
 char             g_TargetName[PEER_NAME_ID_LEN];
+char             *g_pTargetName = NULL;
 char             g_MyName[PEER_NAME_ID_LEN];
-
-static BOOL      sta_ifBeginNewConnection = 0;
 
 static void 
 tkNetInit()
@@ -46,13 +45,10 @@ tkNetUninit()
 void 
 tkNetConnect(const char *pa_pName)
 {
-	MutexLock(&g_BkgdMutex);
-
 	if( pa_pName != NULL )
 		strcpy( g_TargetName , pa_pName );
-
-	MutexUnlock(&g_BkgdMutex);
-	sta_ifBeginNewConnection = 1;
+	
+	g_pTargetName = g_TargetName;
 }
 
 int 
@@ -67,7 +63,6 @@ tkNetMain(int pa_argn,char **in_args)
 	struct BridgeProc          BdgServerProc;
 	struct BridgeProc          BdgClientProc;
 	char                       BdgPeerAddrStr[32];
-	char                       *pTargetName = NULL;
 	BOOL                       ifClientSkipRegister = 1;
 	int                        TestPurposeNatType;
 	struct BridgeClientProcPa  *pBCPPa = NULL;
@@ -156,7 +151,7 @@ tkNetMain(int pa_argn,char **in_args)
 no_bdg_peer:
 
 	pBCPPa = BridgeMakeClientProc(&BdgClientProc,&MainSock,&ProcList,&g_BdgPeerAddr,
-			g_MyName,g_NATtype,pTargetName,ifClientSkipRegister);
+			g_MyName,g_NATtype,&g_pTargetName,ifClientSkipRegister);
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 
 	if(g_ifBkgdEnable)
@@ -186,12 +181,6 @@ no_bdg_peer:
 			MainSock.RecvLen = 0;
 
 		MutexUnlock(&g_BkgdMutex);
-
-		if(sta_ifBeginNewConnection && pBCPPa)
-		{
-			pBCPPa->pTargetNameID = g_TargetName;
-			sta_ifBeginNewConnection = 0;
-		}
 
 		tkMsSleep(50);
 	}

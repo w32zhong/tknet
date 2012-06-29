@@ -67,7 +67,7 @@ struct BridgeHelloStepPa
 struct BridgeClientProcPa
 {
 	char            *pMyNameID;
-	char            *pTargetNameID;
+	char            **ppTargetNameID;
 	struct NetAddr  DirectConnectAddr;
 	BOOL            ifSkipRegister;
 	BOOL            ifFastSendWait;//everytime client go to send "waiting" 
@@ -140,7 +140,7 @@ void
 BridgeClientTryBdgServerProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock *);
 
 struct BridgeClientProcPa*
-BridgeMakeClientProc(struct BridgeProc *, struct Sock *,struct ProcessingList *,struct NetAddr *, char * ,uchar , char* ,BOOL);
+BridgeMakeClientProc(struct BridgeProc *, struct Sock *,struct ProcessingList *,struct NetAddr *, char * ,uchar , char** ,BOOL);
 
 void 
 FreeBdgClientProc(struct BridgeProc *);

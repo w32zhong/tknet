@@ -613,7 +613,7 @@ STEP( BdgClientWait )
 		}
 	}
 
-	if(pBCPPa->pTargetNameID)
+	if(*pBCPPa->ppTargetNameID)
 	{
 		//connection begin
 		return PS_CALLBK_RET_DONE;
@@ -666,7 +666,7 @@ STEP( BdgClientConnectRequire )
 
 			if(pBdgMsg->info == BRIDGE_MSG_ERR_NO_NAMEID)
 			{
-				printf("remote server can't find %s\n",pBCPPa->pTargetNameID);
+				printf("remote server can't find %s\n",*pBCPPa->ppTargetNameID);
 			}
 			else
 			{
@@ -674,7 +674,7 @@ STEP( BdgClientConnectRequire )
 				printf("go to wait\n");
 			}
 			
-			pBCPPa->pTargetNameID = NULL;
+			*pBCPPa->ppTargetNameID = NULL;
 
 			return FlagName(pa_pProc,"BdgClientWait");
 		}
@@ -684,9 +684,9 @@ STEP( BdgClientConnectRequire )
 			pa_state == PS_STATE_OVERTIME)
 	{
 		SendingMsg.info = BRIDGE_MSG_INFO_CONNECT;
-		strcpy(SendingMsg.NameID,pBCPPa->pTargetNameID);
+		strcpy(SendingMsg.NameID,*pBCPPa->ppTargetNameID);
 
-		printf("Connecting %s ...\n",pBCPPa->pTargetNameID);
+		printf("Connecting %s ...\n",*pBCPPa->ppTargetNameID);
 		BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
