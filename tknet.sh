@@ -58,9 +58,7 @@ then
 
 elif [ $1 == 'experiment' ]
 then
-	./tknet.sh build
-	gcc ./test/experiment.c -I . -L ./bin/x86 -lpthread -ltknet
-	mv ./a.out ./test/experiment.out
+	gcc -o ./test/experiment.out ./test/experiment.c -I . -L ./bin/x86 -lpthread -ltknet
 
 elif [ $1 == 'clean' ]
 then

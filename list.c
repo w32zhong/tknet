@@ -88,6 +88,17 @@ AddOneToListHeadSafe(struct Iterator* pa_pIHead, struct Iterator* pa_pINow , str
 	*pa_pIHead = GetIterator( pa_pIHead->last );
 }
 
+BOOL
+ListDragOneOut(struct Iterator *pa_pIHead,struct ListNode *pa_pNode)
+{
+	struct Iterator INow = GetIterator(pa_pNode);
+	struct Iterator IForward = GetIterator(pa_pNode->next);
+	struct Iterator *pa_pINow = &INow, *pa_pIForward = &IForward;
+
+	tk(pa_pINow,pa_pIForward);
+	LIST_SAFE_RETURN;
+}
+
 void
 ForEach(struct Iterator* io_IHead , ListNodeCallBack pa_node_callback ,void* pa_else )
 {

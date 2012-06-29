@@ -265,13 +265,7 @@ ProcessFree( struct Process *pa_pProc )
 BOOL 
 ProcessDisattach( struct Process* pa_pProc , struct ProcessingList *pa_pProcList )
 {
-	struct Iterator INow = GetIterator(pa_pProc->UndergoLN.next->last);
-	struct Iterator IForward = GetIterator(pa_pProc->UndergoLN.next);
-	struct Iterator *pa_pIHead = &pa_pProcList->IUndergoProcess,
-					*pa_pINow = &INow, *pa_pIForward = &IForward;
-
-	tk(pa_pINow,pa_pIForward);
-	LIST_SAFE_RETURN;
+	return ListDragOneOut(&pa_pProcList->IUndergoProcess,&pa_pProc->UndergoLN);
 }
 
 static BOOL 

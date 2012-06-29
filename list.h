@@ -102,6 +102,9 @@ AddOneToListTailSafe(struct Iterator* , struct Iterator* , struct Iterator* , st
 void 
 AddOneToListHeadSafe(struct Iterator* , struct Iterator* , struct Iterator* , struct ListNode* );
 
+BOOL
+ListDragOneOut(struct Iterator *,struct ListNode *);
+
 void
 ForEach(struct Iterator* , ListNodeCallBack ,void* );
 
