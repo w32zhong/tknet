@@ -93,7 +93,7 @@ SessionOvertimeNotify(struct Process *pa_)
 	
 	PipeDele(pProc->pPipe);
 
-	printf("session ends.\n");
+	printf("session proc ends.\n");
 }
 
 static
@@ -150,5 +150,5 @@ SessionStart(struct NetAddr pa_addr,struct Sock *pa_pSock,struct ProcessingList 
 	PROCESS_ADD_STEP( &pProc->proc , SessionMaintain , g_WaitLevel[3] );
 	ProcessSafeStart(&pProc->proc,pa_pProcList,pa_pINow,pa_pIForward);
 	
-	printf("session starts.\n");
+	printf("session proc starts.\n");
 }

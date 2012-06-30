@@ -265,7 +265,10 @@ ProcessFree( struct Process *pa_pProc )
 BOOL 
 ProcessDisattach( struct Process* pa_pProc , struct ProcessingList *pa_pProcList )
 {
-	return ListDragOneOut(&pa_pProcList->IUndergoProcess,&pa_pProc->UndergoLN);
+	if(pa_pProc->UndergoLN.next == &pa_pProc->UndergoLN)
+		return 0;//not attached, do nothing.
+	else
+		return ListDragOneOut(&pa_pProcList->IUndergoProcess,&pa_pProc->UndergoLN);
 }
 
 static BOOL 
@@ -382,6 +385,8 @@ LIST_ITERATION_CALLBACK_FUNCTION( FreeProcess )
 	struct Process *pProc = GET_STRUCT_ADDR_FROM_IT( pa_pINow , struct Process , UndergoLN );
 
 	tk( pa_pINow , pa_pIForward );
+
+	printf("freeeeeeeing..\n");
 			
 	if( pProc->NotifyCallbk != NULL )
 		pProc->NotifyCallbk( pProc );

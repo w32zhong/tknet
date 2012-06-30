@@ -569,7 +569,7 @@ STEP( BdgClientWait )
 			{
 				printf("Nice To Meet you too.\n");
 
-				SessionStart(pBdgProc->b.addr,pBdgProc->pSock,
+				SessionStart(FromAddr,pBdgProc->pSock,
 						pBdgProc->pProcList,pa_pINow,pa_pIForward);
 
 				if(g_ConnectionNotify)
