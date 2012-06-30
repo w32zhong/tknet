@@ -290,9 +290,16 @@ TK_THREAD( BackGround )
 						"  cproc (print client processes)\n"
 						"  relays (print current relay processes)\n"
 						"  pltrace (Process List trace)\n"
+						"  pipet (print pipe table)\n"
+						"  pipe     [a] [b] (pipe from a to b)\n"
+						"  pipeonly [a] [b] (pipe from a only to b)\n"
 						"  setc (set tknet condition, from 0 to %d)\n"
 						"  peers (print peers connected to BDG server)\n",
 						TKNET_CONDITIONS-1);
+			}
+			else if( strcmp(pCmd ,"pipet") == 0 )
+			{
+				PipeTablePrint();
 			}
 			else if( strcmp(pCmd ,"relays") == 0 )
 			{

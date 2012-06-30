@@ -122,8 +122,8 @@ struct TkNetMsg
 	uchar           flag;
 	union
 	{
-		struct BridgeMsg BdgMsg;
-		char DataMsg[TK_NET_DATA_LEN];
+		struct BridgeMsg  BdgMsg;
+		char              UsrDat[TK_NET_DATA_LEN];
 	}msg;
 };
 
@@ -135,6 +135,9 @@ ConsAndStartBridgeServer(struct BridgeProc * , struct PeerData * , struct Proces
 
 void 
 FreeBridgeServer(struct BridgeProc *);
+
+void 
+FreeSubBridgeServerTemplate();
 
 void 
 BridgeClientTryBdgServerProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock *);

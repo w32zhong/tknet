@@ -569,6 +569,9 @@ STEP( BdgClientWait )
 			{
 				printf("Nice To Meet you too.\n");
 
+				SessionStart(pBdgProc->b.addr,pBdgProc->pSock,
+						pBdgProc->pProcList,pa_pINow,pa_pIForward);
+
 				if(g_ConnectionNotify)
 				{
 					g_ConnectionNotify(FromAddr,pBdgProc->pSock,
@@ -711,6 +714,9 @@ STEP( BdgClientDoConnectAddr )
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_HELLO)
 		{
 			printf("Nice To Meet U!\n");
+
+			SessionStart(pBdgProc->b.addr,pBdgProc->pSock,
+					pBdgProc->pProcList,pa_pINow,pa_pIForward);
 
 			if(g_ConnectionNotify)
 			{

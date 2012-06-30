@@ -119,9 +119,8 @@ ProcessTraceSteps( struct Process* );
 
 BOOL
 ProcessDisattach( struct Process* pa_pProc , struct ProcessingList *pa_pProcList );
-//if you don't want to free the process
-//after abortion, call this function to stop
-//this process from executing. When disattached,
+//Call this function to stop this process from 
+//executing. When disattached.
 //the process will start from begining next time
 //it is started by ProcessStart().
 
@@ -132,3 +131,6 @@ extern struct WatiLevel g_WaitLevel[TKNET_WAIT_LEVELS];
 
 void
 ProcessSetCondition( uint );
+
+void 
+ProcessListFree(struct ProcessingList *);

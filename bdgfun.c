@@ -48,9 +48,9 @@ BdgClientProcNotify(struct Process *pa_)
 	ProcessTraceSteps(pa_);
 	printf("\n");
 
-	//NEVER free the client Proc in the main loop
-	//we free it by calling the FreeBdgClientProc() after main loop.
-	//instead, we set the ifConnected flag.
+	//NEVER free the client proc in the main loop
+	//instead, we set the ifConnected flag and free client
+	//proc by FreeBdgClientProc() after loop.
 	pBCPPa->ifConnected = 0;
 }
 
@@ -98,8 +98,13 @@ SetPeerByPeerData(struct Peer *pa_pPeer,struct PeerData *pa_pPD)
 void 
 FreeBridgeServer(struct BridgeProc *pa_pBdgProc)
 {
-	ProcessFree(&sta_BdgSubServerProc.proc);
 	ProcessFree(&pa_pBdgProc->proc);
+}
+
+void 
+FreeSubBridgeServerTemplate()
+{
+	ProcessFree(&sta_BdgSubServerProc.proc);
 }
 
 struct BridgeMsg*
@@ -110,11 +115,6 @@ BdgMsgRead(struct Process *in_proc , uchar pa_option , uchar pa_msg , struct Net
 	DEF_AND_CAST(pMsg,struct TkNetMsg,pBdgProc->pSock->RecvBuff);
 	DEF_AND_CAST(pBdgMsg,struct BridgeMsg,&(pMsg->msg.BdgMsg));
 
-	//---------
-	//char AddrText[32];
-	//GetAddrText(&FromAddr,AddrText);
-	//--------
-
 	if( pMsg->flag != TK_NET_BDG_MSG_FLAG ||
 		pBdgProc->pSock->RecvLen <= 0 )
 	{
@@ -122,19 +122,16 @@ BdgMsgRead(struct Process *in_proc , uchar pa_option , uchar pa_msg , struct Net
 	}
 	else if( pa_option == BDG_READ_OPT_ANY )
 	{
-	//	printf("Bdg Recved any %s\n",AddrText);
 		return pBdgMsg;
 	}
 	else if( pa_option == BDG_READ_OPT_ADDR_FILTER && 
 			ifNetAddrEqual(&FromAddr,pa_pAddr) )
 	{
-	//	printf("Bdg Recved addr %s\n",AddrText);
 		return pBdgMsg;
 	}
 	else if( pa_option == BDG_READ_OPT_MSG_FILTER && 
 			pBdgMsg->info == pa_msg )
 	{
-	//	printf("Bdg Recved msg %s\n",AddrText);
 		return pBdgMsg;
 	}
 	else
@@ -148,14 +145,10 @@ BdgMsgWrite(struct Process *in_proc ,struct BridgeMsg *in_msg , struct NetAddr *
 {
 	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(in_proc,struct BridgeProc,proc);
 	struct TkNetMsg   SendingMsg;
-	//char AddrText[32];
 	
 	SendingMsg.flag = TK_NET_BDG_MSG_FLAG;
 	SendingMsg.msg.BdgMsg = *in_msg;
 
-	//GetAddrText(pa_pAddr,AddrText);
-	//printf("Bdg Write to %s\n",AddrText);
-	
 	SockLocateTa(pBdgProc->pSock,htonl(pa_pAddr->IPv4),pa_pAddr->port);
 	SockWrite(pBdgProc->pSock,BYS(SendingMsg));
 }

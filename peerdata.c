@@ -198,8 +198,8 @@ PeerDataDestroy(struct PeerData *pa_pRoot,struct Iterator *pa_pISeedList)
 	Traversal(&(pa_pRoot->tpnd.btnd.tnd),&PostorderDFS,&FreePeerData,NULL);
 
 	ForEach(pa_pISeedList,&FreeSeedPeer,NULL);
-	//some sub server processes is not end, when the program went to exit,
-	//however , the Traversal function will NOT free the Seed of each peer 
+	//some sub server processes is not end when the program went to exit,
+	//and the Traversal function will NOT free the Seed of each peer 
 	//data item, so go through the Seed list and free them all.
 }
 

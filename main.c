@@ -29,6 +29,7 @@ tkNetInit()
 	tkLogInit();
 	SockInit();
 	ProcessSetCondition(1);
+	PipeModuleInit();
 
 	g_TargetName[0]='\0';
 	g_MyName[0]='\0';
@@ -37,6 +38,7 @@ tkNetInit()
 static void 
 tkNetUninit()
 {
+	PipeModuleUninit();
 	SockDestory();
 	tkLogClose();
 	printf("unfree memory:%d \n",g_allocs);
@@ -185,9 +187,15 @@ no_bdg_peer:
 		tkMsSleep(50);
 	}
 
+	ProcessDisattach(&BdgClientProc.proc,&ProcList);
 	FreeBdgClientProc(&BdgClientProc);
+
+	ProcessDisattach(&BdgServerProc.proc,&ProcList);
 	FreeBridgeServer(&BdgServerProc);
-	
+
+	ProcessListFree(&ProcList);
+	FreeSubBridgeServerTemplate();
+
 	SockClose(&MainSock);
 
 exit:

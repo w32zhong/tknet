@@ -375,3 +375,29 @@ ProcessingListTrace(struct ProcessingList *pa_pProcList)
 	ForEach( &pa_pProcList->IUndergoProcess , &ProcessingListTraceCallbk , &count );
 	printf("Processing %d processes. \n",count);
 }
+
+static BOOL
+LIST_ITERATION_CALLBACK_FUNCTION( FreeProcess )
+{
+	struct Process *pProc = GET_STRUCT_ADDR_FROM_IT( pa_pINow , struct Process , UndergoLN );
+
+	tk( pa_pINow , pa_pIForward );
+			
+	if( pProc->NotifyCallbk != NULL )
+		pProc->NotifyCallbk( pProc );
+
+	if( pa_pINow->now == pa_pIHead->last )
+	{
+		*pa_pIHead = GetIterator( NULL );
+		return 1;
+	}else
+	{
+		return 0;
+	}
+}
+
+void 
+ProcessListFree(struct ProcessingList * pa_pProcList)
+{
+	ForEach( &pa_pProcList->IUndergoProcess , &FreeProcess , NULL );
+}

@@ -66,9 +66,12 @@ STEP( Relay )
 	struct NetAddr   FromAddr = GetAddrFromSockAddr(&pRelayProc->pSock->AddrRecvfrom);
 	struct NetAddr   *pAddr;
 	struct TkNetMsg   SendingMsg;
-	struct TkNetMsg  *pMsg;
+	struct TkNetMsg  *pMsg = NULL;
 
-	pMsg = ifReadTkMsg(pRelayProc->pSock);
+	if(pRelayProc->pSock->RecvLen > 0)
+	{
+		pMsg = (struct TkNetMsg*)pRelayProc->pSock->RecvBuff;
+	}
 
 	if(pMsg && pMsg->flag != TK_NET_BDG_MSG_FLAG)
 	{

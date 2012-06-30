@@ -39,18 +39,3 @@ RelayProcMerge(uint ,struct NetAddr ,struct ProcessingList *,struct Iterator *, 
 
 void 
 RelayProcTrace();
-
-static __inline struct TkNetMsg*
-ifReadTkMsg(struct Sock *pa_pSock)
-{
-	DEF_AND_CAST(pMsg,struct TkNetMsg,pa_pSock->RecvBuff);
-	
-	if(pa_pSock->RecvLen > 0)
-	{
-		return pMsg;
-	}
-	else
-	{
-		return NULL;
-	}
-}
