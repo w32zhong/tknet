@@ -16,7 +16,7 @@
 tkMutex        g_BkgdMutex;
 BOOL           g_ifBkgdEnable = 0;
 static char    sta_BkgdCmd[BKGD_CMD_MAX_LEN];
-static BOOL    sta_ifBkgdCmdComing;
+static BOOL    sta_ifBkgdCmdComing = 0;
 static BOOL    sta_ifBkgdSubProcess = 0;
 static BOOL    sta_ifBkgdStunProc = 0;
 extern BOOL    g_MainLoopFlag;
@@ -250,7 +250,7 @@ TK_THREAD( BackGround )
 
 	while(1)
 	{
-		while(!sta_ifBkgdFlow || sta_ifBkgdSubProcess)
+		while(!sta_ifBkgdFlow)
 		{
 			tkMsSleep(50);
 		}

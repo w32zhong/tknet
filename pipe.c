@@ -224,7 +224,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(FlowToCallbk)
 	if(pTo->FlowCallbk)
 	{
 		pTo->FlowCallbk(pFcbkpa->pData,pFcbkpa->DataLen,
-				pFcbkpa->pFlowPa,pFcbkpa->Else);
+				pTo->pFlowPa,pFcbkpa->Else);
 	}
 	else
 	//flow to a null-out pipe
@@ -241,7 +241,6 @@ PipeFlow(struct pipe *pa_pPipe,char *pa_pData,uint pa_DataLen,void *pa_else)
 	struct FlowCallbkPa fcbkpa;
 	fcbkpa.pData = pa_pData;
 	fcbkpa.DataLen = pa_DataLen;
-	fcbkpa.pFlowPa = pa_pPipe->pFlowPa;
 	fcbkpa.Else = pa_else;
 
 	ForEach(&pa_pPipe->IDirection,&FlowToCallbk,&fcbkpa);

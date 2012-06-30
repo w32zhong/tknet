@@ -48,7 +48,6 @@ struct FlowCallbkPa
 {
 	char *pData;
 	uint DataLen;
-	void *pFlowPa;
 	void *Else;
 };
 

@@ -43,7 +43,7 @@ STEP( SessionMaintain )
 	{
 		if(pRecvMsg->flag == SES_MAINTAIN_FLAG)
 		{
-			printf("~");
+			printf("~");//indicating session maintaining
 			pProc->ifAlive = 1;
 		}
 		else if(pRecvMsg->flag == SES_DAT_FLAG)
@@ -100,8 +100,7 @@ static
 FLOW_CALLBK_FUNCTION(SessionFlowCallbk)
 {
 	struct TkNetMsg   SendingMsg;
-	DEF_AND_CAST(pFlowPa,struct SessionMaintainProcess,pa_pFlowPa);
-	struct SessionMaintainProcess *pProc = pFlowPa;
+	DEF_AND_CAST(pProc,struct SessionMaintainProcess,pa_pFlowPa);
 	struct NetAddr                *pAddr = &pProc->addr;
 	uint                          now = 0;
 
@@ -110,7 +109,7 @@ FLOW_CALLBK_FUNCTION(SessionFlowCallbk)
 
 	while(pa_DataLen > TK_NET_DATA_LEN)
 	{
-		memcpy(SendingMsg.msg.UsrDat,pa_pData + now,TK_NET_DATA_LEN);
+		memcpy(SendingMsg.msg.UsrDat , pa_pData + now,TK_NET_DATA_LEN);
 		SockWrite(pProc->pSock,BYS(SendingMsg));
 
 		pa_DataLen -= TK_NET_DATA_LEN;

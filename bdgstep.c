@@ -411,7 +411,7 @@ STEP( BridgeMain )
 
 	if(pa_state == PS_STATE_LAST_TIME)
 	{
-		printf("*");//indicating session maintaining
+		printf("*");//indicating public session maintaining
 		fflush(stdout);
 
 		BdgMsgWrite(pa_pProc,&SendingMsg,&SessionMaintainAddr);
