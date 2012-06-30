@@ -436,6 +436,8 @@ StunNotify(struct Process *pa_)
 {
 	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_ , struct STUNProc , proc);
 
+	printf("KeyInfo Stun proc end.\n");
+
 	if( pProc->NatTypeRes == NAT_T_UNKNOWN )
 	{
 		sta_ProcRes = 0;
@@ -456,6 +458,7 @@ BdgHelloNotify(struct Process *pa_)
 	struct BridgeProc *pProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
 	DEF_AND_CAST(pProcPa,struct BridgeHelloStepPa , pProc->Else);
 
+	printf("KeyInfo Hello proc end.\n");
 	g_BdgPeerAddr = pProcPa->addr;
 	
 	sta_ProcRes = pProcPa->res;

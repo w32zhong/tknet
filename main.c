@@ -21,8 +21,42 @@ char             g_TargetName[PEER_NAME_ID_LEN];
 char             *g_pTargetName = NULL;
 char             g_MyName[PEER_NAME_ID_LEN];
 
-static void 
-tkNetInit()
+static
+FLOW_CALLBK_FUNCTION( StdoutFlowCallbk )
+{
+	printf("%s",pa_pData);
+}
+
+TK_THREAD( StdinThread )
+{
+ 	static char buff[BKGD_CMD_MAX_LEN];
+	DEF_AND_CAST(pPipe,struct pipe,pa_else);
+	
+	while(g_MainLoopFlag)
+	{
+		fgets(buff,BKGD_CMD_MAX_LEN,stdin);
+		PipeFlow(pPipe,buff,strlen(buff) + 1,NULL);
+	}
+
+	return NULL;
+}
+
+void
+tkNetDefaultPipeInit()
+{
+	struct pipe *pPipe;
+	
+	pPipe = PipeMap("null");
+	
+	pPipe = PipeMap("stdout");
+	pPipe->FlowCallbk = &StdoutFlowCallbk;
+	
+	pPipe = PipeMap("stdin");
+	tkBeginThread( &StdinThread , pPipe );
+}
+
+void 
+tkNetCommonInit()
 {
 	g_ConnectionNotify = &OnConnect;
 	tkInitRandom();
@@ -30,18 +64,18 @@ tkNetInit()
 	SockInit();
 	ProcessSetCondition(1);
 	PipeModuleInit();
+	tkNetDefaultPipeInit();
 
 	g_TargetName[0]='\0';
 	g_MyName[0]='\0';
 }
 
-static void 
-tkNetUninit()
+void 
+tkNetCommonUninit()
 {
 	PipeModuleUninit();
 	SockDestory();
 	tkLogClose();
-	printf("unfree memory:%d \n",g_allocs);
 }
 
 void 
@@ -71,7 +105,7 @@ tkNetMain(int pa_argn,char **in_args)
 
 	printf("tknet \n build: " TKNET_VER "\n");
 
-	tkNetInit();
+	tkNetCommonInit();
 	MutexInit(&g_BkgdMutex);
 
 	ISeedPeer = GetIterator(NULL);
@@ -206,7 +240,10 @@ exit:
 	KeyInfoFree(&KeyInfoCache);
 	RelayMuduleDestruction();
 	MutexDelete(&g_BkgdMutex);
-	tkNetUninit();
+	tkNetCommonUninit();
+
+	printf("unfree memory:%d \n",g_allocs);
+	tkMsSleep(200);//waiting for threads
 
 	return 0;
 }

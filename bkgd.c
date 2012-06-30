@@ -12,47 +12,20 @@
 */ 
 
 #include "tknet.h"
-#define BKGD_CMD_MAX_LEN 128
 
-tkMutex g_BkgdMutex;
-
-BOOL    g_ifBkgdEnable = 0;
-char    sta_BkgdCmd[BKGD_CMD_MAX_LEN];
-BOOL    sta_ifBkgdCmdComing;
-BOOL    sta_ifBkgdSubProcess = 0;
-BOOL    sta_ifBkgdStunProc = 0;
-extern  BOOL g_MainLoopFlag;
+tkMutex        g_BkgdMutex;
+BOOL           g_ifBkgdEnable = 0;
+static char    sta_BkgdCmd[BKGD_CMD_MAX_LEN];
+static BOOL    sta_ifBkgdCmdComing;
+static BOOL    sta_ifBkgdSubProcess = 0;
+static BOOL    sta_ifBkgdStunProc = 0;
+extern BOOL    g_MainLoopFlag;
+static BOOL    sta_ifBkgdFlow = 0;
 
 BOOL 
 ifBkgdStunProc()
 {
 	return sta_ifBkgdStunProc;
-}
-
-char*
-BkgdGetBackGroundMsg()
-{
-	if(sta_ifBkgdCmdComing)
-	{
-		sta_ifBkgdCmdComing = 0;
-		return sta_BkgdCmd;
-	}
-	else
-	{
-		return NULL;
-	}
-}
-
-void
-BkgdEnterSubProcess()
-{
-	sta_ifBkgdSubProcess = 1;
-}
-
-void
-BkgdLeaveSubProcess()
-{
-	sta_ifBkgdSubProcess = 0;
 }
 
 static void 
@@ -222,24 +195,48 @@ FindKeyInfoByStrArg(struct KeyInfoCache *pa_pInfoChache,char *pa_pStrArg)
 	return fkipa.found;
 }
 
+static
+FLOW_CALLBK_FUNCTION( CmdFlowCallbk )
+{
+	memcpy(sta_BkgdCmd,pa_pData,pa_DataLen);
+	sta_BkgdCmd[ BKGD_CMD_MAX_LEN - 1 ] = '\0';//make it safe
+	
+	if(sta_BkgdCmd[strlen(sta_BkgdCmd)-1] == '\n')
+		sta_BkgdCmd[strlen(sta_BkgdCmd)-1] = '\0'; //strip the '\n'
+
+	sta_ifBkgdFlow = 1;
+}
+
 TK_THREAD( BackGround )
 {
 	DEF_AND_CAST( pBkgdArgs , struct BackGroundArgs , pa_else );
-	struct Sock sock;
-	BOOL SockOpened = 0;
-	struct POP3Proc Pop3Proc;
-	struct STUNProc StunProc;
-	struct SMTPProc SmtpProc;
-	BOOL SmtpSockOpened = 0;
-	char *pCmd,*pArg0,*pArg1;
-	struct KeyInfo *pKeyInfo;
 	DEF_AND_CAST(pBCPPa,struct BridgeClientProcPa,pBkgdArgs->pBdgClientProc->Else);
-	struct PeerData           *pFoundPD;
+
+	struct Sock                sock;
+	BOOL                       SockOpened = 0;
+	struct POP3Proc            Pop3Proc;
+	struct STUNProc            StunProc;
+	struct SMTPProc            SmtpProc;
+	BOOL                       SmtpSockOpened = 0;
+	char                       *pCmd,*pArg0,*pArg1;
+	struct KeyInfo             *pKeyInfo;
+	struct PeerData            *pFoundPD;
+	struct pipe                *pPipe0,*pPipe1;
 
 	if(!g_ifBkgdEnable)
 	{
 		return NULL;
 	}
+
+	pPipe0 = PipeMap("cmd");
+	pPipe0->FlowCallbk = &CmdFlowCallbk;
+
+	pPipe1 = PipeFindByName("stdin");
+	//pPipe0 = PipeMap("stdout");
+	if(pPipe1)
+		PipeDirectTo(pPipe1,pPipe0);
+	else
+		printf("stdin not found by BackGround.\n");
 
 	BackGroundPOP3ProcMake( &Pop3Proc ,"IP" ,0,0,"username","password");
 	Pop3Proc.proc.NotifyCallbk = &BkgdProcEndCallbk;
@@ -253,8 +250,10 @@ TK_THREAD( BackGround )
 
 	while(1)
 	{
-		fgets(sta_BkgdCmd,32,stdin);
-		sta_BkgdCmd[ strlen(sta_BkgdCmd) - 1 ] = '\0';
+		while(!sta_ifBkgdFlow || sta_ifBkgdSubProcess)
+		{
+			tkMsSleep(50);
+		}
 
 		MutexLock(&g_BkgdMutex);
 
@@ -300,6 +299,32 @@ TK_THREAD( BackGround )
 			else if( strcmp(pCmd ,"pipet") == 0 )
 			{
 				PipeTablePrint();
+			}
+			else if( strcmp(pCmd ,"pipe") == 0 )
+			{
+				pPipe0 = PipeFindByName(pArg0);
+				pPipe1 = PipeFindByName(pArg1);
+
+				if(pPipe0 == NULL || pPipe1 == NULL)
+					printf("can't find pipe.\n");
+				else
+				{
+					PipeDirectTo(pPipe0,pPipe1);
+					PipeTablePrint();
+				}
+			}
+			else if( strcmp(pCmd ,"pipeonly") == 0 )
+			{
+				pPipe0 = PipeFindByName(pArg0);
+				pPipe1 = PipeFindByName(pArg1);
+
+				if(pPipe0 == NULL || pPipe1 == NULL)
+					printf("can't find pipe.\n");
+				else
+				{
+					PipeDirectOnlyTo(pPipe0,pPipe1);
+					PipeTablePrint();
+				}
 			}
 			else if( strcmp(pCmd ,"relays") == 0 )
 			{
@@ -468,7 +493,8 @@ TK_THREAD( BackGround )
 				printf("unknown bkgd cmd.\n");
 			}
 		}
-			
+
+		sta_ifBkgdFlow = 0;
 		MutexUnlock(&g_BkgdMutex);
 	}
 

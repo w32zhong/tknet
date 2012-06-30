@@ -10,6 +10,7 @@
 *
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  .
 */ 
+#define BKGD_CMD_MAX_LEN 128
 
 extern BOOL            g_ifBkgdEnable;
 extern tkMutex         g_BkgdMutex;
@@ -25,15 +26,6 @@ struct BackGroundArgs
 	struct BridgeProc      *pBdgClientProc;
 	struct Sock            *pMainSock;
 };
-
-void
-BkgdEnterSubProcess();
-
-void
-BkgdLeaveSubProcess();
-
-char*
-BkgdGetBackGroundMsg();
 
 BOOL 
 ifBkgdStunProc();

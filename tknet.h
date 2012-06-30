@@ -50,10 +50,10 @@ struct PeerData;
 #include "peerdata.h"
 
 #include "keyinfo.h"
-#include "bkgd.h"
-
 #include "pipe.h"
 #include "session.h"
+
+#include "bkgd.h"
 
 void 
 ON_CONNECT();
@@ -63,6 +63,15 @@ tkNetConnect(const char *);
 
 int 
 tkNetMain(int ,char **);
+
+void 
+tkNetCommonInit();
+
+void 
+tkNetCommonUninit();
+
+void
+tkNetDefaultPipeInit();
 
 #ifdef __cplusplus
 }
