@@ -212,7 +212,7 @@ STEP( BdgConnectDecision )
 	}
 	else if(CONNECT_DECISION_FLAG_DIRECT == pBdgProc->DecisionFlag)
 	{
-		printf("successful direct connection bridged.\n");
+		PROMPT(Usual,"successful direct connection bridged.\n");
 		BetweenMacro(&pBdgProc->a,&pBdgProc->b);
 
 		return FlagName(pa_pProc,"BdgConnectRequireServer");
@@ -229,7 +229,7 @@ STEP( BdgConnectDecision )
 	}
 	else if(CONNECT_DECISION_FLAG_B_SIDE_RELAY == pBdgProc->DecisionFlag)
 	{
-		printf("successful relay connection bridged.\n");
+		PROMPT(Usual,"successful relay connection bridged.\n");
 		BetweenMacro(&pBdgProc->s,&pBdgProc->a);
 		BetweenMacro(&pBdgProc->s,&pBdgProc->b);
 		
@@ -237,7 +237,7 @@ STEP( BdgConnectDecision )
 	}
 	else if(CONNECT_DECISION_FLAG_ERR == pBdgProc->DecisionFlag)
 	{
-		printf("One bridge task failed.\n");
+		PROMPT(Usual,"One bridge task failed.\n");
 		
 		//trace who and who
 		Peer0.addr = pBdgProc->DecisionPunAddr;
@@ -411,9 +411,7 @@ STEP( BridgeMain )
 
 	if(pa_state == PS_STATE_LAST_TIME)
 	{
-		printf("*");//indicating public session maintaining
-		fflush(stdout);
-
+		PROMPT(Usual,"*");//indicating public session maintaining
 		BdgMsgWrite(pa_pProc,&SendingMsg,&SessionMaintainAddr);
 	
 		return PS_CALLBK_RET_REDO;
@@ -469,7 +467,7 @@ STEP( BdgClientRegister )
 	{
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_RGST_OK)
 		{
-			printf("client register ok\n");
+			PROMPT(Usual,"client register ok\n");
 			pBCPPa->ifConnected = 1;//we say it is connected, we will clean this
 			                        //flag in the client proc end notification.
 
@@ -480,7 +478,7 @@ STEP( BdgClientRegister )
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_ERR_NAMEID_EXIST)
 		{
-			printf("client register recv name exist\n");
+			PROMPT(Usual,"client register recv name exist\n");
 
 			return PS_CALLBK_RET_ABORT;
 		}
@@ -532,14 +530,12 @@ STEP( BdgClientWait )
 
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_ECHO)
 		{
-			printf(".");//indicating "I am waiting"
-			fflush(stdout);
-
+			PROMPT(Usual,".");//indicating "I am waiting"
 			return PS_CALLBK_RET_REDO;
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_INFO_PUNCHING)
 		{
-			printf("Punching ...\n");
+			PROMPT(Usual,"Punching ...\n");
 
 			SendingMsg.info = BRIDGE_MSG_INFO_UNKNOWN;
 
@@ -552,11 +548,11 @@ STEP( BdgClientWait )
 			SendingMsg.info = BRIDGE_MSG_INFO_PUNCHING_FINISH;
 			BdgMsgWrite(pa_pProc,&SendingMsg,&FromAddr);
 
-			printf("Punching Finish\n");
+			PROMPT(Usual,"Punching Finish\n");
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_INFO_CONNECT_ADDR)
 		{
-			printf("Recieved a Connect Address ...\n");
+			PROMPT(Usual,"Recieved a Connect Address ...\n");
 			pBdgProc->sx.addr = FromAddr;
 			pBdgProc->b.addr = pBdgMsg->addr;
 			pBdgProc->DecisionRelayID = pBdgMsg->RelayID;
@@ -567,7 +563,7 @@ STEP( BdgClientWait )
 		{
 			if(pBdgMsg->RelayID == 0)
 			{
-				printf("Nice To Meet you too.\n");
+				PROMPT(Usual,"Nice To Meet you too.\n");
 
 				SessionStart(FromAddr,pBdgProc->pSock,
 						pBdgProc->pProcList,pa_pINow,pa_pIForward);
@@ -585,12 +581,12 @@ STEP( BdgClientWait )
 
 				if(MergeRes == RELAY_MERGE_RES_NEW_RELAY)
 				{
-					printf("Start relaying...\n");
+					PROMPT(Usual,"Start relaying...\n");
 					RelayProcTrace();
 				}
 				else if(MergeRes == RELAY_MERGE_RES_MERGED)
 				{
-					printf("relay merged.\n");
+					PROMPT(Usual,"relay merged.\n");
 					RelayProcTrace();
 				}
 			}
@@ -605,14 +601,14 @@ STEP( BdgClientWait )
 			SendingMsg.info = BRIDGE_MSG_INFO_ACKNOWLEDGE;
 			BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 
-			printf("There is no seed to relay on the server side.\n");
+			PROMPT(Usual,"There is no seed to relay on the server side.\n");
 		}
 		else if(pBdgMsg->info == BRIDGE_MSG_ERR_ERROR )
 		{
 			SendingMsg.info = BRIDGE_MSG_INFO_ACKNOWLEDGE;
 			BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 
-			printf("Server side failed to make connection. Try again.\n");
+			PROMPT(Usual,"Server side failed to make connection. Try again.\n");
 		}
 	}
 
@@ -669,12 +665,12 @@ STEP( BdgClientConnectRequire )
 
 			if(pBdgMsg->info == BRIDGE_MSG_ERR_NO_NAMEID)
 			{
-				printf("remote server can't find %s\n",*pBCPPa->ppTargetNameID);
+				PROMPT(Usual,"remote server can't find %s\n",*pBCPPa->ppTargetNameID);
 			}
 			else
 			{
 				pBCPPa->ifFastSendWait = 1;
-				printf("go to wait\n");
+				PROMPT(Usual,"go to wait\n");
 			}
 			
 			*pBCPPa->ppTargetNameID = NULL;
@@ -689,7 +685,7 @@ STEP( BdgClientConnectRequire )
 		SendingMsg.info = BRIDGE_MSG_INFO_CONNECT;
 		strcpy(SendingMsg.NameID,*pBCPPa->ppTargetNameID);
 
-		printf("Connecting %s ...\n",*pBCPPa->ppTargetNameID);
+		PROMPT(Usual,"Connecting %s ...\n",*pBCPPa->ppTargetNameID);
 		BdgMsgWrite(pa_pProc,&SendingMsg,BDG_ADDR(s,pBdgProc));
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
@@ -713,7 +709,7 @@ STEP( BdgClientDoConnectAddr )
 	{
 		if(pBdgMsg->info == BRIDGE_MSG_INFO_HELLO)
 		{
-			printf("Nice To Meet U!\n");
+			PROMPT(Usual,"Nice To Meet U!\n");
 
 			SessionStart(pBdgProc->b.addr,pBdgProc->pSock,
 					pBdgProc->pProcList,pa_pINow,pa_pIForward);
@@ -735,7 +731,7 @@ STEP( BdgClientDoConnectAddr )
 	if(pa_state == PS_STATE_FIRST_TIME || 
 			pa_state == PS_STATE_OVERTIME)
 	{
-		printf("Sending Hello..\n");
+		PROMPT(Usual,"Sending Hello..\n");
 		SendingMsg.info = BRIDGE_MSG_INFO_HELLO;
 		SendingMsg.RelayID = pBdgProc->DecisionRelayID;
 
@@ -762,7 +758,7 @@ STEP( BdgClientMultiSendNotify )
 	if(pa_state == PS_STATE_FIRST_TIME || 
 			pa_state == PS_STATE_OVERTIME)
 	{
-		printf("Multi Send Notify ...\n");
+		PROMPT(Usual,"Multi Send Notify ...\n");
 		SendingMsg.info = pBdgProc->MultiSendInfo;
 		BdgMsgWrite(pa_pProc,&SendingMsg,&pBdgProc->MultiSendTo);
 	}

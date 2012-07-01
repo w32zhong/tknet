@@ -44,9 +44,9 @@ BdgClientProcNotify(struct Process *pa_)
 	struct BridgeProc *pProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
 	DEF_AND_CAST(pBCPPa,struct BridgeClientProcPa,pProc->Else);
 	
-	printf("Client proc end:\n");
+	PROMPT(Usual,"Client proc end:\n");
 	ProcessTraceSteps(pa_);
-	printf("\n");
+	PROMPT(Usual,"\n");
 
 	//NEVER free the client proc in the main loop
 	//instead, we set the ifConnected flag and free client
@@ -60,9 +60,9 @@ BdgSubServerProcNotify(struct Process *pa_)
 	struct BridgeProc *pBdgProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
 	struct PeerData *pPD = GET_STRUCT_ADDR(pBdgProc,struct PeerData,BdgProc);
 
-	printf("Sub Server proc end:\n");
+	PROMPT(Usual,"Sub Server proc end:\n");
 	ProcessTraceSteps(pa_);
-	printf("\n");
+	PROMPT(Usual,"\n");
 	PeerDataDele(pPD,pBdgProc->pSeedPeerCache);
 }
 

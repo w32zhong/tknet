@@ -54,13 +54,13 @@ ProcessTraceCondition(uint pa_condition)
 	uchar  **ppc;
 
 	VCK( pa_condition >= TKNET_CONDITIONS ,return);
-	printf("tknet condition: %d \n",pa_condition);
+	PROMPT(Usual,"tknet condition: %d \n",pa_condition);
 	
 	for(i=0 ; i < TKNET_WAIT_LEVELS ; i++ )
 	{
 		ppl=&g_WaitLevel[i].pInterval;
 		ppc=&g_WaitLevel[i].pRetrys;
-		printf("level%d: %ld*%d \n",i,**ppl,**ppc);
+		PROMPT(Usual,"level%d: %ld*%d \n",i,**ppl,**ppc);
 	}
 }
 
@@ -69,7 +69,7 @@ ProcessSetCondition(uint pa_condition)
 {
 	int i;
 	VCK( pa_condition >= TKNET_CONDITIONS ,
-			printf("Setting condition failed, invalid num.\n");return);
+			PROMPT(Usual,"Setting condition failed, invalid num.\n");return);
 
 	for(i=0 ; i < TKNET_WAIT_LEVELS ; i++ )
 	{
@@ -77,7 +77,7 @@ ProcessSetCondition(uint pa_condition)
 		g_WaitLevel[i].pRetrys   = &sta_RetryValue[pa_condition][i];
 	}
 
-	printf("Set ");ProcessTraceCondition(pa_condition);
+	PROMPT(Usual,"Set ");ProcessTraceCondition(pa_condition);
 }
 
 static void
@@ -310,12 +310,12 @@ LIST_ITERATION_CALLBACK_FUNCTION( TraceProcStep )
 
 	if( pa_pINow->now == pa_pIHead->last )
 	{
-		printf("%s \n" ,PrintStr);
+		PROMPT(Usual,"%s \n" ,PrintStr);
 		return 1;
 	}
 	else
 	{
-		printf("%s->" ,PrintStr);
+		PROMPT(Usual,"%s->" ,PrintStr);
 		return 0;
 	}
 }
@@ -377,7 +377,7 @@ ProcessingListTrace(struct ProcessingList *pa_pProcList)
 	//only implemented the counting function now.
 	int count = 0;
 	ForEach( &pa_pProcList->IUndergoProcess , &ProcessingListTraceCallbk , &count );
-	printf("Processing %d processes. \n",count);
+	PROMPT(Usual,"Processing %d processes. \n",count);
 }
 
 static BOOL

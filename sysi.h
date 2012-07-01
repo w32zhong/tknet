@@ -95,4 +95,7 @@ extern const char   g_DebugPromptName[];
 #define PROMPT( _pipe , ... ) \
 	Prompt( g_p ## _pipe ## Prompt , g_ ## _pipe ## PromptName , __VA_ARGS__)
 
-#define PROMT_BUFFERSIZE 512
+#define PROMT_BUFFERSIZE 1024
+
+void
+Prompt(struct pipe *,const char *,char* , ...);

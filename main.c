@@ -37,10 +37,22 @@ TK_THREAD( StdinThread )
 	while(g_MainLoopFlag)
 	{
 		fgets(buff,BKGD_CMD_MAX_LEN,stdin);
+
+		MutexLock(&g_BkgdMutex);
 		PipeFlow(pPipe,buff,strlen(buff) + 1,NULL);
+		MutexUnlock(&g_BkgdMutex);
+
+		tkMsSleep(SHORT_SLEEP_INTERVAL);
 	}
 
 	return NULL;
+}
+
+static
+FLOW_CALLBK_FUNCTION( LogFlowCallbk )
+{
+	tkLog(1,(const char*)pa_pData);
+	PipeFlow(pa_pPipe,pa_pData,pa_DataLen,NULL);
 }
 
 void
@@ -50,6 +62,9 @@ tkNetDefaultPipeInit()
 	
 	pPipe = PipeMap("null");
 	
+	pPipe = PipeMap("log");
+	pPipe->FlowCallbk = &LogFlowCallbk;
+
 	pPipe = PipeMap("stdout");
 	pPipe->FlowCallbk = &StdoutFlowCallbk;
 	
@@ -57,27 +72,27 @@ tkNetDefaultPipeInit()
 	tkBeginThread( &StdinThread , pPipe );
 }
 
-void 
+void
 tkNetCommonInit()
 {
-	g_ConnectionNotify = &OnConnect;
+	MutexInit(&g_BkgdMutex);
 	tkInitRandom();
 	tkLogInit();
 	SockInit();
-	ProcessSetCondition(1);
+	
 	PipeModuleInit();
 	tkNetDefaultPipeInit();
-
-	g_TargetName[0]='\0';
-	g_MyName[0]='\0';
 }
 
 void 
 tkNetCommonUninit()
 {
+	g_MainLoopFlag = 0;
 	PipeModuleUninit();
 	SockDestory();
 	tkLogClose();
+	tkMsSleep(SHORT_SLEEP_INTERVAL);//waiting for threads
+	MutexDelete(&g_BkgdMutex);
 }
 
 void 
@@ -86,7 +101,20 @@ tkNetConnect(const char *pa_pName)
 	if( pa_pName != NULL )
 		strcpy( g_TargetName , pa_pName );
 	
-	g_pTargetName = g_TargetName;
+	g_pTargetName = pa_pName;
+}
+
+static void
+InitPipeStdoutDirection()
+{
+	struct pipe *pPipe;
+	g_pUsualPrompt = PipeMap((char*)g_UsualPromptName);
+	pPipe = PipeFindByName("stdout");
+
+	if(pPipe)
+		PipeDirectTo(g_pUsualPrompt,pPipe);
+	else
+		TK_EXCEPTION("stdout");
 }
 
 int 
@@ -105,11 +133,17 @@ tkNetMain(int pa_argn,char **in_args)
 	int                        TestPurposeNatType;
 	struct BridgeClientProcPa  *pBCPPa = NULL;
 
-	printf("tknet \n build: " TKNET_VER "\n");
+	g_ConnectionNotify = &OnConnect;
+	g_TargetName[0]='\0';
+	g_MyName[0]='\0';
 
 	tkNetCommonInit();
-	MutexInit(&g_BkgdMutex);
-	
+	InitPipeStdoutDirection();
+
+	PROMPT(Usual,"tknet \n build: " TKNET_VER "\n");
+
+	ProcessSetCondition(1);
+
 	MkCmdModePipe();
 	MkChatModePipe();
 
@@ -127,30 +161,30 @@ tkNetMain(int pa_argn,char **in_args)
 	KeyInfoCacheCons(&KeyInfoCache);
 	if(!KeyInfoReadFile(&KeyInfoCache,"tknet.info"))
 	{
-		printf("config file lost.\n");
+		PROMPT(Usual,"config file lost.\n");
 		goto exit;
 	}
 
 	if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_CONFIG,&MainSock))
 	{
-		printf("bad config format.\n");
+		PROMPT(Usual,"bad config format.\n");
 		goto exit;
 	}
 	
 	if( g_TargetName[0] != '\0' )
 	{
-		printf("target name: %s \n", g_TargetName);
-		tkNetConnect(NULL);
+		PROMPT(Usual,"target name: %s \n", g_TargetName);
+		tkNetConnect(g_TargetName);
 	}
 	else
 	{
-		printf("target name unset. \n");
+		PROMPT(Usual,"target name unset. \n");
 	}
 
 	if(g_ifConfigAsFullCone)
 	{
 		g_NATtype = NAT_T_FULL_CONE;
-		printf("config NAT type as fullcone.\n");
+		PROMPT(Usual,"config NAT type as fullcone.\n");
 	}
 	else
 	{
@@ -158,12 +192,12 @@ tkNetMain(int pa_argn,char **in_args)
 		{
 			if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
 			{
-				printf("No way to get NAT type.\n");
+				PROMPT(Usual,"No way to get NAT type.\n");
 				goto exit;
 			}
 		}
 		
-		printf("NAT type got from STUN.\n");
+		PROMPT(Usual,"NAT type got from STUN.\n");
 	}
 
 	if(pa_argn == 2)
@@ -171,7 +205,7 @@ tkNetMain(int pa_argn,char **in_args)
 		sscanf(in_args[1],"%d",&TestPurposeNatType);
 		g_NATtype = (uchar)TestPurposeNatType;
 		
-		printf("NAT type assigned by argument.\n");
+		PROMPT(Usual,"NAT type assigned by argument.\n");
 	}
 		
 	NatTypePrint(g_NATtype);
@@ -180,13 +214,15 @@ tkNetMain(int pa_argn,char **in_args)
 	{
 		if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
 		{
-			printf("no avalible Bridge peer.\n");
+			PROMPT(Usual,"no avalible Bridge peer.\n");
+			tkNetConnect(NULL);
+
 			goto no_bdg_peer;
 		}
 	}
 
 	GetAddrText(&g_BdgPeerAddr,BdgPeerAddrStr);
-	printf("using Bridge peer: %s\n",BdgPeerAddrStr);
+	PROMPT(Usual,"using Bridge peer: %s\n",BdgPeerAddrStr);
 	ifClientSkipRegister = 0;
 
 no_bdg_peer:
@@ -196,9 +232,9 @@ no_bdg_peer:
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 
 	if(g_ifStdinToCmd)
-		printf("back ground enabled.\n");
+		PROMPT(Usual,"back ground enabled.\n");
 	else
-		printf("back ground disabled.\n");
+		PROMPT(Usual,"back ground disabled.\n");
 
 	BkgdArgs.pPeerDataRoot = &PeerDataRoot;
 	BkgdArgs.pInfoCache = &KeyInfoCache;
@@ -222,7 +258,7 @@ no_bdg_peer:
 			MainSock.RecvLen = 0;
 
 		MutexUnlock(&g_BkgdMutex);
-		tkMsSleep(50);
+		tkMsSleep(SHORT_SLEEP_INTERVAL);
 	}
 
 	ProcessDisattach(&BdgClientProc.proc,&ProcList);
@@ -243,11 +279,8 @@ exit:
 	KeyInfoWriteFile(&KeyInfoCache,"tknet.info");
 	KeyInfoFree(&KeyInfoCache);
 	RelayMuduleDestruction();
-	MutexDelete(&g_BkgdMutex);
 	tkNetCommonUninit();
 
 	printf("unfree memory:%d \n",g_allocs);
-	tkMsSleep(200);//waiting for threads
-
 	return 0;
 }

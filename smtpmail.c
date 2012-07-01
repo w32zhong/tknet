@@ -38,7 +38,7 @@ STEP( SMTPFirstRecv )
 
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME )
@@ -56,12 +56,12 @@ STEP( SMTPHello  )
 	
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( &pProc->Sock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -79,12 +79,12 @@ STEP( SMTPStartAuth  )
 	
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( &pProc->Sock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -102,13 +102,13 @@ STEP( SMTPUsrName  )
 
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
 		Base64Encode( pProc->UsrName, strlen(pProc->UsrName) , Base64Buff );
-		printf("write %s \n",Base64Buff);
+		PROMPT(Usual,"write %s \n",Base64Buff);
 		strcat(Base64Buff,"\r\n");
 		SockWrite( &pProc->Sock , StrBys(Base64Buff) );
 	}
@@ -127,13 +127,13 @@ STEP( SMTPPassWord  )
 
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
 		Base64Encode( pProc->PassWord, strlen(pProc->PassWord) , Base64Buff );
-		printf("write %s \n",Base64Buff);
+		PROMPT(Usual,"write %s \n",Base64Buff);
 		strcat(Base64Buff,"\r\n");
 		SockWrite( &pProc->Sock , StrBys(Base64Buff) );
 	}
@@ -152,13 +152,13 @@ STEP( SMTPMailFrom  )
 
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
 		sprintf(StrBuff , "MAIL FROM:<%s>\r\n",pProc->MailAddr);
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( &pProc->Sock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -176,13 +176,13 @@ STEP( SMTPRcptTo  )
 
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
 		sprintf(StrBuff , "RCPT TO:<%s>\r\n",pProc->MailAddr);
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( &pProc->Sock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -200,12 +200,12 @@ STEP( SMTPData  )
 	
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( &pProc->Sock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -222,11 +222,11 @@ STEP( SMTPTitle  )
 	char StrBuff[ SMTP_PROTO_MAIL_ADDR_MAX_LEN + 12 ];
 
 	sprintf(StrBuff , "FROM:tknet<%s>\r\n",pProc->MailAddr);
-	printf("write: %s \n", StrBuff );
+	PROMPT(Usual,"write: %s \n", StrBuff );
 	SockWrite( &pProc->Sock , StrBys(StrBuff) );
 
 	sprintf(StrBuff , "TO:tknet<%s>\r\n",pProc->MailAddr);
-	printf("write: %s \n", StrBuff );
+	PROMPT(Usual,"write: %s \n", StrBuff );
 	SockWrite( &pProc->Sock , StrBys(StrBuff) );
 
 	return PS_CALLBK_RET_DONE;
@@ -239,13 +239,13 @@ STEP( SMTPContent  )
 
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
 		sprintf(StrBuff , "\r\n%s\r\n.\r\n",pProc->SendBuff);
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( &pProc->Sock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -263,12 +263,12 @@ STEP( SMTPQuit  )
 	
 	if( SockRead( &pProc->Sock ) )
 	{
-		printf("return %s\n", pProc->Sock.RecvBuff );
+		PROMPT(Usual,"return %s\n", pProc->Sock.RecvBuff );
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( &pProc->Sock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )

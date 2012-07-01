@@ -74,6 +74,9 @@ then
 	rm -f ./test/bin/dir2/demo
 	rm -f ./test/bin/dir3/demo
 
+	find . -name '*.log' | xargs rm
+	find . -name '*.exp' | xargs rm
+
 elif [ $1 == 'history' ]
 then
 	./tknet.sh clean

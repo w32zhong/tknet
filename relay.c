@@ -142,7 +142,7 @@ RelayProcNotify(struct Process *pa_)
 	FreeRelayProc(&sta_IRelayProc,&INow,&IForward,NULL);
 		
 	g_Relays --;
-	printf("relay proc end\n");
+	PROMPT(Usual,"relay proc end\n");
 }
 
 uchar 
@@ -200,7 +200,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceRelayProc)
 		GetAddrText(&(pRelayProc->peer1.addr),AddrText1);
 	}
 	
-	printf("RelayID=%d,between %s & %s \n",pRelayProc->RelayID,AddrText0,AddrText1);
+	PROMPT(Usual,"RelayID=%d,between %s & %s \n",pRelayProc->RelayID,AddrText0,AddrText1);
 
 	return pa_pINow->now == pa_pIHead->last;
 }
@@ -208,6 +208,6 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceRelayProc)
 void 
 RelayProcTrace()
 {
-	printf("relays(total = %d): \n",g_Relays);
+	PROMPT(Usual,"relays(total = %d): \n",g_Relays);
 	ForEach(&sta_IRelayProc,&TraceRelayProc,NULL);
 }

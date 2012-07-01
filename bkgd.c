@@ -31,7 +31,7 @@ ifBkgdStunProc()
 static void 
 BkgdProcEndCallbk(struct Process *pa_)
 {
-	printf("bkgd process end.\n");
+	PROMPT(Usual,"bkgd process end.\n");
 	sta_ifBkgdSubProcess = 0;
 }
 
@@ -50,7 +50,7 @@ STEP( ProtoPOP3BackGround )
 		}
 		else
 		{
-			printf("%s\n",pProc->pSock->RecvBuff);
+			PROMPT(Usual,"%s\n",pProc->pSock->RecvBuff);
 		}
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -73,7 +73,7 @@ STEP( ProtoPOP3BackGround )
 		    strcmp(cmd , "list") && 
 		    strcmp(cmd , "retr") )
 		{
-			printf("unknown POP3 cmd. Available:\n"
+			PROMPT(Usual,"unknown POP3 cmd. Available:\n"
 					"quit,dele,list,retr. \n");
 		}
 		else
@@ -232,7 +232,7 @@ TK_THREAD( BackGround )
 		if(pPipe1)
 			PipeDirectTo(pPipe1,pPipe0);
 		else
-			printf("stdin not found by BackGround.\n");
+			PROMPT(Usual,"stdin not found by BackGround.\n");
 	}
 
 	BackGroundPOP3ProcMake( &Pop3Proc ,"IP" ,0,0,"username","password");
@@ -249,7 +249,7 @@ TK_THREAD( BackGround )
 	{
 		while(!sta_ifBkgdFlow)
 		{
-			tkMsSleep(50);
+			tkMsSleep(SHORT_SLEEP_INTERVAL);
 		}
 
 		MutexLock(&g_BkgdMutex);
@@ -273,7 +273,7 @@ TK_THREAD( BackGround )
 
 			if( strcmp(pCmd ,"help") == 0 )
 			{
-				printf("valid cmd:\n"
+				PROMPT(Usual,"valid cmd:\n"
 						"  pop3 [pop3 key] (enter mail through POP3)\n"
 						"  exit (exit this program)\n"
 						"  nat [stun key] (get public NAT type through STUN)\n"
@@ -303,7 +303,7 @@ TK_THREAD( BackGround )
 				pPipe1 = PipeFindByID(atoi(pArg1));
 
 				if(pPipe0 == NULL || pPipe1 == NULL)
-					printf("can't find pipe.\n");
+					PROMPT(Usual,"can't find pipe.\n");
 				else
 				{
 					PipeDirectTo(pPipe0,pPipe1);
@@ -316,7 +316,7 @@ TK_THREAD( BackGround )
 				pPipe1 = PipeFindByID(atoi(pArg1));
 
 				if(pPipe0 == NULL || pPipe1 == NULL)
-					printf("can't find pipe.\n");
+					PROMPT(Usual,"can't find pipe.\n");
 				else
 				{
 					PipeDirectOnlyTo(pPipe0,pPipe1);
@@ -337,14 +337,14 @@ TK_THREAD( BackGround )
 			}
 			else if( strcmp(pCmd ,"cproc") == 0 )
 			{
-				printf("status: ");
+				PROMPT(Usual,"status: ");
 				if(pBCPPa->ifConnected)
 				{
-					printf("Connected.\n");
+					PROMPT(Usual,"Connected.\n");
 				}
 				else
 				{
-					printf("Disconnected.\n");
+					PROMPT(Usual,"Disconnected.\n");
 				}
 
 				ProcessTraceSteps(&(pBkgdArgs->pBdgClientProc->proc));
@@ -357,7 +357,7 @@ TK_THREAD( BackGround )
 				}
 				else
 				{
-					printf("Failed: Client is disconnected to BDG server now.\n");
+					PROMPT(Usual,"Failed: Client is disconnected to BDG server now.\n");
 				}
 			}
 			else if( strcmp(pCmd ,"direct") == 0 )
@@ -366,12 +366,12 @@ TK_THREAD( BackGround )
 				{
 					if(pBCPPa->ifConnected)
 					{
-						printf("direct connect to BDG server...\n");
+						PROMPT(Usual,"direct connect to BDG server...\n");
 						pBCPPa->DirectConnectAddr = g_BdgPeerAddr;
 					}
 					else
 					{
-						printf("Failed: Client is disconnected to BDG server now.\n");
+						PROMPT(Usual,"Failed: Client is disconnected to BDG server now.\n");
 					}
 				}
 				else
@@ -380,12 +380,12 @@ TK_THREAD( BackGround )
 					
 					if(pFoundPD)
 					{
-						printf("direct connect to peer from BDG server.\n");
+						PROMPT(Usual,"direct connect to peer from BDG server.\n");
 						pBCPPa->DirectConnectAddr = pFoundPD->addr;
 					}
 					else
 					{
-						printf("unable to find the name in peer data.\n");
+						PROMPT(Usual,"unable to find the name in peer data.\n");
 					}
 				}
 			}
@@ -409,7 +409,7 @@ TK_THREAD( BackGround )
 				}
 				else
 				{
-					printf("unable to find the key.\n");
+					PROMPT(Usual,"unable to find the key.\n");
 				}
 			}
 			else if( strcmp(sta_BkgdCmd ,"exit") == 0 )
@@ -434,7 +434,7 @@ TK_THREAD( BackGround )
 				}
 				else
 				{
-					printf("unable to find the key.\n");
+					PROMPT(Usual,"unable to find the key.\n");
 				}
 			}
 			else if( strcmp(sta_BkgdCmd ,"smtp") == 0 )
@@ -462,12 +462,12 @@ TK_THREAD( BackGround )
 					}
 					else
 					{
-						printf("unable to find the key to the content.\n");
+						PROMPT(Usual,"unable to find the key to the content.\n");
 					}
 				}
 				else
 				{
-					printf("unable to find the key.\n");
+					PROMPT(Usual,"unable to find the key.\n");
 				}
 			}
 			else if( strcmp(sta_BkgdCmd ,"peers") == 0 )
@@ -478,7 +478,7 @@ TK_THREAD( BackGround )
 			{
 				if(!KeyInfoReadFile(pBkgdArgs->pInfoCache,"tknet.info"))
 				{
-					printf("config file lost.\n");
+					PROMPT(Usual,"config file lost.\n");
 				}
 				else
 				{
@@ -487,7 +487,7 @@ TK_THREAD( BackGround )
 			}
 			else
 			{
-				printf("unknown bkgd cmd.\n");
+				PROMPT(Usual,"unknown bkgd cmd.\n");
 			}
 		}
 

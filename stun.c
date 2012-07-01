@@ -158,7 +158,7 @@ StunGetValue(ushort pa_attr, uint pa_i , int pa_val , uint pa_MagicCookie)
 			break;
 		}
 		
-		printf("CHANGED-ADDRESS attribute recved\n");
+		PROMPT(Usual,"CHANGED-ADDRESS attribute recved\n");
 	}
 	else if( pa_attr == 0x0009 )
 	{

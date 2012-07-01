@@ -197,15 +197,15 @@ PeerTrace( struct Peer *pa_pPeer )
 {
 	char AddrText[16];
 	GetAddrText(&pa_pPeer->addr,AddrText);
-	printf("%s(%s)",pa_pPeer->NameID,AddrText);
+	PROMPT(Usual,"%s(%s)",pa_pPeer->NameID,AddrText);
 }
 
 static __inline void 
 BetweenMacro( struct Peer *pa_pPeer0, struct Peer *pa_pPeer1 )
 {
-	printf("between ");
+	PROMPT(Usual,"between ");
 	PeerTrace( pa_pPeer0 );
-	printf(" and ");
+	PROMPT(Usual," and ");
 	PeerTrace( pa_pPeer1 );
-	printf(" . \n");
+	PROMPT(Usual," . \n");
 }

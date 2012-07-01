@@ -156,12 +156,12 @@ LIST_ITERATION_CALLBACK_FUNCTION(PrintPipeDirectionsCallbk)
 
 	if(pC->pCounterPart == NULL)
 	{
-		printf("%s%s","NULL",end?".":",");
+		PROMPT(Usual,"%s%s","NULL",end?".":",");
 	}
 	else
 	{
 		pDir = GET_STRUCT_ADDR(pC->pCounterPart->pIterator,struct pipe,IReference);
-		printf("%s%s",pDir->name,end?".":",");
+		PROMPT(Usual,"%s%s",pDir->name,end?".":",");
 	}
 		
 	return end;
@@ -181,13 +181,13 @@ LIST_ITERATION_CALLBACK_FUNCTION(PrintPipeReferencesCallbk)
 
 	if(pC->pCounterPart == NULL)
 	{
-		printf("%s%s","NULL",end?".":",");
+		PROMPT(Usual,"%s%s","NULL",end?".":",");
 		return end;
 	}
 	else
 	{
 		pRef = GET_STRUCT_ADDR(pC->pCounterPart->pIterator,struct pipe,IDirection);
-		printf("%s%s",pRef->name,end?".":",");
+		PROMPT(Usual,"%s%s",pRef->name,end?".":",");
 	}
 		
 	return end;
@@ -198,12 +198,12 @@ LIST_ITERATION_CALLBACK_FUNCTION(PrintPipeCallbk)
 {
 	struct pipe *pPipe = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct pipe,ln);
 
-	printf("%d: %s",pPipe->id,pPipe->name);
-	printf(" dir:");
+	PROMPT(Usual,"%d: %s",pPipe->id,pPipe->name);
+	PROMPT(Usual," dir:");
 	ForEach(&pPipe->IDirection,&PrintPipeDirectionsCallbk,NULL);
-	printf(" ref:");
+	PROMPT(Usual," ref:");
 	ForEach(&pPipe->IReference,&PrintPipeReferencesCallbk,NULL);
-	printf("\n");
+	PROMPT(Usual,"\n");
 		
 	return pa_pINow->now == pa_pIHead->last;
 }
@@ -211,9 +211,9 @@ LIST_ITERATION_CALLBACK_FUNCTION(PrintPipeCallbk)
 void
 PipeTablePrint()
 {
-	printf("Pipe table:\n");
+	PROMPT(Usual,"Pipe table:\n");
 	ForEach(&sta_PipeMap.IPipe,&PrintPipeCallbk,NULL);
-	printf("\n");
+	PROMPT(Usual,"\n");
 }
 
 static BOOL

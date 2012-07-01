@@ -218,7 +218,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceKeyInfo)
 
 	GetAddrText(&pInfo->addr,addr);
 
-	printf("%6d %6s %16s %20s \n",pInfo->num,valid,type,addr);
+	PROMPT(Usual,"%6d %6s %16s %20s \n",pInfo->num,valid,type,addr);
 
 	return pa_pINow->now == pa_pIHead->last;
 }
@@ -226,7 +226,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceKeyInfo)
 void 
 KeyInfoTrace( struct KeyInfoCache *pa_pCache )
 {
-	printf("%6s %6s %16s %20s \n","num","valid","type","addr");
+	PROMPT(Usual,"%6s %6s %16s %20s \n","num","valid","type","addr");
 	ForEach( &pa_pCache->IKeyInfo , &TraceKeyInfo , NULL );
 }
 
@@ -436,7 +436,7 @@ StunNotify(struct Process *pa_)
 {
 	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_ , struct STUNProc , proc);
 
-	printf("KeyInfo Stun proc end.\n");
+	PROMPT(Usual,"KeyInfo Stun proc end.\n");
 
 	if( pProc->NatTypeRes == NAT_T_UNKNOWN )
 	{
@@ -458,7 +458,7 @@ BdgHelloNotify(struct Process *pa_)
 	struct BridgeProc *pProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);
 	DEF_AND_CAST(pProcPa,struct BridgeHelloStepPa , pProc->Else);
 
-	printf("KeyInfo Hello proc end.\n");
+	PROMPT(Usual,"KeyInfo Hello proc end.\n");
 	g_BdgPeerAddr = pProcPa->addr;
 	
 	sta_ProcRes = pProcPa->res;
@@ -517,7 +517,7 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 		VCK(sscanf(buff0,"%d",&ifEnableSSL) == 0 ,return 0;);
 		VCK( !(ifEnableSSL == 0 || ifEnableSSL == 1 ) , return 0;);
 
-		printf("pop3 proc:%s/%d,%d,%s,%s.\n",AddrText , pa_pInfo->addr.port ,ifEnableSSL,buff1,buff2);
+		PROMPT(Usual,"pop3 proc:%s/%d,%d,%s,%s.\n",AddrText , pa_pInfo->addr.port ,ifEnableSSL,buff1,buff2);
 		MakeProtoPOP3Proc( &Pop3Proc , AddrText , pa_pInfo->addr.port ,ifEnableSSL,buff1,buff2);
 
 		Pop3Proc.proc.NotifyCallbk = &Pop3Notify;
@@ -529,7 +529,7 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 	}
 	else if( pa_pInfo->type == KEY_INFO_TYPE_STUNSERVER )
 	{
-		printf("stun proc:%s/%d.\n",AddrText , pa_pInfo->addr.port);
+		PROMPT(Usual,"stun proc:%s/%d.\n",AddrText , pa_pInfo->addr.port);
 		MakeProtoStunProc(&StunProc ,pa_pMainSock ,AddrText,pa_pInfo->addr.port);
 		
 		StunProc.proc.NotifyCallbk = &StunNotify;
@@ -538,7 +538,7 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 	}
 	else if( pa_pInfo->type == KEY_INFO_TYPE_BRIDGEPEER )
 	{
-		printf("bridge 'hello proc':%s/%d.\n",AddrText , pa_pInfo->addr.port);
+		PROMPT(Usual,"bridge 'hello proc':%s/%d.\n",AddrText , pa_pInfo->addr.port);
 		BdgProcPa.res = 0;
 		BdgProcPa.addr = pa_pInfo->addr;
 		BridgeClientTryBdgServerProc(&BdgProc,&BdgProcPa,pa_pMainSock);
@@ -570,7 +570,7 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 				}
 				else
 				{
-					printf("please config net type."
+					PROMPT(Usual,"please config net type."
 							"(WAN/LAN)\n");
 					return 0;
 				}
@@ -602,18 +602,18 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 			}
 		}
 			
-		printf("using config: port %d,named %s.\n",pa_pInfo->addr.port,g_MyName);
+		PROMPT(Usual,"using config: port %d,named %s.\n",pa_pInfo->addr.port,g_MyName);
 		
 		i = 0;//to count times of trys.
 		while(!SockOpen(pa_pMainSock,UDP,pa_pInfo->addr.port))
 		{
-			printf("port binded , change and retry ...\n");
+			PROMPT(Usual,"port binded , change and retry ...\n");
 			pa_pInfo->addr.port ++;
 			i ++;
 
 			if(i>2)
 			{
-				printf("port binding retry exceed.\n");
+				PROMPT(Usual,"port binding retry exceed.\n");
 				return 0;
 			}
 		}
@@ -631,7 +631,7 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 	while( sta_LoopFlag )
 	{
 		DoProcessing( &ProcList );
-		tkMsSleep(100);
+		tkMsSleep(SHORT_SLEEP_INTERVAL);
 	}
 
 	if( pa_pInfo->type == KEY_INFO_TYPE_MAILSERVER )

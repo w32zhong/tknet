@@ -29,11 +29,11 @@ STEP( BindingRequest )
 		//print details 
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
 		GetAddrText(&AddrTemp,AddrStr);
-		printf("recv STUN from %s ,",AddrStr);
+		PROMPT(Usual,"recv STUN from %s ,",AddrStr);
 		GetAddrText(&pProc->MapAddr,AddrStr);
-		printf("saying that my public address is %s",AddrStr);
+		PROMPT(Usual,"saying that my public address is %s",AddrStr);
 		GetAddrText(&pProc->ChangeAddr,AddrStr);
-		printf(" and 'change address' is %s\n",AddrStr);
+		PROMPT(Usual," and 'change address' is %s\n",AddrStr);
 
 		return PS_CALLBK_RET_DONE;
 	}
@@ -45,7 +45,7 @@ STEP( BindingRequest )
 		
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
 		GetAddrText(&AddrTemp,AddrStr);
-		printf("Binding request to %s..\n",AddrStr);
+		PROMPT(Usual,"Binding request to %s..\n",AddrStr);
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
@@ -76,7 +76,7 @@ STEP( ChangeIPAndPort )
 		//check if IP and port both has changed.
 
 		GetAddrText(&AddrTemp,AddrStr);
-		printf("recv STUN from %s \n",AddrStr);
+		PROMPT(Usual,"recv STUN from %s \n",AddrStr);
 		//print details 
 
 		pProc->NatTypeRes = NAT_T_FULL_CONE;
@@ -94,7 +94,7 @@ STEP( ChangeIPAndPort )
 		
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
 		GetAddrText(&AddrTemp,AddrStr);
-		printf("Sending ChangeIPAndPort request to %s ..\n",AddrStr);
+		PROMPT(Usual,"Sending ChangeIPAndPort request to %s ..\n",AddrStr);
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
@@ -130,9 +130,9 @@ STEP( BindingRequestToAnotherServer )
 		//print details 
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrRecvfrom);
 		GetAddrText(&AddrTemp,AddrStr);
-		printf("recv STUN from %s ,",AddrStr);
+		PROMPT(Usual,"recv STUN from %s ,",AddrStr);
 		GetAddrText(&pProc->MapAddr,AddrStr);
-		printf("saying that my public address is %s\n",AddrStr);
+		PROMPT(Usual,"saying that my public address is %s\n",AddrStr);
 
 		if( pProc->NatTypeRes == NAT_T_SYMMETRIC )
 		{
@@ -157,7 +157,7 @@ STEP( BindingRequestToAnotherServer )
 		
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
 		GetAddrText(&AddrTemp,AddrStr);
-		printf("Binding request to server #2(%s)..\n",AddrStr);
+		PROMPT(Usual,"Binding request to server #2(%s)..\n",AddrStr);
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
@@ -188,7 +188,7 @@ STEP( ChangePort )
 		//check if port has changed while IP stays the same.
 
 		GetAddrText(&AddrTemp,AddrStr);
-		printf("recv STUN from %s \n",AddrStr);
+		PROMPT(Usual,"recv STUN from %s \n",AddrStr);
 		//print details 
 
 		pProc->NatTypeRes = NAT_T_RESTRICTED;
@@ -202,7 +202,7 @@ STEP( ChangePort )
 		
 		AddrTemp = GetAddrFromSockAddr(&pProc->pSock->AddrTa);
 		GetAddrText(&AddrTemp,AddrStr);
-		printf("Sending ChangePort request to %s ..\n",AddrStr);
+		PROMPT(Usual,"Sending ChangePort request to %s ..\n",AddrStr);
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
@@ -237,23 +237,23 @@ MakeProtoStunProc( struct STUNProc *pa_pStunProc ,struct Sock *pa_pSock , const 
 void
 NatTypePrint(uchar pa_type)
 {
-	printf("NAT type: %d ",pa_type);
+	PROMPT(Usual,"NAT type: %d ",pa_type);
 
 	switch( pa_type )
 	{
 		case NAT_T_FULL_CONE:
-			printf("(full cone)\n");
+			PROMPT(Usual,"(full cone)\n");
 			break;
 		case NAT_T_RESTRICTED:
-			printf("(restricted cone)\n");
+			PROMPT(Usual,"(restricted cone)\n");
 			break;
 		case NAT_T_PORT_RESTRICTED:
-			printf("(port restricted cone)\n");
+			PROMPT(Usual,"(port restricted cone)\n");
 			break;
 		case NAT_T_SYMMETRIC:
-			printf("(symmetric)\n");
+			PROMPT(Usual,"(symmetric)\n");
 			break;
 		default:
-			printf("(unknown)\n");
+			PROMPT(Usual,"(unknown)\n");
 	}
 }

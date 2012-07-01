@@ -38,7 +38,7 @@ STEP( ProtoPOP3FirstRecv )
 
 	if( SockRead( pProc->pSock ) )
 	{
-		printf("%s\n",pProc->pSock->RecvBuff);
+		PROMPT(Usual,"%s\n",pProc->pSock->RecvBuff);
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME )
@@ -59,12 +59,12 @@ STEP( ProtoPOP3User  )
 
 	if( SockRead( pProc->pSock ) )
 	{
-		printf("%s\n",pProc->pSock->RecvBuff);
+		PROMPT(Usual,"%s\n",pProc->pSock->RecvBuff);
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( pProc->pSock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -85,12 +85,12 @@ STEP( ProtoPOP3Password  )
 
 	if( SockRead( pProc->pSock ) )
 	{
-		printf("%s\n",pProc->pSock->RecvBuff);
+		PROMPT(Usual,"%s\n",pProc->pSock->RecvBuff);
 		return PS_CALLBK_RET_DONE;
 	}
 	else if( pa_state == PS_STATE_OVERTIME || pa_state == PS_STATE_FIRST_TIME )
 	{
-		printf("write: %s \n", StrBuff );
+		PROMPT(Usual,"write: %s \n", StrBuff );
 		SockWrite( pProc->pSock , StrBys(StrBuff) );
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
@@ -112,7 +112,7 @@ STEP( ProtoPOP3List  )
 	{
 		pProc->ifEnterSucc = 1;
 
-		printf("%s \n",pProc->pSock->RecvBuff);
+		PROMPT(Usual,"%s \n",pProc->pSock->RecvBuff);
 
 		pBuff = pProc->pSock->RecvBuff;
 
@@ -257,7 +257,7 @@ nextmail:
 	{
 		sprintf( StrBuff , "RETR %d\r\n" , pMail->num );
 		SockWrite( pProc->pSock , StrBys(StrBuff) );
-		printf("write: %s", StrBuff ); //No need to plus '\n', StrBuff already has.
+		PROMPT(Usual,"write: %s", StrBuff ); //No need to plus '\n', StrBuff already has.
 	}
 	else if( pa_state == PS_STATE_LAST_TIME )
 	{
@@ -272,7 +272,7 @@ STEP( ProtoPOP3Quit  )
 	struct POP3Proc *pProc = GET_STRUCT_ADDR( pa_pProc , struct POP3Proc , proc );
 	char StrBuff[] = "QUIT\r\n";
 
-	printf("write: %s \n", StrBuff );
+	PROMPT(Usual,"write: %s \n", StrBuff );
 	SockWrite( pProc->pSock , StrBys(StrBuff) );
 
 	return PS_CALLBK_RET_DONE;
@@ -305,9 +305,9 @@ BOOL
 LIST_ITERATION_CALLBACK_FUNCTION( TraceMail )
 {
 	struct NetInfoMail *pMail = GET_STRUCT_ADDR_FROM_IT( pa_pINow , struct NetInfoMail , ln);
-	printf("mail No.%d :\n", pMail->num);
+	PROMPT(Usual,"mail No.%d :\n", pMail->num);
 	StrTraceFormat(pMail->content);
-	printf("END\n\n");
+	PROMPT(Usual,"END\n\n");
 
 	return pa_pINow->now == pa_pIHead->last;
 }

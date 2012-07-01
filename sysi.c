@@ -80,8 +80,8 @@ int
 tkLogInit()
 {
 	int res = 1;
-	LOG_FOPEN( 0 , "tknet.log" , "w" );
-	//LOG_FOPEN( 1 , "exception.log" , "a" );
+	LOG_FOPEN( 0 , "tknet.exp" , "w" );
+	LOG_FOPEN( 1 , "tknet.log" , "a" );
 	return res;
 }
 
@@ -196,7 +196,7 @@ StrTraceFormat( char *in_str )
 		}
 	}
 
-	printf("%s",buff);
+	PROMPT(Usual,"%s",buff);
 	free(buff);
 }
 
@@ -211,7 +211,7 @@ void
 Prompt(struct pipe *pa_pPipe,const char *pa_pPipeName,
 		char* pa_pFormat, ...)
 {
-	char buff[PROMT_BUFFERSIZE];
+	static char buff[PROMT_BUFFERSIZE];
 	va_list args;
 	va_start(args, pa_pFormat);
 	vsnprintf(buff,PROMT_BUFFERSIZE,pa_pFormat,args);

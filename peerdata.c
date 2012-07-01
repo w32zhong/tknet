@@ -99,7 +99,7 @@ LIST_ITERATION_CALLBACK_FUNCTION( TracePeerData )
 
 	for( i = 0 ; i < pData->TreeLevel ; i++ )
 	{
-		printf("--");
+		PROMPT(Usual,"--");
 	}
 
 	pBinFather = GET_STRUCT_ADDR(pData->tpnd.btnd.tnd.pFather, struct BinTreeNode , tnd);
@@ -128,7 +128,7 @@ LIST_ITERATION_CALLBACK_FUNCTION( TracePeerData )
 
 	GetAddrText(&pData->addr,AddrBuff);
 
-	printf("%s(%s) %c,Level%d,NAT%d%s,RAN%d.\n",pData->NameID,AddrBuff,PosFlagChar,
+	PROMPT(Usual,"%s(%s) %c,Level%d,NAT%d%s,RAN%d.\n",pData->NameID,AddrBuff,PosFlagChar,
 				pData->TreeLevel,pData->NATType,SeedStr,pData->tpnd.RanPriority);
 
 	return pa_pINow->now == pa_pIHead->last;

@@ -71,6 +71,8 @@ struct Bys
 
 #define BYS( _obj ) _Bys( (char*)& ( _obj ) , sizeof( _obj ) )
 
+#define SHORT_SLEEP_INTERVAL 20
+
 static __inline struct Bys
 _Bys( char* pa_p , uint pa_size )
 {

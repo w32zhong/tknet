@@ -18,7 +18,7 @@ UsrDatRead(struct SessionMaintainProcess *in_SesProc)
 	{
 		if(pMsg->msg.BdgMsg.info == BRIDGE_MSG_INFO_WAIT_RELAY)
 		{
-			printf("relay has not finished yet, "
+			PROMPT(Usual,"relay has not finished yet, "
 					"This message can't reach the end.\n");
 		}
 
@@ -45,9 +45,7 @@ STEP( SessionMaintain )
 	{
 		if(pRecvMsg->flag == SES_MAINTAIN_FLAG)
 		{
-			printf("~");//indicating session maintaining
-			fflush(stdout);
-
+			PROMPT(Usual,"~");//indicating session maintaining
 			pProc->ifAlive = 1;
 		}
 		else if(pRecvMsg->flag == SES_DAT_FLAG)
@@ -174,7 +172,7 @@ SessionOvertimeNotify(struct Process *pa_)
 	
 	PipeDele(pProc->pPipe);
 
-	printf("session proc ends.\n");
+	PROMPT(Usual,"session proc ends.\n");
 }
 
 static
@@ -212,7 +210,7 @@ FLOW_CALLBK_FUNCTION(SessionFlowCallbk)
 	memcpy(SendingMsg.msg.UsrDat,pa_pData + now,pa_DataLen);
 	SockWrite(pProc->pSock,BYS(SendingMsg));
 	
-	printf("Sending with flag:%d \n",SendingMsg.flag);
+	PROMPT(Usual,"Sending with flag:%d \n",SendingMsg.flag);
 }
 
 void
@@ -244,7 +242,7 @@ SessionStart(struct NetAddr pa_addr,struct Sock *pa_pSock,struct ProcessingList 
 	PROCESS_ADD_STEP( &pProc->proc , SessionMaintain , g_WaitLevel[3] );
 	ProcessSafeStart(&pProc->proc,pa_pProcList,pa_pINow,pa_pIForward);
 	
-	printf("session proc starts.\n");
+	PROMPT(Usual,"session proc starts.\n");
 }
 
 static
