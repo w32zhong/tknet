@@ -21,6 +21,7 @@ struct pipe
 	PipeFlowCallbk  FlowCallbk;
 	void            *pFlowPa;//freed by pipe.
 	char            name[PIPE_NAME_MAXLEN];
+	uint            id;
 	struct ListNode ln;
 	struct Iterator IDirection;
 	struct Iterator IReference;
@@ -36,6 +37,12 @@ struct connection
 struct FindPipeByName
 {
 	char        *name;
+	struct pipe *found;
+};
+
+struct FindPipeByID
+{
+	uint        id;
 	struct pipe *found;
 };
 
@@ -98,3 +105,6 @@ PipeModuleUninit();
 
 BOOL 
 ifPipeTo(struct pipe *,struct pipe *);
+
+struct pipe*
+PipeFindByID(uint);

@@ -1,6 +1,7 @@
 #include "tknet.h"
 
 static struct PipeMap sta_PipeMap;
+static uint           sta_PipeIDSeed = 0;
 
 void
 MakeConnection(struct Iterator *pa_pI0,struct Iterator *pa_pI1)
@@ -129,6 +130,7 @@ PipeMap(char *pa_pName)
 		strcpy(pPipe->name,pa_pName);
 		pPipe->FlowCallbk = NULL;
 		pPipe->pFlowPa = NULL;
+		pPipe->id = ++ sta_PipeIDSeed;
 
 		ListNodeCons(&pPipe->ln);
 		pPipe->IDirection = GetIterator(NULL);
@@ -196,7 +198,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(PrintPipeCallbk)
 {
 	struct pipe *pPipe = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct pipe,ln);
 
-	printf("%s",pPipe->name);
+	printf("%d: %s",pPipe->id,pPipe->name);
 	printf(" dir:");
 	ForEach(&pPipe->IDirection,&PrintPipeDirectionsCallbk,NULL);
 	printf(" ref:");
@@ -271,4 +273,32 @@ ifPipeTo(struct pipe *pa_pFrom,struct pipe *pa_pTo)
 
 	ForEach(&pa_pFrom->IDirection,&ifPipeToCallbk,&iptpa);
 	return iptpa.res;
+}
+
+static BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindPipeByIDCallbk)
+{
+	struct pipe *pPipe = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct pipe,ln);
+	DEF_AND_CAST(pFpbipa,struct FindPipeByID ,pa_else);
+
+	if( pFpbipa->id == pPipe->id )
+	{
+		pFpbipa->found = pPipe;
+		return 1;
+	}
+	else
+	{
+		return pa_pINow->now == pa_pIHead->last;
+	}
+}
+
+struct pipe*
+PipeFindByID(uint pa_ID)
+{
+	struct FindPipeByID fpbipa;
+	fpbipa.found = NULL;
+	fpbipa.id    = pa_ID;
+		
+	ForEach( &sta_PipeMap.IPipe , &FindPipeByIDCallbk , &fpbipa );
+	return fpbipa.found;
 }

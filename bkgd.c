@@ -299,8 +299,8 @@ TK_THREAD( BackGround )
 			}
 			else if( strcmp(pCmd ,"pipe") == 0 )
 			{
-				pPipe0 = PipeFindByName(pArg0);
-				pPipe1 = PipeFindByName(pArg1);
+				pPipe0 = PipeFindByID(atoi(pArg0));
+				pPipe1 = PipeFindByID(atoi(pArg1));
 
 				if(pPipe0 == NULL || pPipe1 == NULL)
 					printf("can't find pipe.\n");
@@ -312,8 +312,8 @@ TK_THREAD( BackGround )
 			}
 			else if( strcmp(pCmd ,"pipeonly") == 0 )
 			{
-				pPipe0 = PipeFindByName(pArg0);
-				pPipe1 = PipeFindByName(pArg1);
+				pPipe0 = PipeFindByID(atoi(pArg0));
+				pPipe1 = PipeFindByID(atoi(pArg1));
 
 				if(pPipe0 == NULL || pPipe1 == NULL)
 					printf("can't find pipe.\n");
