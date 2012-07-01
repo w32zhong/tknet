@@ -1,2 +1,2 @@
-Config     127.0.0.1         8912   WAN  Joey           EnableBkgd
-MailServer 220.181.12.101    110    0    li28jhyxy76223 g131517
+Config     127.0.0.1         8912   WAN  Joey            StdinToCmd 
+MailServer 220.181.12.101    110    0    li28jhyxy76223  g131517

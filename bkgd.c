@@ -14,7 +14,7 @@
 #include "tknet.h"
 
 tkMutex        g_BkgdMutex;
-BOOL           g_ifBkgdEnable = 0;
+BOOL           g_ifStdinToCmd = 0;
 static char    sta_BkgdCmd[BKGD_CMD_MAX_LEN];
 static BOOL    sta_ifBkgdCmdComing = 0;
 static BOOL    sta_ifBkgdSubProcess = 0;
@@ -223,20 +223,17 @@ TK_THREAD( BackGround )
 	struct PeerData            *pFoundPD;
 	struct pipe                *pPipe0,*pPipe1;
 
-	if(!g_ifBkgdEnable)
-	{
-		return NULL;
-	}
-
 	pPipe0 = PipeMap("cmd");
 	pPipe0->FlowCallbk = &CmdFlowCallbk;
 
-	pPipe1 = PipeFindByName("stdin");
-	//pPipe0 = PipeMap("stdout");
-	if(pPipe1)
-		PipeDirectTo(pPipe1,pPipe0);
-	else
-		printf("stdin not found by BackGround.\n");
+	if(g_ifStdinToCmd)
+	{
+		pPipe1 = PipeFindByName("stdin");
+		if(pPipe1)
+			PipeDirectTo(pPipe1,pPipe0);
+		else
+			printf("stdin not found by BackGround.\n");
+	}
 
 	BackGroundPOP3ProcMake( &Pop3Proc ,"IP" ,0,0,"username","password");
 	Pop3Proc.proc.NotifyCallbk = &BkgdProcEndCallbk;

@@ -590,10 +590,10 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 			{
 				break;
 			}
-			else if(0 == strcmp(pNextWord,"EnableBkgd"))
+			else if(0 == strcmp(pNextWord,"StdinToCmd"))
 			{
 				//treat string as bkgd thread enable/disable config
-				g_ifBkgdEnable = 1;
+				g_ifStdinToCmd = 1;
 			}
 			else
 			{

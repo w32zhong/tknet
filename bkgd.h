@@ -12,7 +12,7 @@
 */ 
 #define BKGD_CMD_MAX_LEN 128
 
-extern BOOL            g_ifBkgdEnable;
+extern BOOL            g_ifStdinToCmd;
 extern tkMutex         g_BkgdMutex;
 extern                 TK_THREAD( BackGround );
 extern char            g_TargetName[];

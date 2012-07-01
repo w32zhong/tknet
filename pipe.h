@@ -5,10 +5,16 @@
 //longest possible name string:
 //"123.123.123.123/12345\0"
 
-typedef void (*PipeFlowCallbk)(char* ,uint ,void* ,void*);
+#define FLOW_PAELSE_NAME_LEN 32
+
+struct pipe;
+
+typedef void (*PipeFlowCallbk)(char* ,uint ,struct pipe*,
+		void* ,void*);
 
 #define FLOW_CALLBK_FUNCTION( _fun_name ) \
-	void _fun_name (char* pa_pData,uint pa_DataLen,void *pa_pFlowPa,void* pa_else)
+	void _fun_name (char* pa_pData,uint pa_DataLen,struct pipe *pa_pPipe, \
+			void *pa_pFlowPa,void* pa_else)
 
 struct pipe
 {
@@ -27,12 +33,6 @@ struct connection
 	struct ListNode    ln;
 };
 
-struct PipeReference
-{
-	struct PipeDirection *pDirection;
-	struct ListNode  ln;
-};
-
 struct FindPipeByName
 {
 	char        *name;
@@ -49,6 +49,18 @@ struct FlowCallbkPa
 	char *pData;
 	uint DataLen;
 	void *Else;
+};
+
+struct FlowPaElse
+{
+	char PaName[FLOW_PAELSE_NAME_LEN];
+	void *pPa;
+};
+
+struct IfPipeToPa
+{
+	struct pipe* pTo;
+	BOOL         res;
 };
 
 void
@@ -83,3 +95,6 @@ PipeModuleInit();
 
 void 
 PipeModuleUninit();
+
+BOOL 
+ifPipeTo(struct pipe *,struct pipe *);

@@ -25,6 +25,7 @@ static
 FLOW_CALLBK_FUNCTION( StdoutFlowCallbk )
 {
 	printf("%s",pa_pData);
+	PipeFlow(pa_pPipe,pa_pData,pa_DataLen,NULL);
 }
 
 TK_THREAD( StdinThread )
@@ -107,6 +108,9 @@ tkNetMain(int pa_argn,char **in_args)
 
 	tkNetCommonInit();
 	MutexInit(&g_BkgdMutex);
+	
+	MkCmdModePipe();
+	MkChatModePipe();
 
 	ISeedPeer = GetIterator(NULL);
 
@@ -190,7 +194,7 @@ no_bdg_peer:
 			g_MyName,g_NATtype,&g_pTargetName,ifClientSkipRegister);
 	ProcessStart(&BdgClientProc.proc,&ProcList);
 
-	if(g_ifBkgdEnable)
+	if(g_ifStdinToCmd)
 		printf("back ground enabled.\n");
 	else
 		printf("back ground disabled.\n");

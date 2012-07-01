@@ -1,2 +1,2 @@
-Config      127.0.0.1  8921   LAN  dir1 dir3 EnableBkgd
+Config      127.0.0.1  8921   LAN  dir1 dir3 StdinToCmd 
 BridgePeer  127.0.0.1  8912 
