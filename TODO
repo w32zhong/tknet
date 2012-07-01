@@ -2,3 +2,5 @@ This file lists what functions and ideas worth adding into the project.
 .bridge peer checks the public IP, if it has changed, informs others by sending a new mail with new IP address.
 .add re-send & circle-buffer utilities.
 .the ability to update tknet program at remote.(md5 check)
+.classify prompts into 'debug' and 'important'.
+.speed up connection further.
