@@ -25,6 +25,7 @@ static
 FLOW_CALLBK_FUNCTION( StdoutFlowCallbk )
 {
 	printf("%s",pa_pData);
+	fflush(stdout);
 	PipeFlow(pa_pPipe,pa_pData,pa_DataLen,NULL);
 }
 
@@ -221,7 +222,6 @@ no_bdg_peer:
 			MainSock.RecvLen = 0;
 
 		MutexUnlock(&g_BkgdMutex);
-
 		tkMsSleep(50);
 	}
 

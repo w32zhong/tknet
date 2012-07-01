@@ -46,6 +46,8 @@ STEP( SessionMaintain )
 		if(pRecvMsg->flag == SES_MAINTAIN_FLAG)
 		{
 			printf("~");//indicating session maintaining
+			fflush(stdout);
+
 			pProc->ifAlive = 1;
 		}
 		else if(pRecvMsg->flag == SES_DAT_FLAG)

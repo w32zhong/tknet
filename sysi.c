@@ -199,3 +199,28 @@ StrTraceFormat( char *in_str )
 	printf("%s",buff);
 	free(buff);
 }
+
+struct pipe *g_pImportantPrompt = NULL;
+struct pipe *g_pUsualPrompt     = NULL;
+struct pipe *g_pDebugPrompt     = NULL;
+const char   g_ImportantPromptName[] = "ImportantPrompt";
+const char   g_UsualPromptName[]     = "UsualPrompt";
+const char   g_DebugPromptName[]     = "DebugPrompt";
+
+void
+Prompt(struct pipe *pa_pPipe,const char *pa_pPipeName,
+		char* pa_pFormat, ...)
+{
+	char buff[PROMT_BUFFERSIZE];
+	va_list args;
+	va_start(args, pa_pFormat);
+	vsnprintf(buff,PROMT_BUFFERSIZE,pa_pFormat,args);
+	va_end(args);
+	
+	if(pa_pPipe == NULL)
+	{
+		pa_pPipe = PipeMap((char*)pa_pPipeName);
+	}
+
+	PipeFlow(pa_pPipe,buff,strlen(buff)+1,NULL);
+}

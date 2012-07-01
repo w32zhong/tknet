@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 extern unsigned int g_allocs;
 
@@ -83,3 +84,15 @@ tkBeginThread(void* (*)(void*) ,void * );
 
 void 
 StrTraceFormat( char* );
+
+extern struct pipe *g_pImportantPrompt;
+extern struct pipe *g_pUsualPrompt;
+extern struct pipe *g_pDebugPrompt;
+extern const char   g_ImportantPromptName[]; 
+extern const char   g_UsualPromptName[];
+extern const char   g_DebugPromptName[];
+
+#define PROMPT( _pipe , ... ) \
+	Prompt( g_p ## _pipe ## Prompt , g_ ## _pipe ## PromptName , __VA_ARGS__)
+
+#define PROMT_BUFFERSIZE 512
