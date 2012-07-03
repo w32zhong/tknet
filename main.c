@@ -15,10 +15,9 @@
 
 BOOL             g_MainLoopFlag = 1;
 BOOL             g_ifConfigAsFullCone = 0;
-uchar            g_NATtype = NAT_T_UNKNOWN;
 struct NetAddr   g_BdgPeerAddr;
 char             g_TargetName[PEER_NAME_ID_LEN];
-char             *g_pTargetName = NULL;
+const char      *g_pTargetName = NULL;
 char             g_MyName[PEER_NAME_ID_LEN];
 
 static
@@ -133,7 +132,6 @@ tkNetMain(int pa_argn,char **in_args)
 	int                        TestPurposeNatType;
 	struct BridgeClientProcPa  *pBCPPa = NULL;
 
-	g_ConnectionNotify = &OnConnect;
 	g_TargetName[0]='\0';
 	g_MyName[0]='\0';
 
@@ -216,6 +214,12 @@ tkNetMain(int pa_argn,char **in_args)
 		{
 			PROMPT(Usual,"no avalible Bridge peer.\n");
 			tkNetConnect(NULL);
+
+			if(g_NATtype == NAT_T_FULL_CONE)
+			{
+				//CheckNATProcConsAndBegin(&ProcList,KeyInfoCache);
+				PROMPT(Usual,"checking NAT enabled.\n");
+			}
 
 			goto no_bdg_peer;
 		}

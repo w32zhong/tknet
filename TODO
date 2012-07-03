@@ -1,6 +1,17 @@
+***********************************************************************
 This file lists what functions and ideas worth adding into the project.
+***********************************************************************
+Currently most important:
 .bridge peer checks the public IP, if it has changed, informs others by sending a new mail with new IP address.
+
+Others:
 .add re-send & circle-buffer utilities.
 .the ability to update tknet program at remote.(md5 check)
 .classify prompts into 'debug' and 'important'.
 .speed up connection further.
+
+A large-scale usable version further needs these features:
+.enable BDG server to be relayer and even STUN server.
+.SSL in POP3 process.
+.encrypted config file
+.encrypted BDG process

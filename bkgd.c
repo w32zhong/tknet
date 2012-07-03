@@ -21,6 +21,8 @@ static BOOL    sta_ifBkgdSubProcess = 0;
 static BOOL    sta_ifBkgdStunProc = 0;
 extern BOOL    g_MainLoopFlag;
 static BOOL    sta_ifBkgdFlow = 0;
+uchar          g_BkgdNatTestRes = NAT_T_UNKNOWN;
+struct NetAddr g_BkgdNatTestAddrRes;
 
 BOOL 
 ifBkgdStunProc()
@@ -111,6 +113,9 @@ BkgdNatTypeNotify(struct Process *pa_)
 	struct STUNProc *pProc = GET_STRUCT_ADDR(pa_ , struct STUNProc , proc);
 
 	NatTypePrint(pProc->NatTypeRes);
+	
+	g_BkgdNatTestRes = pProc->NatTypeRes;
+	g_BkgdNatTestAddrRes = pProc->MapAddr;
 	
 	sta_ifBkgdStunProc =0;
 	BkgdProcEndCallbk( pa_ );
@@ -290,8 +295,32 @@ TK_THREAD( BackGround )
 						"  pipe     [a] [b] (pipe from a to b)\n"
 						"  pipeonly [a] [b] (pipe from a only to b)\n"
 						"  setc (set tknet condition, from 0 to %d)\n"
-						"  peers (print peers connected to BDG server)\n",
+						"  peers (print peers connected to BDG server)\n"
+						"  ikey [key] [1/0] (validated/invalidated a key manually)\n",
 						TKNET_CONDITIONS-1);
+			}
+			else if( strcmp(pCmd ,"ikey") == 0 )
+			{
+				pKeyInfo = FindKeyInfoByStrArg(pBkgdArgs->pInfoCache,pArg0);
+				
+				if(pKeyInfo == NULL)
+				{
+					PROMPT(Usual,"Unable to find the key.\n");
+				}
+				else if( 0 == atoi(pArg1) )
+				{
+					PROMPT(Usual,"invalidated the key.\n");
+					
+					pKeyInfo->valid = KEY_INFO_VALID_NOT;
+					KeyInfoTrace(pBkgdArgs->pInfoCache);
+				}
+				else
+				{
+					PROMPT(Usual,"validated the key.\n");
+					
+					pKeyInfo->valid = KEY_INFO_VALID_UNSURE;
+					KeyInfoTrace(pBkgdArgs->pInfoCache);
+				}
 			}
 			else if( strcmp(pCmd ,"pipet") == 0 )
 			{

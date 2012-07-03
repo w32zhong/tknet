@@ -34,3 +34,11 @@ MakeProtoStunProc( struct STUNProc * ,struct Sock * , const char * , ushort );
 
 void
 NatTypePrint(uchar);
+
+extern uchar             g_NATtype;
+extern struct NetAddr    g_NATMapAddr;
+//g_NATMapAddr is recorded not for sending to BDG server
+//for register(the map addr is obtained through recved socket
+//by BDG server), however, it is used for bkgd process, specifically
+//the check NAT process to compare, and know whether map addr has 
+//changed.

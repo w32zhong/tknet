@@ -66,8 +66,8 @@ struct BridgeHelloStepPa
 
 struct BridgeClientProcPa
 {
-	char            *pMyNameID;
-	char            **ppTargetNameID;
+	char           *pMyNameID;
+	const char    **ppTargetNameID;
 	struct NetAddr  DirectConnectAddr;
 	BOOL            ifSkipRegister;
 	BOOL            ifFastSendWait;//everytime client go to send "waiting" 
@@ -131,7 +131,8 @@ DECLARATION_STRUCT_CONSTRUCTOR( BridgeProc )
 DECLARATION_STRUCT_CONSTRUCTOR( Peer )
 
 void 
-ConsAndStartBridgeServer(struct BridgeProc * , struct PeerData * , struct ProcessingList * , struct Sock *,struct Iterator *);
+ConsAndStartBridgeServer(struct BridgeProc * , struct PeerData * , 
+		struct ProcessingList * , struct Sock *,struct Iterator *);
 
 void 
 FreeBridgeServer(struct BridgeProc *);
@@ -143,7 +144,8 @@ void
 BridgeClientTryBdgServerProc(struct BridgeProc *,struct BridgeHelloStepPa * , struct Sock *);
 
 struct BridgeClientProcPa*
-BridgeMakeClientProc(struct BridgeProc *, struct Sock *,struct ProcessingList *,struct NetAddr *, char * ,uchar , char** ,BOOL);
+BridgeMakeClientProc(struct BridgeProc *, struct Sock *,struct ProcessingList *,
+		struct NetAddr *, char * ,uchar , const char** ,BOOL);
 
 void 
 FreeBdgClientProc(struct BridgeProc *);
@@ -185,12 +187,14 @@ EXTERN_STEP( BdgClientConnectRequire )
 EXTERN_STEP( BdgClientDoConnectAddr )
 EXTERN_STEP( BdgClientMultiSendNotify )
 
-typedef void (*CONNECT_CALLBK)(struct NetAddr,struct Sock*,struct ProcessingList*,struct Iterator*,struct Iterator*);
+typedef void (*CONNECT_CALLBK)(struct NetAddr,struct Sock*,struct ProcessingList*, 
+		struct Iterator*,struct Iterator*);
 
 extern CONNECT_CALLBK g_ConnectionNotify;
 
 #define ON_CONNECT() \
-	OnConnect(struct NetAddr pa_addr,struct Sock *pa_pSock,struct ProcessingList *pa_pProcList,struct Iterator* pa_pINow,struct Iterator *pa_pIForward)
+	OnConnect(struct NetAddr pa_addr,struct Sock *pa_pSock,struct ProcessingList *pa_pProcList \
+			,struct Iterator* pa_pINow,struct Iterator *pa_pIForward)
 
 static __inline void 
 PeerTrace( struct Peer *pa_pPeer )

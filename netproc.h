@@ -53,7 +53,7 @@ typedef uchar (*StepCallbk)( struct Process* , uchar, struct Iterator*, struct I
 #define PROCESS_ADD_STEP( _pProc , _step , _WaitLevel ) \
 	ProcessAddStep( _pProc , & ( ProcessStep ## _step ) , &( _WaitLevel .pInterval) , &( _WaitLevel .pRetrys) , ProcessStepName ## _step )
 
-#define TKNET_WAIT_LEVELS  5
+#define TKNET_WAIT_LEVELS  6
 #define TKNET_CONDITIONS   3
 
 struct WatiLevel

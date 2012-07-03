@@ -12,6 +12,8 @@
 */ 
 
 #include "tknet.h"
+uchar             g_NATtype = NAT_T_UNKNOWN;
+struct NetAddr    g_NATMapAddr;
 
 STEP( BindingRequest )
 {

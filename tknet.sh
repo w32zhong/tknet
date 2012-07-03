@@ -74,8 +74,8 @@ then
 	rm -f ./test/bin/dir2/demo
 	rm -f ./test/bin/dir3/demo
 
-	find . -name '*.log' | xargs rm
-	find . -name '*.exp' | xargs rm
+	find . -name '*.log' | xargs rm -f
+	find . -name '*.exp' | xargs rm -f
 
 elif [ $1 == 'history' ]
 then

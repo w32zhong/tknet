@@ -199,7 +199,10 @@ BdgSubServerProcInit()
 
 
 struct BridgeClientProcPa*
-BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,struct ProcessingList *pa_pProcList,struct NetAddr *pa_pAddr, char *pa_pMyNameID ,uchar pa_MyNatType , char **pa_ppTargetNameID , BOOL pa_ifSkipRegister)
+BridgeMakeClientProc(struct BridgeProc *pa_pBdgProc, struct Sock *pa_pMainSock ,
+		struct ProcessingList *pa_pProcList,struct NetAddr *pa_pAddr, 
+		char *pa_pMyNameID ,uchar pa_MyNatType , 
+		const char **pa_ppTargetNameID , BOOL pa_ifSkipRegister)
 //TaName can be NULL
 {
 	struct BridgeClientProcPa *pBCPPa = tkmalloc(struct BridgeClientProcPa);

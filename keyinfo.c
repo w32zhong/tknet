@@ -13,11 +13,10 @@
 
 #include "tknet.h"
 
-static BOOL sta_LoopFlag;
-static BOOL sta_ProcRes;
+static BOOL                 sta_LoopFlag;
+static BOOL                 sta_ProcRes;
 static struct KeyInfoCache *sta_pKeyInfoCache;
-extern uchar g_NATtype;
-extern struct NetAddr g_BdgPeerAddr;
+extern struct NetAddr       g_BdgPeerAddr;
 
 DEF_STRUCT_CONSTRUCTOR( KeyInfoCache ,
 		out_cons->KeyInfoNumbers = 0;
@@ -445,6 +444,13 @@ StunNotify(struct Process *pa_)
 	else
 	{
 		g_NATtype = pProc->NatTypeRes;
+		g_NATMapAddr = pProc->MapAddr;
+		//g_NATMapAddr is recorded not for sending to BDG server
+		//for register(the map addr is obtained through recved socket
+		//by BDG server), however, it is used for bkgd process, specifically
+		//the check NAT process to compare, and know whether map addr has 
+		//changed.
+
 		sta_ProcRes = 1;
 	}
 

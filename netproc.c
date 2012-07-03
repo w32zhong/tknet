@@ -32,19 +32,19 @@ struct WatiLevel g_WaitLevel[TKNET_WAIT_LEVELS];
 
 
 long   sta_WaitValue[TKNET_CONDITIONS][TKNET_WAIT_LEVELS] = {
-		{600,1000,1500,9000,20000},  //under good net condition (condition0)
-		{600,1500,2000,9000,20000},  //under nomal net condition (condition1)
-		{600,2000,2000,9000,20000}}; //under bad net condition (condition2)
-//level:  0    1    2    3    4
+		{600,1000,1500,9000,20000,1800000},  //under good net condition (condition0)
+		{600,1500,2000,9000,20000,1800000},  //under nomal net condition (condition1)
+		{600,2000,2000,9000,20000,1800000}}; //under bad net condition (condition2)
+//level:  0    1    2    3    4      5
 
 //NOTE: we currently use level 0 for result muti-sending, its wait value doesn't change.
 //we currently use level 3 and 4 for client "wait step" and main server loop step, 
 //its wait value doesn't change either.
 
 uchar  sta_RetryValue[TKNET_CONDITIONS][TKNET_WAIT_LEVELS] = {
-	{  2,   1,   1,   1,    1},
-	{  2,   2,   2,   2,    2},
-	{  3,   3,   3,   3,    3}};
+	{  2,   1,   1,   1,    1 , 1},
+	{  2,   2,   2,   2,    2 , 1},
+	{  3,   3,   3,   3,    3 , 1}};
 
 static void 
 ProcessTraceCondition(uint pa_condition)
