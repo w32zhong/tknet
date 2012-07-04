@@ -63,9 +63,6 @@ LIST_ITERATION_CALLBACK_FUNCTION(FindPossibleKeyInfoByNotNum)
 
 STEP( WaitToCheck )
 {
-	struct CheckNATProc *pCkProc = GET_STRUCT_ADDR(pa_pProc,struct CheckNATProc,proc);
-	struct FindPossibleKeyInfoByNotNumPa FpkibnnPa;
-
 	if(pa_state == PS_STATE_OVERTIME)
 	{
 		return PS_CALLBK_RET_DONE;
@@ -117,9 +114,8 @@ STEP( BeginCheckNAT )
 	if(ifBkgdSubProcess())
 		return PS_CALLBK_RET_REDO;
 
-	PipeFlow(pCkProc->pCheckPipe,CmdStr,strlen(CmdStr)+1,NULL);
-
 	g_BkgdNatTestRes = NAT_T_UNKNOWN;
+	PipeFlow(pCkProc->pCheckPipe,CmdStr,strlen(CmdStr)+1,NULL);
 	
 	pCkProc->pFailedKey = FpkibnnPa.pPossible;
 	//we assume it will fail, if not, we set pFailedKey to NULL.
@@ -206,7 +202,8 @@ STEP( SendingNewAddr )
 			return PS_CALLBK_RET_REDO;
 
 		PipeFlow(pCkProc->pCheckPipe,CmdStr,strlen(CmdStr)+1,NULL);
-		KeyInfoDele(pTmpContentKey,pCkProc->pKeyInfo);
+		//Do not dele the temp key immediately, because the bkgd thread
+		//need to access it.
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
 	{
@@ -217,6 +214,8 @@ STEP( SendingNewAddr )
 	{
 		//it seems like the bkgd side sending process has finished,
 		//go to next step to check mail further.
+		KeyInfoDele(pTmpContentKey,pCkProc->pKeyInfo);
+		
 		return PS_CALLBK_RET_DONE;
 	}
 	
@@ -321,17 +320,16 @@ NewPOP3ProcFromKeyInfo(struct KeyInfoCache *pa_pKeyInfoCache)
 	char             text[KEY_INFO_MAX_LEN];
 	char            *pNextWord,*pText = text;
 	struct KeyInfo  *pPop3Key;
-	char             AddrText[32];
+	char             IPText[16];
 	int              i,ifEnableSSL;
-	char 			 buff0[32];
-	char 			 buff1[32];
-	char 			 buff2[32];
+	char             buff0[32];
+	char             buff1[32];
+	char             buff2[32];
 
 	pPop3Key = KeyInfoSelectA(pa_pKeyInfoCache,KEY_INFO_TYPE_MAILSERVER);
 	VCK(pPop3Key == NULL, return NULL);
 	
 	strcpy(text , pPop3Key->text);
-	GetIPText( &pPop3Key->addr , AddrText );
 
 	for( i = 0 ; i < 6 ; i++ )
 	{
@@ -358,9 +356,10 @@ NewPOP3ProcFromKeyInfo(struct KeyInfoCache *pa_pKeyInfoCache)
 	VCK( !(ifEnableSSL == 0 || ifEnableSSL == 1 ) , return 0;);
 
 	pPop3Proc = tkmalloc(struct POP3Proc);
-	PROMPT(Usual,"pop3 proc:%s/%d,%d,%s,%s.\n",AddrText , pPop3Key->addr.port,
+	GetIPText( &pPop3Key->addr , IPText );
+	PROMPT(Usual,"pop3 proc:%s/%d,%d,%s,%s.\n",IPText , pPop3Key->addr.port,
 			ifEnableSSL,buff1,buff2);
-	MakeProtoPOP3Proc( pPop3Proc , AddrText , pPop3Key->addr.port ,
+	MakeProtoPOP3Proc( pPop3Proc , IPText , pPop3Key->addr.port ,
 			ifEnableSSL,buff1,buff2);
 
 	pPop3Proc->pSock = tkmalloc(struct Sock);

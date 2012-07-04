@@ -74,6 +74,7 @@ NewKeyInfoFromStrLine(char *);
 
 struct KeyInfo*
 KeyInfoInsert(struct KeyInfo *,struct KeyInfoCache *);
+//insert a key info, if a same address info existed, return it.
 
 void 
 KeyInfoDele(struct KeyInfo *,struct KeyInfoCache *);

@@ -140,7 +140,7 @@ KeyInfoInsert(struct KeyInfo *pa_pKeyInfo,struct KeyInfoCache *pa_pCache)
 		if( fkipa.found )
 		{
 			tkfree(pa_pKeyInfo);
-			pa_pKeyInfo = NULL;
+			pa_pKeyInfo = fkipa.found;
 		}
 		else
 		{
