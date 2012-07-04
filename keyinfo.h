@@ -57,6 +57,11 @@ KeyInfoSelectA( struct KeyInfoCache * , uchar  );
 void
 KeyInfoWorksFine( struct KeyInfoCache * , int  );
 
+struct KeyInfo*
+KeyInfoFindByType( struct KeyInfoCache *, uchar );
+//different from KeyInfoSelectA() which takes 'valide' into consideration,
+//this function only use type as filter.
+
 void
 KeyInfoUpdate( struct KeyInfoCache * );
 

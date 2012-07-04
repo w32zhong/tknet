@@ -38,7 +38,7 @@ static struct BridgeProc sta_BdgSubServerProc;
 
 CONNECT_CALLBK g_ConnectionNotify = NULL;
 
-void
+static void
 BdgClientProcNotify(struct Process *pa_)
 {
 	struct BridgeProc *pProc = GET_STRUCT_ADDR(pa_ , struct BridgeProc , proc);

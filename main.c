@@ -217,7 +217,8 @@ tkNetMain(int pa_argn,char **in_args)
 
 			if(g_NATtype == NAT_T_FULL_CONE)
 			{
-				//CheckNATProcConsAndBegin(&ProcList,KeyInfoCache);
+				BkgdArgs.pCheckNATProc = 
+					CheckNATProcConsAndBegin(&ProcList, &KeyInfoCache);
 				PROMPT(Usual,"checking NAT enabled.\n");
 			}
 
@@ -225,6 +226,7 @@ tkNetMain(int pa_argn,char **in_args)
 		}
 	}
 
+	BkgdArgs.pCheckNATProc = NULL;
 	GetAddrText(&g_BdgPeerAddr,BdgPeerAddrStr);
 	PROMPT(Usual,"using Bridge peer: %s\n",BdgPeerAddrStr);
 	ifClientSkipRegister = 0;

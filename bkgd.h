@@ -27,6 +27,7 @@ struct BackGroundArgs
 	struct PeerData        *pPeerDataRoot;
 	struct BridgeProc      *pBdgClientProc;
 	struct Sock            *pMainSock;
+	struct CheckNATProc    *pCheckNATProc;
 };
 
 BOOL 

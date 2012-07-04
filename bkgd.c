@@ -295,6 +295,7 @@ TK_THREAD( BackGround )
 						"  key (print tknet info keys)\n"
 						"  readkey (read in new keys from the tknet.info file)\n"
 						"  cproc (print client processes)\n"
+						"  ckproc (print check NAT process)\n"
 						"  relays (print current relay processes)\n"
 						"  pltrace (Process List trace)\n"
 						"  pipet (print pipe table)\n"
@@ -384,6 +385,13 @@ TK_THREAD( BackGround )
 
 				ProcessTraceSteps(&(pBkgdArgs->pBdgClientProc->proc));
 			}
+			else if( strcmp(pCmd ,"ckproc") == 0 )
+			{
+				if(pBkgdArgs->pCheckNATProc)
+					ProcessTraceSteps(&pBkgdArgs->pCheckNATProc->proc);
+				else
+					PROMPT(Usual,"Check NAT process is not started.\n");
+			}
 			else if( strcmp(pCmd ,"connect") == 0 )
 			{
 				if(pBCPPa->ifConnected)
@@ -461,6 +469,9 @@ TK_THREAD( BackGround )
 
 				if(pKeyInfo)
 				{
+					StunProc.NatTypeRes = NAT_T_UNKNOWN;
+					//reset the result flag.
+
 					SetStunProcByKeyInfo(&StunProc,pKeyInfo);
 					ProcessStart( &StunProc.proc , pBkgdArgs->pProcList );
 

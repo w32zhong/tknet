@@ -52,6 +52,7 @@ struct PeerData;
 #include "keyinfo.h"
 #include "pipe.h"
 #include "session.h"
+#include "nat_checkd.h"
 
 #include "bkgd.h"
 

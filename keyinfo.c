@@ -60,10 +60,13 @@ NewKeyInfoFromStrLine(char *io_pStr)
 	uchar          type;
 	struct NetAddr addr;
 	char           text[KEY_INFO_MAX_LEN];
+	char           text2[KEY_INFO_MAX_LEN];
+	char           *pText2 = text2;
 	struct KeyInfo *pNewKeyInfo;
 	uint           i;
 
 	strcpy(text,io_pStr);
+	strcpy(text2,io_pStr);
 	
 	i = strlen(text);
 	if( i >= 1 && text[i-1] == '\n')
@@ -74,7 +77,7 @@ NewKeyInfoFromStrLine(char *io_pStr)
 	//because GetNextSeparateStr() doesn't
 	//expect any \n in a line.
 
-	pNextWord = GetNextSeparateStr(&io_pStr);
+	pNextWord = GetNextSeparateStr(&pText2);
 	VCK( pNextWord == NULL , return NULL; );
 
 	if( strcmp(pNextWord,"MailServer") == 0 )
@@ -103,13 +106,13 @@ NewKeyInfoFromStrLine(char *io_pStr)
 		return NULL;
 	}
 	
-	pNextWord = GetNextSeparateStr(&io_pStr);
+	pNextWord = GetNextSeparateStr(&pText2);
 	VCK( pNextWord == NULL , return NULL; );
 
 	addr.IPv4 = GetIPVal(pNextWord);
 	addr.IPv4 = ntohl(addr.IPv4);
 
-	pNextWord = GetNextSeparateStr(&io_pStr);
+	pNextWord = GetNextSeparateStr(&pText2);
 	VCK( pNextWord == NULL , return NULL; );
 
 	VCK( 0 == sscanf(pNextWord,"%d",&i) , return NULL; );
@@ -225,7 +228,7 @@ LIST_ITERATION_CALLBACK_FUNCTION(TraceKeyInfo)
 
 	GetAddrText(&pInfo->addr,addr);
 
-	PROMPT(Usual,"%6d %6s %16s %20s \n",pInfo->num,valid,type,addr);
+	PROMPT(Usual,"%6d %6s %16s %20s | text: %s\n",pInfo->num,valid,type,addr,pInfo->text);
 
 	return pa_pINow->now == pa_pIHead->last;
 }
@@ -629,7 +632,7 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 		i = 0;//to count times of trys.
 		while(!SockOpen(pa_pMainSock,UDP,pa_pInfo->addr.port))
 		{
-			PROMPT(Usual,"port binded , change and retry ...\n");
+			PROMPT(Usual,"port %d binded , change and retry ...\n",pa_pInfo->addr.port);
 			pa_pInfo->addr.port ++;
 			i ++;
 
@@ -686,4 +689,38 @@ KeyInfoTry(struct KeyInfoCache *pa_pInfoChache , uchar pa_type , struct Sock *pa
 	}
 
 	return res;
+}
+
+static BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByType)
+{
+	struct KeyInfo *pInfo = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct KeyInfo,ln);
+	DEF_AND_CAST(pFkipa,struct FindKeyInfoByTypePa,pa_else);
+
+	if(pFkipa->TypeToFind == pInfo->type)
+	{
+		pFkipa->found = pInfo;
+		return 1;
+	}
+	else
+	{
+		return pa_pINow->now == pa_pIHead->last;
+	}
+}
+	
+struct KeyInfo*
+KeyInfoFindByType( struct KeyInfoCache *pa_pCache , uchar pa_type )
+{
+	struct FindKeyInfoByTypePa fkipa;
+	fkipa.TypeToFind = pa_type;
+	fkipa.found = NULL;
+
+	ForEach( &pa_pCache->IKeyInfo , &FindKeyInfoByType , &fkipa );
+
+	if(fkipa.found)
+	{
+		fkipa.found->valid = KEY_INFO_VALID_NOT;
+	}
+
+	return fkipa.found;
 }
