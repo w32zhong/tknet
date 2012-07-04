@@ -95,7 +95,7 @@ LIST_ITERATION_CALLBACK_FUNCTION( TracePeerData )
 	char PosFlagChar;
 	struct BinTreeNode *pBinFather;
 	char AddrBuff[32];
-	char SeedStr[16];
+	char SeedStr[32];
 
 	for( i = 0 ; i < pData->TreeLevel ; i++ )
 	{

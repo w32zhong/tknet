@@ -39,7 +39,7 @@ STEP( SessionMaintain )
 	struct TkNetMsg               SendingMsg;
 	struct NetAddr                *pAddr = &pProc->addr;
 	struct pipe                   *pPipe0,*pPipe1;
-	char                          AddrText[16];
+	char                          AddrText[32];
 
 	if(pRecvMsg)
 	{

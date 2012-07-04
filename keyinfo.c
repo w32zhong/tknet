@@ -53,7 +53,7 @@ GetNextSeparateStr(char ** io_pStrNow)
 	return pResStr;
 }
 
-static struct KeyInfo*
+struct KeyInfo*
 NewKeyInfoFromStrLine(char *io_pStr)
 {
 	char           *pNextWord;
@@ -126,13 +126,39 @@ NewKeyInfoFromStrLine(char *io_pStr)
 	return pNewKeyInfo;
 }
 
+struct KeyInfo*
+KeyInfoInsert(struct KeyInfo *pa_pKeyInfo,struct KeyInfoCache *pa_pCache)
+{
+	struct FindKeyInfoByAddrPa fkipa;
+
+	if( NULL != pa_pKeyInfo )
+	{
+		fkipa.found = NULL;
+		fkipa.addr = pa_pKeyInfo->addr;
+		ForEach( &pa_pCache->IKeyInfo , &FindKeyInfoByAddr , &fkipa );
+
+		if( fkipa.found )
+		{
+			tkfree(pa_pKeyInfo);
+			pa_pKeyInfo = NULL;
+		}
+		else
+		{
+			AddOneToListTail(&pa_pCache->IKeyInfo,&pa_pKeyInfo->ln);
+			pa_pKeyInfo->num = pa_pCache->KeyInfoNumbers;
+			pa_pCache->KeyInfoNumbers ++;
+		}
+	}
+		
+	return pa_pKeyInfo;
+}
+
 uchar 
 KeyInfoReadFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )
 {
 	FILE *pf = fopen( pa_pFileName , "r+" );
 	char buff[KEY_INFO_MAX_LEN];
 	struct KeyInfo *pKeyInfo;
-	struct FindKeyInfoByAddrPa fkipa;
 	
 	VCK( pf == NULL , return 0 );
 
@@ -140,28 +166,10 @@ KeyInfoReadFile( struct KeyInfoCache *pa_pCache , const char *pa_pFileName )
 	while(fgets( buff , KEY_INFO_MAX_LEN , pf ))
 	{
 		pKeyInfo = NewKeyInfoFromStrLine(buff);
-
-		if( NULL != pKeyInfo )
-		{
-			fkipa.found = NULL;
-			fkipa.addr = pKeyInfo->addr;
-			ForEach( &pa_pCache->IKeyInfo , &FindKeyInfoByAddr , &fkipa );
-
-			if( fkipa.found )
-			{
-				tkfree(pKeyInfo);
-			}
-			else
-			{
-				AddOneToListTail(&pa_pCache->IKeyInfo,&pKeyInfo->ln);
-				pKeyInfo->num = pa_pCache->KeyInfoNumbers;
-				pa_pCache->KeyInfoNumbers ++;
-			}
-		}
+		KeyInfoInsert(pKeyInfo,pa_pCache);
 	}
 
 	fclose(pf);
-
 	return 1;
 }
 
@@ -236,6 +244,14 @@ void
 KeyInfoFree(struct KeyInfoCache *pa_pCache)
 {
 	ForEach( &pa_pCache->IKeyInfo , &FreeKeyInfo , NULL );
+}
+
+void 
+KeyInfoDele(struct KeyInfo *pa_pKeyInfo,struct KeyInfoCache *pa_pCache)
+{
+	VCK(pa_pKeyInfo == NULL,return);
+	ListDragOneOut(&pa_pCache->IKeyInfo,&pa_pKeyInfo->ln);
+	tkfree(pa_pKeyInfo);
 }
 
 BOOL
@@ -485,9 +501,9 @@ KeyInfoUse( struct KeyInfo *pa_pInfo , struct KeyInfoCache *pa_pKeyInfoCache ,st
 	char   text[KEY_INFO_MAX_LEN];
 	uint i,ifEnableSSL;
 	char AddrText[32];
-	char buff0[16];
-	char buff1[16];
-	char buff2[16];
+	char buff0[32];
+	char buff1[32];
+	char buff2[32];
 	char *pNextWord;
 	char *pText = text;
 

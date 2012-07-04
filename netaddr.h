@@ -42,7 +42,7 @@ GetIPText( struct NetAddr *pa_pAddr , char *out_str)
 static __inline void
 GetAddrText( struct NetAddr *pa_pAddr , char *out_str)
 {
-	char buff[16];
+	char buff[32];
 	GetIPText(pa_pAddr,out_str);
 	sprintf(buff,"/%d",pa_pAddr->port);
 	strcat(out_str,buff);

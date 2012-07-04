@@ -31,3 +31,6 @@ struct BackGroundArgs
 
 BOOL 
 ifBkgdStunProc();
+
+BOOL
+ifBkgdSubProcess();

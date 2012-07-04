@@ -56,9 +56,9 @@ then
 	cp ./bin/x86/demo ./test/bin/dir2
 	cp ./bin/x86/demo ./test/bin/dir3
 
-elif [ $1 == 'experiment' ]
+elif [ $1 == 'unit_test' ]
 then
-	gcc -o ./test/experiment.out ./test/experiment.c -I . -L ./bin/x86 -lpthread -ltknet
+	gcc -o ./test/unit.out ./test/unit_test.c -I . -L ./bin/x86 -lpthread -ltknet
 
 elif [ $1 == 'clean' ]
 then

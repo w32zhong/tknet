@@ -69,6 +69,15 @@ KeyInfoTry(struct KeyInfoCache * , uchar , struct Sock* );
 char*
 GetNextSeparateStr(char ** );
 
+struct KeyInfo*
+NewKeyInfoFromStrLine(char *);
+
+struct KeyInfo*
+KeyInfoInsert(struct KeyInfo *,struct KeyInfoCache *);
+
+void 
+KeyInfoDele(struct KeyInfo *,struct KeyInfoCache *);
+
 DECLARATION_STRUCT_CONSTRUCTOR( KeyInfoCache )
 
 struct FindKeyInfoByTypePa

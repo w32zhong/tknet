@@ -199,7 +199,7 @@ extern CONNECT_CALLBK g_ConnectionNotify;
 static __inline void 
 PeerTrace( struct Peer *pa_pPeer )
 {
-	char AddrText[16];
+	char AddrText[32];
 	GetAddrText(&pa_pPeer->addr,AddrText);
 	PROMPT(Usual,"%s(%s)",pa_pPeer->NameID,AddrText);
 }

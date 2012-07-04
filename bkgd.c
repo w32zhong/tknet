@@ -30,6 +30,12 @@ ifBkgdStunProc()
 	return sta_ifBkgdStunProc;
 }
 
+BOOL
+ifBkgdSubProcess()
+{
+	return sta_ifBkgdSubProcess;
+}
+
 static void 
 BkgdProcEndCallbk(struct Process *pa_)
 {
