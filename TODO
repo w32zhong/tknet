@@ -2,7 +2,7 @@
 This file lists what functions and ideas worth adding into the project.
 ***********************************************************************
 Currently most important:
-.bridge peer checks the public IP, if it has changed, informs others by sending a new mail with new IP address.
+.blank
 
 Others:
 .add re-send & circle-buffer utilities.

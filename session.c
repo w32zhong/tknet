@@ -47,9 +47,12 @@ STEP( SessionMaintain )
 		{
 			PROMPT(Usual,"~");//indicating session maintaining
 			pProc->ifAlive = 1;
+				
+			goto discard;
 		}
 		else if(pRecvMsg->flag == SES_DAT_FLAG)
 		{
+			//not implemented yet.
 		}
 		else if(pRecvMsg->flag == SES_CMD_FLAG)
 		{
@@ -132,7 +135,7 @@ STEP( SessionMaintain )
 		}
 
 		PipeFlow(pProc->pPipe,pRecvMsg->msg.UsrDat,
-				pProc->pSock->RecvLen,NULL);
+				pRecvMsg->UsrDatLen,NULL);
 	}
 
 discard:
@@ -185,7 +188,6 @@ FLOW_CALLBK_FUNCTION(SessionFlowCallbk)
 	uint                          now = 0;
 	uchar                         *pUchar;
 
-
 	if(pFpe && 0 == strcmp(pFpe->PaName,"uint:SET_FLAG"))
 	{
 		pUchar = (uchar*)pFpe->pPa;
@@ -200,17 +202,17 @@ FLOW_CALLBK_FUNCTION(SessionFlowCallbk)
 
 	while(pa_DataLen > TK_NET_DATA_LEN)
 	{
+		SendingMsg.UsrDatLen = TK_NET_DATA_LEN;
 		memcpy(SendingMsg.msg.UsrDat , pa_pData + now,TK_NET_DATA_LEN);
 		SockWrite(pProc->pSock,BYS(SendingMsg));
 
 		pa_DataLen -= TK_NET_DATA_LEN;
 		now += TK_NET_DATA_LEN;
 	}
-
+	
+	SendingMsg.UsrDatLen = pa_DataLen;
 	memcpy(SendingMsg.msg.UsrDat,pa_pData + now,pa_DataLen);
 	SockWrite(pProc->pSock,BYS(SendingMsg));
-	
-	PROMPT(Usual,"Sending with flag:%d \n",SendingMsg.flag);
 }
 
 void
@@ -257,7 +259,7 @@ FLOW_CALLBK_FUNCTION(CmdModeFlowCallbk)
 	*pSetNum = SES_CMD_FLAG;
 
 	PipeFlow(pa_pPipe,pa_pData,pa_DataLen,pFpe);//redirection
-		
+
 	tkfree(pSetNum);
 	tkfree(pFpe);
 }

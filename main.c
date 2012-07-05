@@ -20,12 +20,52 @@ char             g_TargetName[PEER_NAME_ID_LEN];
 const char      *g_pTargetName = NULL;
 char             g_MyName[PEER_NAME_ID_LEN];
 
+#define STDOUT_BUFFLEN (PROMT_BUFFERSIZE*3)
+static char      sta_StdoutBuff[STDOUT_BUFFLEN];
+static uint      sta_StdoutBuffIndex = 0;//point to the first unfilled buffer.
+struct pipe      *sta_pStdoutPipe = NULL;
+
 static
 FLOW_CALLBK_FUNCTION( StdoutFlowCallbk )
 {
-	printf("%s",pa_pData);
+	int i;
+
+	for(i=0;i< pa_DataLen ;i++)
+	{
+		VCK(pa_pData[i] == '\0',continue);
+		putchar(pa_pData[i]);
+	}
+
 	fflush(stdout);
-	PipeFlow(pa_pPipe,pa_pData,pa_DataLen,NULL);
+	
+	if(sta_StdoutBuffIndex + pa_DataLen > STDOUT_BUFFLEN)
+	{
+		memcpy(sta_StdoutBuff + sta_StdoutBuffIndex ,
+				pa_pData, STDOUT_BUFFLEN - sta_StdoutBuffIndex);
+		sta_StdoutBuffIndex = STDOUT_BUFFLEN;
+
+		StdoutPipeFlush();
+	}
+	else
+	{
+		memcpy(sta_StdoutBuff + sta_StdoutBuffIndex ,
+				pa_pData, pa_DataLen);
+		sta_StdoutBuffIndex += pa_DataLen;
+	}
+}
+
+void
+StdoutPipeFlush()
+{
+	if(NULL == sta_pStdoutPipe)
+		sta_pStdoutPipe = PipeMap("stdout");
+
+	if(sta_StdoutBuffIndex == 0)
+		return;
+	else
+		PipeFlow(sta_pStdoutPipe,sta_StdoutBuff,sta_StdoutBuffIndex,NULL);
+	
+	sta_StdoutBuffIndex = 0;
 }
 
 TK_THREAD( StdinThread )
@@ -36,6 +76,9 @@ TK_THREAD( StdinThread )
 	while(g_MainLoopFlag)
 	{
 		fgets(buff,BKGD_CMD_MAX_LEN,stdin);
+
+		if(strcmp(buff,"debug\n") == 0)
+			PipeTablePrint();
 
 		MutexLock(&g_BkgdMutex);
 		PipeFlow(pPipe,buff,strlen(buff) + 1,NULL);
@@ -262,6 +305,8 @@ no_bdg_peer:
 
 		if(!ifBkgdStunProc())
 			MainSock.RecvLen = 0;
+
+		StdoutPipeFlush();
 
 		MutexUnlock(&g_BkgdMutex);
 		tkMsSleep(SHORT_SLEEP_INTERVAL);

@@ -209,6 +209,8 @@ FindKeyInfoByStrArg(struct KeyInfoCache *pa_pInfoChache,char *pa_pStrArg)
 static
 FLOW_CALLBK_FUNCTION( CmdFlowCallbk )
 {
+	VCK(pa_DataLen >= BKGD_CMD_MAX_LEN,return);
+
 	memcpy(sta_BkgdCmd,pa_pData,pa_DataLen);
 	sta_BkgdCmd[ BKGD_CMD_MAX_LEN - 1 ] = '\0';//make it safe
 	
@@ -533,7 +535,7 @@ TK_THREAD( BackGround )
 			}
 			else
 			{
-				PROMPT(Usual,"unknown bkgd cmd.\n");
+				PROMPT(Usual,"bad.\n");
 			}
 		}
 

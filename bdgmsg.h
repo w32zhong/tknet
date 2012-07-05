@@ -120,6 +120,8 @@ struct BridgeMsg
 struct TkNetMsg
 {
 	uchar           flag;
+	ushort          UsrDatLen;//Only used when msg union stands for UsrDat
+	                          //(flag is not TK_NET_BDG_MSG_FLAG).
 	union
 	{
 		struct BridgeMsg  BdgMsg;

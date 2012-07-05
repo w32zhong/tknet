@@ -74,6 +74,9 @@ tkNetCommonUninit();
 void
 tkNetDefaultPipeInit();
 
+void
+StdoutPipeFlush();
+
 #ifdef __cplusplus
 }
 #endif
