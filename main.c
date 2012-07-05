@@ -270,11 +270,11 @@ tkNetMain(int pa_argn,char **in_args)
 			PROMPT(Usual,"no avalible Bridge peer.\n");
 			tkNetConnect(NULL);
 			
-			if(g_NATtype == NAT_T_FULL_CONE)
+			if(g_NATtype == NAT_T_FULL_CONE && 0 == strcmp(g_MyName,"BDG"))
 			{
 				BkgdArgs.pCheckNATProc = 
 					CheckNATProcConsAndBegin(&ProcList, &KeyInfoCache);
-				PROMPT(Usual,"checking NAT enabled.\n");
+				PROMPT(Usual,"This is BridgePeer.\n");
 			}
 
 			goto no_bdg_peer;

@@ -27,6 +27,7 @@ struct CheckNATProc
 	struct pipe            *pCheckPipe;
 	uchar                   STUNTryFlag;
 	struct ProcessingList  *pProcList;
+	BOOL                    ifFisrtRun;
 };
 
 struct FindPossibleKeyInfoByNotNumPa

@@ -747,8 +747,6 @@ KeyInfoDoubleCheckNAT(struct KeyInfoCache *pa_pInfoChache , struct Sock *pa_pMai
 			return 0;
 		}
 
-		KeyInfoTrace(pa_pInfoChache);
-
 		if(KeyInfoUse(pKeyInfo,pa_pInfoChache,pa_pMainSock))
 		{
 			PROMPT(Usual,"NAT type got from STUN.\n");

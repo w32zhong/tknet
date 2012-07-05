@@ -49,7 +49,18 @@ next:
 
 STEP( WaitToCheck )
 {
-	if(pa_state == PS_STATE_OVERTIME)
+	struct CheckNATProc *pCkProc = GET_STRUCT_ADDR(pa_pProc,struct CheckNATProc,proc);
+	char  IPText[16];
+	
+	if(pCkProc->ifFisrtRun)
+	{
+		GetIPText(&g_NATMapAddr,IPText);
+		sprintf(sta_NatStr,"BridgePeer %s %d",IPText,g_NATMapAddr.port);
+		
+		pCkProc->ifFisrtRun = 0;
+		return FlagName(pa_pProc,"SendingNewAddr");
+	}
+	else if(pa_state == PS_STATE_OVERTIME)
 	{
 		return PS_CALLBK_RET_DONE;
 	}
@@ -176,8 +187,17 @@ STEP( SendingNewAddr )
 	struct CheckNATProc *pCkProc = GET_STRUCT_ADDR(pa_pProc,struct CheckNATProc,proc);
 	char                 CmdStr[BKGD_CMD_MAX_LEN];
 	struct KeyInfo      *pSmtpKey;
+	struct pipe         *pCmdPipe = PipeFindByName("cmd");
 
-	if(pa_state == PS_STATE_FIRST_TIME)
+	if(pCmdPipe == NULL)
+	{
+		TK_EXCEPTION(
+				PROMPT(Usual,"No cmd pipe.\n");
+				);
+
+		return PS_CALLBK_RET_ABORT;
+	}
+	else if(pa_state == PS_STATE_FIRST_TIME)
 	{
 		pSmtpKey = KeyInfoFindByType(pCkProc->pKeyInfo,KEY_INFO_TYPE_SMTPSERVER);
 		VCK(pSmtpKey == NULL,return PS_CALLBK_RET_ABORT;);
@@ -190,10 +210,17 @@ STEP( SendingNewAddr )
 		
 		if(ifBkgdSubProcess())
 			return PS_CALLBK_RET_REDO;
+	
+		if(!ifPipeTo(pCkProc->pCheckPipe,pCmdPipe))
+		{
+			PipeDirectTo(pCkProc->pCheckPipe,pCmdPipe);
+		}
 
 		PipeFlow(pCkProc->pCheckPipe,CmdStr,strlen(CmdStr)+1,NULL);
 		//Do not dele the temp key immediately, because the bkgd thread
 		//need to access it.
+		
+		PROMPT(Usual,"Send Mail ...\n");
 	}
 	else if(pa_state == PS_STATE_LAST_TIME)
 	{
@@ -288,6 +315,7 @@ CheckNATProcConsAndBegin(struct ProcessingList *pa_pProcList,
 	pProc->STUNTryFlag  = CHECK_NAT_FINE;
 	pProc->pCheckPipe = PipeMap("CHECK");
 	pProc->pProcList = pa_pProcList;
+	pProc->ifFisrtRun = 1;
 
 	pProc->proc.NotifyCallbk = &CheckNATProcNotify;
 	sta_NatStr[0] = '\0';
