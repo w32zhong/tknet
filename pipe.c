@@ -85,6 +85,23 @@ PipeDele(struct pipe *pa_pPipe)
 	tkfree(pa_pPipe);
 }
 
+static BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(ResetPipeCallbk)
+{
+	struct pipe *pPipe = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct pipe,ln);
+
+	CutConnections(&pPipe->IDirection);
+	CutConnections(&pPipe->IReference);
+		
+	return pa_pINow->now == pa_pIHead->last;
+}
+
+void 
+PipeReset()
+{
+	ForEach(&sta_PipeMap.IPipe,&ResetPipeCallbk,NULL);
+}
+
 void 
 PipeModuleInit()
 {

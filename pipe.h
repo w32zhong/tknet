@@ -121,3 +121,6 @@ ifPipeTo(struct pipe *,struct pipe *);
 
 struct pipe*
 PipeFindByID(uint);
+
+void 
+PipeReset();

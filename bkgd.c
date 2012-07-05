@@ -306,6 +306,7 @@ TK_THREAD( BackGround )
 						"  relays (print current relay processes)\n"
 						"  pltrace (Process List trace)\n"
 						"  pipet (print pipe table)\n"
+						"  pipereset (reset pipes)\n"
 						"  pipe     [a] [b] (pipe from a to b)\n"
 						"  pipeonly [a] [b] (pipe from a only to b)\n"
 						"  setc (set tknet condition, from 0 to %d)\n"
@@ -335,6 +336,10 @@ TK_THREAD( BackGround )
 					pKeyInfo->valid = KEY_INFO_VALID_UNSURE;
 					KeyInfoTrace(pBkgdArgs->pInfoCache);
 				}
+			}
+			else if( strcmp(pCmd ,"pipereset") == 0 )
+			{
+				PipeReset();
 			}
 			else if( strcmp(pCmd ,"pipet") == 0 )
 			{
