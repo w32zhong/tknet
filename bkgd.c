@@ -209,13 +209,15 @@ FindKeyInfoByStrArg(struct KeyInfoCache *pa_pInfoChache,char *pa_pStrArg)
 static
 FLOW_CALLBK_FUNCTION( CmdFlowCallbk )
 {
-	VCK(pa_DataLen >= BKGD_CMD_MAX_LEN,return);
+	VCK(pa_DataLen >= BKGD_CMD_MAX_LEN -1 ,return);
 
 	memcpy(sta_BkgdCmd,pa_pData,pa_DataLen);
-	sta_BkgdCmd[ BKGD_CMD_MAX_LEN - 1 ] = '\0';//make it safe
+	sta_BkgdCmd[pa_DataLen] = '\0';//make it a C string so that strcmp function
+	//can deal with it in the BackGround thread.
 	
 	if(sta_BkgdCmd[strlen(sta_BkgdCmd)-1] == '\n')
-		sta_BkgdCmd[strlen(sta_BkgdCmd)-1] = '\0'; //strip the '\n'
+		sta_BkgdCmd[strlen(sta_BkgdCmd)-1] = '\0'; 
+	//strip the '\n'
 
 	sta_ifBkgdFlow = 1;
 }

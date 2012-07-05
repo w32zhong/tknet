@@ -77,11 +77,12 @@ TK_THREAD( StdinThread )
 	{
 		fgets(buff,BKGD_CMD_MAX_LEN,stdin);
 
-		if(strcmp(buff,"debug\n") == 0)
+		if(strcmp(buff,"pipet_debug\n") == 0)
 			PipeTablePrint();
 
 		MutexLock(&g_BkgdMutex);
-		PipeFlow(pPipe,buff,strlen(buff) + 1,NULL);
+		PipeFlow(pPipe,buff,strlen(buff),NULL);
+		//Do not flow '\0' in string pipe.
 		MutexUnlock(&g_BkgdMutex);
 
 		tkMsSleep(SHORT_SLEEP_INTERVAL);
@@ -93,7 +94,7 @@ TK_THREAD( StdinThread )
 static
 FLOW_CALLBK_FUNCTION( LogFlowCallbk )
 {
-	tkLog(1,(const char*)pa_pData);
+	tkLogLenDat(1,(const char*)pa_pData, pa_DataLen);
 	PipeFlow(pa_pPipe,pa_pData,pa_DataLen,NULL);
 }
 

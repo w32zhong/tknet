@@ -95,6 +95,17 @@ tkLog( uint pa_LogNum , const char* pa_log )
 	}
 }
 
+void 
+tkLogLenDat(uint pa_LogNum , const char* pa_dat , uint pa_len )
+{
+	if( pa_LogNum < LOG_FILES && cst_ifEnableLogFile[pa_LogNum] )
+	{
+		fwrite( pa_dat , 1 , pa_len , sta_pLogFile[pa_LogNum] );
+		fflush( sta_pLogFile[pa_LogNum] );
+	}
+}
+
+
 void
 tkLogClose()
 {
@@ -222,5 +233,6 @@ Prompt(struct pipe *pa_pPipe,const char *pa_pPipeName,
 		pa_pPipe = PipeMap((char*)pa_pPipeName);
 	}
 
-	PipeFlow(pa_pPipe,buff,strlen(buff)+1,NULL);
+	PipeFlow(pa_pPipe,buff,strlen(buff),NULL);
+	//Do not flow '\0' in string pipe.
 }
