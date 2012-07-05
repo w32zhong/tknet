@@ -51,9 +51,6 @@ KeyInfoTrace( struct KeyInfoCache * );
 void 
 KeyInfoFree(struct KeyInfoCache *);
 
-struct KeyInfo*
-KeyInfoSelectA( struct KeyInfoCache * , uchar  );
-
 void
 KeyInfoWorksFine( struct KeyInfoCache * , int  );
 
@@ -70,6 +67,9 @@ KeyInfoUse( struct KeyInfo * , struct KeyInfoCache * , struct Sock* );
 
 BOOL 
 KeyInfoTry(struct KeyInfoCache * , uchar , struct Sock* );
+
+BOOL 
+KeyInfoDoubleCheckNAT(struct KeyInfoCache *, struct Sock *);
 
 char*
 GetNextSeparateStr(char ** );
@@ -109,9 +109,6 @@ struct FindKeyInfoByAddrPa
 	struct NetAddr addr;
 	struct KeyInfo *found;
 };
-
-BOOL
-LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoNotUsedByType);
 
 BOOL
 LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoByNum);

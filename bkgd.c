@@ -259,6 +259,9 @@ TK_THREAD( BackGround )
 
 	SMTPProcMake(&SmtpProc ,"IP" , 0,0,"username","password","adress","content");
 	SmtpProc.proc.NotifyCallbk = &BkgdProcEndCallbk;
+		
+	MutexUnlock(&g_BkgdMutex);
+	//as a flag to say thread has been initialized.
 
 	while(1)
 	{
@@ -537,7 +540,7 @@ TK_THREAD( BackGround )
 			}
 			else
 			{
-				PROMPT(Usual,"bad.\n");
+				PROMPT(Usual,"Bad Cmd.\n");
 			}
 		}
 

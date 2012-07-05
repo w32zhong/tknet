@@ -257,8 +257,8 @@ KeyInfoDele(struct KeyInfo *pa_pKeyInfo,struct KeyInfoCache *pa_pCache)
 	tkfree(pa_pKeyInfo);
 }
 
-BOOL
-LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoNotUsedByType)
+static BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindAnUnsureKey)
 {
 	struct KeyInfo *pInfo = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct KeyInfo,ln);
 	DEF_AND_CAST(pFkipa,struct FindKeyInfoByTypePa ,pa_else);
@@ -275,14 +275,54 @@ LIST_ITERATION_CALLBACK_FUNCTION(FindKeyInfoNotUsedByType)
 	}
 }
 	
-struct KeyInfo*
-KeyInfoSelectA( struct KeyInfoCache *pa_pCache , uchar pa_type )
+static struct KeyInfo*
+KeyInfoSelectAnUnsureKey( struct KeyInfoCache *pa_pCache , uchar pa_type )
 {
 	struct FindKeyInfoByTypePa fkipa;
 	fkipa.TypeToFind = pa_type;
 	fkipa.found = NULL;
 
-	ForEach( &pa_pCache->IKeyInfo , &FindKeyInfoNotUsedByType , &fkipa );
+	ForEach( &pa_pCache->IKeyInfo , &FindAnUnsureKey , &fkipa );
+
+	if(fkipa.found)
+	{
+		fkipa.found->valid = KEY_INFO_VALID_NOT;
+	}
+
+	return fkipa.found;
+}
+
+static BOOL
+LIST_ITERATION_CALLBACK_FUNCTION(FindAnotherKeyByPriority)
+{
+	struct KeyInfo *pInfo = GET_STRUCT_ADDR_FROM_IT(pa_pINow,struct KeyInfo,ln);
+	DEF_AND_CAST(pFkipa,struct FindKeyInfoByTypePa ,pa_else);
+
+	if(pFkipa->TypeToFind == pInfo->type)
+	{
+		if(	pInfo->valid == KEY_INFO_VALID_UNSURE )
+		{
+			pFkipa->found = pInfo;
+			//unsure means not used which is what we prefer,
+			//return it immediately.
+			return 1;
+		}
+		else if( pInfo->valid == KEY_INFO_VALID_WORKS)
+			pFkipa->found = pInfo;
+			//although it is used, we save it as a candidate.
+	}
+		
+	return pa_pINow->now == pa_pIHead->last;
+}
+	
+static struct KeyInfo*
+KeyInfoSelectAnotherKeyByPriority( struct KeyInfoCache *pa_pCache , uchar pa_type )
+{
+	struct FindKeyInfoByTypePa fkipa;
+	fkipa.TypeToFind = pa_type;
+	fkipa.found = NULL;
+
+	ForEach( &pa_pCache->IKeyInfo , &FindAnotherKeyByPriority , &fkipa );
 
 	if(fkipa.found)
 	{
@@ -674,7 +714,7 @@ KeyInfoTry(struct KeyInfoCache *pa_pInfoChache , uchar pa_type , struct Sock *pa
 	BOOL res = 0;
 	while(!res)
 	{
-		pKeyInfo = KeyInfoSelectA(pa_pInfoChache,pa_type);
+		pKeyInfo = KeyInfoSelectAnUnsureKey(pa_pInfoChache,pa_type);
 		if( pKeyInfo == NULL )
 		{
 			break;
@@ -689,6 +729,43 @@ KeyInfoTry(struct KeyInfoCache *pa_pInfoChache , uchar pa_type , struct Sock *pa
 	}
 
 	return res;
+}
+
+BOOL 
+KeyInfoDoubleCheckNAT(struct KeyInfoCache *pa_pInfoChache , struct Sock *pa_pMainSock)
+{
+	struct KeyInfo *pKeyInfo;
+	uchar LastType  = NAT_T_UNKNOWN;
+	
+	while(1)
+	{
+		pKeyInfo = KeyInfoSelectAnotherKeyByPriority(pa_pInfoChache,
+				KEY_INFO_TYPE_STUNSERVER);
+		
+		if( pKeyInfo == NULL )
+		{
+			return 0;
+		}
+
+		KeyInfoTrace(pa_pInfoChache);
+
+		if(KeyInfoUse(pKeyInfo,pa_pInfoChache,pa_pMainSock))
+		{
+			PROMPT(Usual,"NAT type got from STUN.\n");
+			NatTypePrint(g_NATtype);
+			
+			KeyInfoWorksFine(pa_pInfoChache,pKeyInfo->num);
+			
+			if(NAT_T_UNKNOWN != LastType && LastType == g_NATtype)
+			{
+				return 1;
+			}
+			else
+			{
+				LastType = g_NATtype;
+			}
+		}
+	}
 }
 
 static BOOL

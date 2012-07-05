@@ -72,17 +72,29 @@ TK_THREAD( StdinThread )
 {
  	static char buff[BKGD_CMD_MAX_LEN];
 	DEF_AND_CAST(pPipe,struct pipe,pa_else);
+	struct pipe *pFindPipe;
 	
 	while(g_MainLoopFlag)
 	{
 		fgets(buff,BKGD_CMD_MAX_LEN,stdin);
 
-		if(strcmp(buff,"pipet_debug\n") == 0)
-			PipeTablePrint();
+		if(!g_MainLoopFlag)
+			break;
+		//Main thread has exited, so break this thread too.
 
 		MutexLock(&g_BkgdMutex);
+		
+		if(strcmp(buff,"control\n") == 0)
+		{
+			pFindPipe = PipeFindByName("cmd");
+			VCK(pFindPipe == NULL , goto unlock);
+			PipeDirectOnlyTo(pPipe,pFindPipe);
+			goto unlock;
+		}
+
 		PipeFlow(pPipe,buff,strlen(buff),NULL);
 		//Do not flow '\0' in string pipe.
+unlock:
 		MutexUnlock(&g_BkgdMutex);
 
 		tkMsSleep(SHORT_SLEEP_INTERVAL);
@@ -230,7 +242,7 @@ tkNetMain(int pa_argn,char **in_args)
 	}
 	else
 	{
-		while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_STUNSERVER,&MainSock))
+		while(!KeyInfoDoubleCheckNAT(&KeyInfoCache,&MainSock))
 		{
 			if(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_MAILSERVER,&MainSock))
 			{
@@ -239,7 +251,7 @@ tkNetMain(int pa_argn,char **in_args)
 			}
 		}
 		
-		PROMPT(Usual,"NAT type got from STUN.\n");
+		PROMPT(Usual,"NAT type double checked.\n");
 	}
 
 	if(pa_argn == 2)
@@ -248,9 +260,8 @@ tkNetMain(int pa_argn,char **in_args)
 		g_NATtype = (uchar)TestPurposeNatType;
 		
 		PROMPT(Usual,"NAT type assigned by argument.\n");
+		NatTypePrint(g_NATtype);
 	}
-		
-	NatTypePrint(g_NATtype);
 
 	while(!KeyInfoTry(&KeyInfoCache,KEY_INFO_TYPE_BRIDGEPEER,&MainSock))
 	{
@@ -258,7 +269,7 @@ tkNetMain(int pa_argn,char **in_args)
 		{
 			PROMPT(Usual,"no avalible Bridge peer.\n");
 			tkNetConnect(NULL);
-
+			
 			if(g_NATtype == NAT_T_FULL_CONE)
 			{
 				BkgdArgs.pCheckNATProc = 
@@ -291,10 +302,18 @@ no_bdg_peer:
 	BkgdArgs.pProcList = &ProcList;
 	BkgdArgs.pBdgClientProc = &BdgClientProc;
 	BkgdArgs.pMainSock = &MainSock;
+	
+	MutexLock(&g_BkgdMutex);
 	tkBeginThread( &BackGround , &BkgdArgs );
+	
+	PROMPT(Usual,"wait BackGround thread init...\n");
+	MutexLock(&g_BkgdMutex);	
+	MutexUnlock(&g_BkgdMutex);
 
 	ConsAndStartBridgeServer(&BdgServerProc,&PeerDataRoot,&ProcList,&MainSock,&ISeedPeer);
 
+	PROMPT(Usual,"tknet gets prepared.\n");
+	
 	while( g_MainLoopFlag )
 	{
 		MutexLock(&g_BkgdMutex);

@@ -163,6 +163,14 @@ then
 	done
 	rm GPL.head
 
+elif [ $1 == 'lshead' ]
+then
+	for srcfile in *.c *.h
+	do
+		echo "$srcfile:"
+		cat $srcfile | head -2
+	done
+
 elif [ $1 == 'rmhead' ]
 then
 	for srcfile in *.c *.h
