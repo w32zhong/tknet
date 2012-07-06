@@ -10,6 +10,7 @@ BUILD:
 STEP 1: 
 ~~~~~~
 Scons(see http://www.scons.org/) is required for building, OpenSSL-dev library is also required if you want to enable the SSL feature.
+
 STEP 2: 
 ~~~~~~
 Run the './tknet.sh build' command in the source directory, an executable demo program and tknet binary library are created under ./bin folder.
@@ -17,6 +18,7 @@ Run the './tknet.sh build' command in the source directory, an executable demo p
 NOTE: 
 =====
 1: The './tknet.sh win' help you generate the DOS format source codes in a new folder.
+
 2: Use 'help' command in demo stdin to see built-in commands.
 
 LICENSE:
@@ -27,4 +29,4 @@ http://www.gnu.org/copyleft/gpl.html
 
 CONTACT:
 ========
-Contact me via clock126@126.com.
+You can contact me via clock126@126.com.
