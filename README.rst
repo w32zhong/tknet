@@ -1,7 +1,7 @@
-INTRO:
+ .. image:: http://www.thoughts-of.me/twbook/images/adog.png
+    :align: right
+INTRO:                             
 ======
-	.. image:: http://www.thoughts-of.me/twbook/images/adog.png
-
   tknet (originally named twnet) is a simple-oriented cross-platform P2P library especially aimed at low cost embedded systems.
 
   tknet uses traditional centralized server-based model. However, differing from other P2P applications, the main feature of tknet enables tknet maintainers to use e-mail servers to track new tknet center P2P servers (namely bridge peer or BDG peer) lest others are broken down.
