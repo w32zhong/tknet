@@ -1,6 +1,6 @@
 INTRO:
 ======
-	.. image:: http://github.com/intuited/grainery-db/raw/dist/screenshot.png
+	.. image:: http://www.thoughts-of.me/twbook/images/adog.png
 
   tknet (originally named twnet) is a simple-oriented cross-platform P2P library especially aimed at low cost embedded systems.
 
