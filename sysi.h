@@ -46,7 +46,7 @@ void
 tkLog( unsigned int , const char* );
 
 void 
-tkLogLenDat(uint , const char* , uint );
+tkLogLenDat(unsigned int , const char* , unsigned int );
 //this log function doesn't expect any '\0' in data to write.
 
 void

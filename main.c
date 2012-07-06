@@ -28,7 +28,7 @@ struct pipe      *sta_pStdoutPipe = NULL;
 static
 FLOW_CALLBK_FUNCTION( StdoutFlowCallbk )
 {
-	int i;
+	uint i;
 
 	for(i=0;i< pa_DataLen ;i++)
 	{
