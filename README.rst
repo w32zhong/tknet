@@ -1,19 +1,19 @@
- .. image:: http://www.thoughts-of.me/twbook/images/tknet_link.png
+.. image:: http://www.thoughts-of.me/twbook/images/tknet_link.png
 INTRO:                             
 ======
 tknet is designed to become a simple cross-platform P2P library.
 
-tknet uses traditional centralized server-based model, however, different from other P2P solutions, tknet is able to use E-mail server to track center servers (namely bridge peer or BDG peer) lest others are closed down; it was written from scratch, using a private protocol, simple as it is and still under development; despite this, now it is able to establish connections between peers in a foolproof way. I simply include how to build it and not writing documents before I think it is almost usable and easy-to-use.
+tknet uses traditional centralized server-based model, however, different from other P2P solutions, tknet is able to use E-mail server to track center servers (namely bridge peer or BDG peer) lest others are closed down; it was written from scratch, using a private protocol, simple as it is and still under development; despite these, it is able to establish connections between peers in a foolproof way already. I simply include how to build it in this file and not writing documents before I think it is almost usable and easy-to-use.
 
 BUILD:
 ======
 STEP 1: 
 ~~~~~~
-Scons(see http://www.scons.org/) is required for building, OpenSSL-dev library is also required if you want to enable the SSL feature.
+Scons(see http://www.scons.org/) is required for building, OpenSSL-dev library is also needed if you want to enable SSL feature.
 
 STEP 2: 
 ~~~~~~
-Run the './tknet.sh build' command in the source directory, an executable demo program and tknet binary library are created under ./bin folder.
+Run the './tknet.sh build' command in the source directory, an executable demo program and the tknet binary library are created under ./bin folder.
 
 NOTE: 
 =====
