@@ -17,9 +17,9 @@ Run the './tknet.sh build' command in the source directory, an executable demo p
 
 NOTE: 
 =====
-1: The './tknet.sh win' help you generate the DOS format source codes in a new folder.
+  1: The './tknet.sh win' help you generate the DOS format source codes in a new folder.
 
-2: Use 'help' command in demo stdin to see built-in commands.
+  2: Use 'help' command in demo stdin to see built-in commands.
 
 LICENSE:
 ========
