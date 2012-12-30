@@ -1,5 +1,0 @@
-Config     127.0.0.1         8912   WAN  BDG             StdinToCmd 
-MailServer 220.181.12.101    110    0    li28jhyxy76223  g131517
-STUNServer 132.177.123.13 3478      
-STUNServer 208.97.25.20   3478
-SMTPServer 113.108.225.10  25  0 li28jhyxy76223 g131517 li28jhyxy76223@163.com
