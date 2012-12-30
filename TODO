@@ -2,7 +2,7 @@
 This file lists what functions and ideas worth adding into the project.
 ***********************************************************************
 Currently most important:
-.blank
+.use an efficient software interruption to replace polling(tree 21342%2)
 
 Others:
 .add re-send & circle-buffer utilities.
