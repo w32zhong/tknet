@@ -9,7 +9,7 @@ Others:
 .the ability to update tknet program at remote.(md5 check)
 .classify prompts into 'debug' and 'important'.
 .speed up connection further.
-.config which to print and which do not using a new config file.
+.config (which to print, log or give to a callback function) and (which do not) using a new config file.
 
 A large-scale usable version further needs these features:
 .enable BDG server to be relayer and even STUN server.
