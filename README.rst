@@ -3,7 +3,7 @@ INTRO:
 ======
   tknet is designed to become a simple cross-platform P2P library.
 
-  tknet uses traditional centralized server-based model, however, different from other P2P solutions, tknet peer is able to use E-mail server to track center servers (namely bridge peer or BDG peer) when necessary. It uses a private protocol, very simple and is still under development; despite these, it is tested that tknet can establish connections already.
+  tknet uses traditional centralized server-based model, however, different from other P2P solutions, tknet peer is able to use E-mail server to track center servers (namely bridge peers or BDG peers) when necessary. It uses a private protocol, very simple and is still under development; despite these, it is tested that tknet can establish connections already.
 
   I simply include how to build it in this README and have not written documents before I think it is at least usable and easy-to-use. If you are interested in this project, please let me know! I need some incentive to let tknet go further.
 
