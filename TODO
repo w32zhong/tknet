@@ -10,7 +10,8 @@ Others:
 .classify prompts into 'debug' and 'important'.
 .speed up connection further.
 .config (which to print -- file name, line number at head is a good idea, log or give to a callback function) and (which do not) using a new config file.
-.graphical and statistical debug ability
+.graphical and statistical debug ability.
+.an idea to implement a command-based interface with only one string parameter for each function.
 
 A large-scale usable version further needs these features:
 .enable BDG server to be relayer and even STUN server.
