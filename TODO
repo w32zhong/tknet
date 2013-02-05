@@ -14,6 +14,8 @@ Others:
 .an idea to implement a command-based interface with only one string parameter for each function.
 .a well designed error code model applied system wide.
 .a similar interface with that of vvnet.
+.a note that a connection maybe still connected when session is prompting the end.
+.the ability to call another proc in one proc.
 
 A large-scale usable version further needs these features:
 .enable BDG server to be relayer and even STUN server.
