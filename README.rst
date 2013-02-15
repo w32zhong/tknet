@@ -9,12 +9,11 @@ If you are interested in this project, please let me know! I need some incentive
 
 BUILD:
 ======
-WINDOWS platform:
+Windows platform:
 ~~~~~~
 
 Linux platform: 
 ~~~~~~
-If GNU make is installed, you can type 'make' to build.
 
 LICENSE:
 ========
