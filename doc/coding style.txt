@@ -1,0 +1,98 @@
+This document gives suggestions on coding style for tknet. Coding style is very personal but code is read by human (including me and perhaps future maintainers), it is very convenient to follow the same style. This is the same reason tknet is written in C confirmed to C89 standard -- for a p2p library, C is simple but enough.
+
+Suggestion 0 on general structure:
+==================================
+In compliance with K&R style in case of placing braces and spaces, e.g. :
+
+struct some_struct {
+	members ...
+};
+
+if (statement) {
+	one line;
+	another line;
+}
+
+and do not unnecessarily use braces where a single statement will do:
+
+if (statement)
+	only one line;
+
+return type in defination of function and its declaration should be written differently like:
+
+int foo(void);
+
+int 
+foo(void)
+{
+	...
+}
+
+be aware that non-prototype old-style K&R declaration may not be supported thus should not be used:
+
+int foo();
+
+Suggestion 1 on operators:
+==========================
+Use one space around (on each side of) most binary and ternary operators,
+such as any of these:
+
+=  +  -  <  >  *  /  %  |  &  ^  <=  >=  ==  !=  ?  :
+
+but no space after unary operators:
+
+&  *  +  -  ~  !
+
+and no space around the '.' and "->" structure member operators.
+
+Suggestion 2 on naming:
+=======================
+Do not use Hungarian notation to name variables. I generally let, global variables start with a "g_", many arguments start with a "pa_" which is short for the word parameter (one special case, arguments in macro functions start with a '_'), when arguments are pointers, I may replace "pa_" with "in_", "out_" or "io_" to indicate the usage of certain argument is to pass in, pass out or both. Besides, static variables start with a "s_". When using typedef, use something like "foo_t" as the defined type name and use something like "foo_fun" as the defined function type.
+
+Names of macros are capitalized, however, inline functions are preferable to be in lower case. Function names and variables are recommended be named in lower case too.
+
+An example:
+
+void
+add(int pa_a, int pa_b, int *out_res)
+{
+	*out_res = pa_a + pa_b;
+}
+
+This is a little bit ugly, and yes, 'pa_' only makes a small function cumbersome, but it will improve readability to know a variable is not local at the first glance of its name WHEN dealing with a function with a number of local variables. So, choose the right time to use 'pa_' prefix.
+
+Suggestion 3 on comments:
+=========================
+Generally, comments tell WHAT your code does, not HOW. Comments always follow the C89 style: "/* */", do not use C99-style "// ..." comments. (our codes confirm to C89 standard) 
+
+Avoid over-commenting, documentation is better to be put away from codes.
+
+Suggestion 4 on typedef:
+========================
+Defining a struct using typedef to just save a few keystrokes (i.e. to type "struct") is not recommended.
+In contrast, when a typedef is used for function declaration or function pointer name abbreviation, feel free to use them.
+
+For instance:
+
+typedef int a_fun(const char*);
+...
+a_fun foo;                     /* declaration */
+a_fun *foo = &some_function;   /* function pointer */
+
+or:
+
+typedef int (*b_fun)(void);
+...
+b_fun foo = &some_function;    /* function pointer */
+
+Suggestion 5 on tab:
+====================
+To make code nice and independent from editor tab setting, it is better to write:
+
+...
+{
+	some_type a;
+	int       b;
+}
+
+where use tab before type name (i.e. some_type and int) but use space after type name.
