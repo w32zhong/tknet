@@ -37,7 +37,7 @@ clean:
 push: clean
 	git add .
 	git commit
-	git push origin re-design
+	git push origin rewrite
 
 license_header:
 	@ cd script && ./license_header.sh
