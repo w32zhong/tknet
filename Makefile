@@ -38,3 +38,6 @@ push: clean
 	git add .
 	git commit
 	git push origin re-design
+
+license_header:
+	@ cd script && ./license_header.sh
