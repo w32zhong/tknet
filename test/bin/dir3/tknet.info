@@ -1,2 +1,0 @@
-Config      127.0.0.1  8923   LAN  dir3 dir1 StdinToCmd 
-BridgePeer  127.0.0.1  8912 
