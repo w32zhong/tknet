@@ -37,4 +37,4 @@ clean:
 push: clean
 	git add .
 	git commit
-	git push orgin re-design
+	git push origin re-design
