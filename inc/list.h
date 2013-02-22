@@ -40,6 +40,10 @@ struct list_it {
 
 #define LIST_NULL {NULL, NULL}
 
+#define LIST_CONS(_it) \
+	(_it).now = NULL; \
+	(_it).last = NULL
+
 /*
  * get a iterator pointing to a list node.
  */
@@ -256,7 +260,6 @@ list_it_fun list_insert;
  * 'extra' is your extra parameters you need to pass to your 
  * compare callback.
  */
-
 struct list_sort_arg {
 	list_cmp_fun     *cmp;
 	void             *extra;

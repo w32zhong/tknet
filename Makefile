@@ -32,7 +32,7 @@ test_%: env $(BIN_TKNET)
 
 clean:
 	@ find . -name "*.o" -o -name "*.swp" | xargs rm -f
-	@ rm -rf bin
+	@ rm -rf bin tags
 
 push: clean
 	git add .

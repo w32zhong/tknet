@@ -16,6 +16,7 @@
 #define NULL ((void*)0)
 #endif
 
+/* macro BOOL allow a program to undefine and redefine it */
 #ifndef BOOL
 #define BOOL uint
 #endif

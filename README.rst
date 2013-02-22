@@ -9,9 +9,6 @@ If you are interested in this project, please let me know! I need some incentive
 
 BUILD:
 ======
-Windows platform:
-~~~~~~
-
 Linux platform: 
 ~~~~~~
 
@@ -23,4 +20,6 @@ http://www.gnu.org/copyleft/gpl.html
 
 CONTACT:
 ========
-Zhong Wei <clock126@126.com> .
+Zhong Wei <clock126@126.com>
+
+Technical problems are primarily discused in mail list of tknet: <tk_net@groups.163.com>
