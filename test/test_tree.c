@@ -119,7 +119,7 @@ main()
 	root.i = 0;
 	TREE_NODE_CONS(root.tnd);
 
-	/* then add notes to the tree */
+	/* then add nodes to the tree */
 	ATTACH(1, &root.tnd);
 	ATTACH(2, &root.tnd);
 	ATTACH(3, &root.tnd);
