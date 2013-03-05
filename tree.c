@@ -17,7 +17,6 @@
 /* some static structs */
 struct traversal_arg {
 	tree_it_fun *each_do;
-	BOOL        if_break;
 	void        *extra;
 };
 
@@ -56,10 +55,11 @@ LIST_IT_CALLBK(tree_pre_order_DFS)
 
 /* go through a tree, see tree.h for detail. */
 void
-tree_foreach(struct tree_node *root, list_it_fun *traversal, tree_it_fun *each_do, BOOL if_exclude_root, void *extra)
+tree_foreach(struct tree_node *root, list_it_fun *traversal, 
+		tree_it_fun *each_do, BOOL if_exclude_root, void *extra)
 {
 	struct list_it tmp = list_get_it(&root->ln);
-	struct traversal_arg t_arg = {each_do, 0, extra};
+	struct traversal_arg t_arg = {each_do, extra};
 	struct foreach_arg   f_arg = {0, &t_arg};
 
 	if (if_exclude_root) {
