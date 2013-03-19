@@ -1,0 +1,14 @@
+cfg.h module draft:
+config_read(config.txt)
+ID = config_get(selector, int, char ....)
+config_mark(ID, "bad")
+config_update # delete the items marked "bad" in group where exists item marked "good" 
+config_write()
+the set_default marco
+
+time_wheel -> linked list
+sock -> recv_addr -> treap
+
+stat class
+get net bandwide
+H.264 PNum
