@@ -36,10 +36,10 @@ typedef unsigned char  uchar;
 #define DEF_AND_CAST( _to_var , _type_tag_casting_to , _from_var ) \
 	_type_tag_casting_to * _to_var = ( _type_tag_casting_to *)( _from_var )
 
-#define MEMBER_OFFSET( _type_tag , _member ) (int)(&( (( _type_tag *)0)-> _member ))
+#define MEMBER_OFFSET( _type_tag , _member ) (uintptr_t)(&( (( _type_tag *)0)-> _member ))
 
 #define GET_STRUCT_ADDR( _member_addr , _type_tag , _member_name ) \
-	( _type_tag *)((int)( _member_addr ) - MEMBER_OFFSET( _type_tag , _member_name ) )
+	( _type_tag *)((uintptr_t)( _member_addr ) - MEMBER_OFFSET( _type_tag , _member_name ) )
 
 #define TK_EXCEPTION( _describe ) \
 	_descr_exception_( __FILE__ ": " #_describe " exception at line " \

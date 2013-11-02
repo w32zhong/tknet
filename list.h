@@ -12,7 +12,7 @@
 */ 
 
 #define GET_STRUCT_ADDR_FROM_IT( _iterator , _type_tag , _list_node_member_name ) \
-	( _type_tag *)((int)( ( _iterator )->now) - MEMBER_OFFSET( _type_tag , _list_node_member_name ) )
+	( _type_tag *)((uintptr_t)( ( _iterator )->now) - MEMBER_OFFSET( _type_tag , _list_node_member_name ) )
 
 #define LIST_ITERATION_CALLBACK_FUNCTION( _fun_name ) \
 	_fun_name (struct Iterator* pa_pIHead, struct Iterator* pa_pINow , struct Iterator* pa_pIForward , void* pa_else)

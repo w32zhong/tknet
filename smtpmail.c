@@ -17,6 +17,12 @@ STEP( SMTPConnect )
 {
 	struct SMTPProc *pProc = GET_STRUCT_ADDR( pa_pProc , struct SMTPProc , proc );
 
+
+	struct NetAddr addr = {pProc->HostIPVal, pProc->HostPort};
+	char IPText[64];
+	GetAddrText( &addr , IPText );
+	printf("smtp to %s\n", IPText);
+
 	if( !SockLocateTa( &pProc->Sock , pProc->HostIPVal , pProc->HostPort ) )
 	{
 		return PS_CALLBK_RET_ABORT;

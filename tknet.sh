@@ -44,7 +44,7 @@ then
 	set_build_time
 	scons
 	gcc -c './test/demo.c' -o ./demo.o
-	gcc demo.o $dependlibs -L ./ -ltknet -o ./demo
+	gcc demo.o -L . -ltknet $dependlibs -o ./demo
 
 	mkdir -p ./bin/x86
 	mv libtknet.a ./bin/x86/

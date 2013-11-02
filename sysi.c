@@ -72,14 +72,14 @@ static BOOL cst_ifEnableLogFile[ LOG_FILES ];
 #define LOG_FOPEN( _num , _name , _mode ) \
 	cst_ifEnableLogFile[ _num ] = 1; \
 	sta_pLogFile[ _num ] = fopen( _name , _mode ); \
-	res = res && (int)sta_pLogFile[ _num ]
+	res = res && (uintptr_t)sta_pLogFile[ _num ]
 
 #include <string.h>
 
 int
 tkLogInit()
 {
-	int res = 1;
+	uintptr_t res = 1;
 	LOG_FOPEN( 0 , "tknet.exp" , "w" );
 	LOG_FOPEN( 1 , "tknet.log" , "a" );
 	return res;
@@ -170,8 +170,7 @@ void
 tkBeginThread(void* (*pa_thread)(void*) ,void *pa_else )
 {
 	pthread_t id;
-	int res;
-	res = pthread_create( &id , NULL , pa_thread , pa_else );
+	pthread_create( &id , NULL , pa_thread , pa_else );
 }
 
 #elif defined(_MSC_VER)
