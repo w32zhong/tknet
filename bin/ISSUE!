@@ -1,0 +1,70 @@
+ build: 2013-11-15 23:19:47-05:00
+Set tknet condition: 1 
+level0: 600*2 
+level1: 1500*2 
+level2: 2000*2 
+level3: 9000*2 
+level4: 20000*2 
+level5: 1800000*1 
+using config: port 8912,named BDG.
+target name unset. 
+stun proc:208.97.25.20/3478.
+Binding request to 208.97.25.20/3478..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.20/3478 ,saying that my public address is 76.124.91.219
+/8912 and 'change address' is 208.97.25.12/3479
+Sending ChangeIPAndPort request to 208.97.25.20/3478 ..
+Sending ChangeIPAndPort request to 208.97.25.20/3478 ..
+Sending ChangeIPAndPort request to 208.97.25.20/3478 ..
+Binding request to server #2(208.97.25.12/3478)..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.12/3478 ,saying that my public address is 76.124.91.219
+/8912
+Sending ChangePort request to 208.97.25.20/3478 ..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.20/3479 
+KeyInfo Stun proc end.
+NAT type got from STUN.
+NAT type: 1 (restricted cone)
+
+stun proc:208.97.25.20/3478.
+Binding request to 208.97.25.20/3478..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.20/3478 ,saying that my public address is 76.124.91.219
+/8912 and 'change address' is 208.97.25.12/3479
+Sending ChangeIPAndPort request to 208.97.25.20/3478 ..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.12/3479 
+Binding request to server #2(208.97.25.12/3478)..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.12/3478 ,saying that my public address is 76.124.91.219
+/8912
+KeyInfo Stun proc end.
+NAT type got from STUN.
+NAT type: 0 (full cone)
+
+stun proc:208.97.25.20/3478.
+Binding request to 208.97.25.20/3478..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.20/3478 ,saying that my public address is 76.124.91.219
+/8912 and 'change address' is 208.97.25.12/3479
+Sending ChangeIPAndPort request to 208.97.25.20/3478 ..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.12/3479 
+Binding request to server #2(208.97.25.12/3478)..
+CHANGED-ADDRESS attribute recved
+CHANGED-ADDRESS attribute recved
+recv STUN from 208.97.25.12/3478 ,saying that my public address is 76.124.91.219
+/8912
+KeyInfo Stun proc end.
+NAT type got from STUN.
+NAT type: 0 (full cone)
+NAT type double checked.
