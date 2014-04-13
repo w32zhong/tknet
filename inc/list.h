@@ -11,6 +11,7 @@
 * 
 *    Copyright  (C)   2012   Zhong Wei <clock126@126.com>  . 
 */ 
+#include <stdint.h>
 
 /*
  * a typical doubly-linked list node
@@ -197,7 +198,7 @@ list_detach_one(struct list_node *node,
 }
 
 /* 
- * these marcos help you to define a list_foreach callback 
+ * these marcos help you define a list_foreach callback 
  * function & return the right value if you want to go over 
  * the list.
  */
@@ -219,10 +220,10 @@ list_detach_one(struct list_node *node,
  * list object by passing the member name of a list node.
  */
 #define MEMBER_OFFSET(_type, _member) \
-	((uint)&((_type*)0)->_member)
+	((uintptr_t)&((_type*)0)->_member)
 
 #define MEMBER_2_STRUCT(_member_addr, _type, _member_name) \
-	(_type*)((uint)(_member_addr) - MEMBER_OFFSET(_type, _member_name))
+	(_type*)((uintptr_t)(_member_addr) - MEMBER_OFFSET(_type, _member_name))
 
 #define LIST_OBJ(_type, _name, _list_node_name) \
 	_type* _name = MEMBER_2_STRUCT(pa_now->now, _type, _list_node_name)
