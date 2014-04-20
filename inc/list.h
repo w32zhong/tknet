@@ -223,6 +223,7 @@ list_detach_one(struct list_node *node,
 	((uintptr_t)&((_type*)0)->_member)
 
 #define MEMBER_2_STRUCT(_member_addr, _type, _member_name) \
+	(_member_addr == NULL) ? NULL : \
 	(_type*)((uintptr_t)(_member_addr) - MEMBER_OFFSET(_type, _member_name))
 
 #define LIST_OBJ(_type, _name, _list_node_name) \
