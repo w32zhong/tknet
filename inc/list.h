@@ -242,26 +242,6 @@ typedef BOOL list_cmp_fun(struct list_node *,
 		struct list_node *,
 		void *);
 
-#define LIST_CMP_CALLBK(_fun_name) \
-	BOOL _fun_name(struct list_node *pa_node0, \
-			struct list_node *pa_node1, \
-			void *pa_extra)
-
-/*
- * list insert is designed as a callback called by list_foreach
- * function, it can also be used by user-end to insert a node into 
- * certain position.
- * see list_sort on how to use.
- */
-list_it_fun list_insert;
-
-/*
- * list sort
- * struct list_cmp_arg is used as argument list here.
- * where 'cmp' is sorting compare callback;
- * 'extra' is your extra parameters you need to pass to your 
- * compare callback.
- */
 struct list_sort_arg {
 	list_cmp_fun     *cmp;
 	void             *extra;
@@ -272,6 +252,50 @@ struct __list_sort_tmp_arg {
 	void             *extra;
 };
 
+#define LIST_CMP_CALLBK(_fun_name) \
+	BOOL _fun_name(struct list_node *pa_node0, \
+			struct list_node *pa_node1, \
+			void *pa_extra)
+/*
+ * list insert is designed as a callback called by list_foreach
+ * function, it can also be used by user-end to insert a node into 
+ * certain position.
+ * see list_sort on how to use.
+ */
+#define __CMP(_node) \
+	(*sort->cmp)(expa->it.now, pa_now->_node, expa->extra)
+
+static __inline LIST_IT_CALLBK(list_insert)
+{
+	P_CAST(sort, struct list_sort_arg, pa_extra);
+	P_CAST(expa, struct __list_sort_tmp_arg, sort->extra);
+
+	if (pa_now->now == pa_head->now) {
+		if(__CMP(now)) {
+			list_tk(&expa->it, pa_head);
+			*pa_head = list_get_it(pa_head->last);
+
+		} else if (!__CMP(last)) 
+			list_tk(&expa->it, pa_head);
+
+		return LIST_RET_BREAK;
+	} else if (__CMP(now)) {
+		list_tk(&expa->it, pa_now);
+		return LIST_RET_BREAK;
+
+	} else
+		return LIST_RET_CONTINUE;
+
+	return 0;
+}
+
+/*
+ * list sort
+ * struct list_cmp_arg is used as argument list here.
+ * where 'cmp' is sorting compare callback;
+ * 'extra' is your extra parameters you need to pass to your 
+ * compare callback.
+ */
 static __inline void
 list_sort(struct list_it *head, struct list_sort_arg *sort)
 {
