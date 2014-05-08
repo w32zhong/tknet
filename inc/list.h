@@ -274,19 +274,17 @@ static __inline LIST_IT_CALLBK(list_insert)
 		if(__CMP(now)) {
 			list_tk(&expa->it, pa_head);
 			*pa_head = list_get_it(pa_head->last);
-
-		} else if (!__CMP(last)) 
+			return LIST_RET_BREAK;
+		} else if (!__CMP(last)) {
 			list_tk(&expa->it, pa_head);
-
-		return LIST_RET_BREAK;
+			return LIST_RET_BREAK;
+		}
 	} else if (__CMP(now)) {
 		list_tk(&expa->it, pa_now);
 		return LIST_RET_BREAK;
+	} 
 
-	} else
-		return LIST_RET_CONTINUE;
-
-	return 0;
+	return LIST_RET_CONTINUE;
 }
 
 /*
