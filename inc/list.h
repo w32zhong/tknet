@@ -198,7 +198,7 @@ list_detach_one(struct list_node *node,
 }
 
 /* 
- * these marcos help you define a list_foreach callback 
+ * these macros help you define a list_foreach callback 
  * function & return the right value if you want to go over 
  * the list.
  */
@@ -215,7 +215,7 @@ list_detach_one(struct list_node *node,
 		return LIST_RET_CONTINUE
 
 /*
- * these marcos provide common way to access a struct giving
+ * these macros provide common way to access a struct giving
  * its member addresss. Specifically, use LIST_OBJ to get the 
  * list object by passing the member name of a list node.
  */
@@ -230,7 +230,7 @@ list_detach_one(struct list_node *node,
 	_type* _name = MEMBER_2_STRUCT(pa_now->now, _type, _list_node_name)
 
 /*
- * this marco utility helps you with pointer type cast.
+ * this macro utility helps you with pointer type cast.
  */
 #define P_CAST(_to, _type, _from) \
 	_type* _to = (_type*)(_from)
@@ -318,3 +318,24 @@ list_sort(struct list_it *head, struct list_sort_arg *sort)
 
 	*head = tmp_hd;
 }
+
+/*
+ * this macro provides a quick way to define a list-release 
+ * function for convenience.
+ */
+#define LIST_DECL_FREE_FUN(_fun_name) \
+	extern void _fun_name(struct list_it *)
+	
+#define LIST_DEF_FREE_FUN(_fun_name, _type, _member) \
+	static LIST_IT_CALLBK(_ ## _fun_name) \
+	{ \
+		LIST_OBJ(_type, p, _member); \
+		BOOL res = list_detach_one(pa_now->now, \
+		               pa_head, pa_now, pa_fwd); \
+		free(p); \
+		return res; \
+	} \
+	void _fun_name(struct list_it *head) \
+	{ \
+		list_foreach(head, &_ ## _fun_name, NULL); \
+	} LIST_DECL_FREE_FUN(_fun_name)

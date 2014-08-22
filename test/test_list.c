@@ -31,19 +31,6 @@ LIST_IT_CALLBK(print)
 }
 
 static
-LIST_IT_CALLBK(release)
-{
-	LIST_OBJ(struct T, p, ln);
-	BOOL res;
-	printf("free %d \n", p->i);
-	res = list_detach_one(pa_now->now, 
-			pa_head, pa_now, pa_fwd);
-
-	free(p);
-	return res;
-}
-
-static
 LIST_CMP_CALLBK(compare)
 {
 	struct T *p0 = MEMBER_2_STRUCT(pa_node0, struct T, ln);
@@ -53,6 +40,9 @@ LIST_CMP_CALLBK(compare)
 	printf("%d \n", *extra);
 	return p0->i > p1->i;
 }
+
+LIST_DEF_FREE_FUN(list_release, struct T, ln);
+LIST_DEF_FREE_FUN(list_release2, struct T, ln);
 
 /* print list */
 #define PRINT_LIST \
@@ -84,7 +74,7 @@ main()
 	PRINT_LIST;
 	
 	/* free list */
-	list_foreach(&list, &release, NULL);
+	list_release(&list);
 	
 	exit(0);
 }
