@@ -1,4 +1,7 @@
-.. image:: http://www.thoughts-of.me/twbook/images/tknet_link.png
+Notice
+=======
+This repo is a very early experiment of my idea, and is not active now because lack of participation and most importantly, author decides to focus on more practical project (this project relies on Email server, which is only practical in a small scale deployment). If you still think this is useful, send an issue to me and I would also like to help as always.
+
 INTRO:                             
 ======
   tknet is designed to become a simple cross-platform P2P library.
